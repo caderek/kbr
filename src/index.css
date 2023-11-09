@@ -1,0 +1,26 @@
+:root {
+  --color-bg: #181826;
+  --color-bg-lc: #1e1e2f;
+  --color-bg-hc: #101019;
+  --color-fg: #444755;
+  --color-fg-lc: #6c7087;
+  --color-fg-ok: #fefefe;
+}
+
+* {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  display: grid;
+  place-content: center;
+}

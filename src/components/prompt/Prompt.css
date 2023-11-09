@@ -1,0 +1,42 @@
+.prompt {
+  background-color: var(--color-bg);
+  position: relative;
+  width: min(90vw, 60rem);
+  height: 12rem;
+}
+
+.prompt textarea {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent;
+  resize: none;
+  padding: 1rem;
+  font-family: "Fira Code";
+  font-size: 1.5rem;
+  outline: none;
+  line-height: 1.6;
+}
+
+.prompt .task {
+  color: var(--color-fg);
+}
+
+.prompt .input {
+  color: var(--color-fg-ok);
+}
+
+.prompt .warning,
+.prompt .error {
+  pointer-events: none;
+}
+
+.prompt .warning {
+  color: #ffff55;
+}
+
+.prompt .error {
+  color: #ff5555;
+}
