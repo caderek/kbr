@@ -6,8 +6,7 @@ import "./index.css"
 import App from "./components/App"
 import { WordList } from "./models/WordList.ts"
 import { loadWordList } from "./io/loaders.ts"
-
-import "./boot/registerShortcuts.ts"
+import "./boot/registerKeybindings.ts"
 
 const root = document.getElementById("root")
 
@@ -25,20 +24,16 @@ async function main() {
   const letters = list.lettersByFrequency.slice(0, lettersUnlocked)
   const must = "" //letters.slice(-1)
 
+  console.log(list.lettersByFrequency)
+
   const lesson = list.getLesson({
-    letters,
-    mustIncludeLetters: must,
+    letters: letters + "p",
+    mustIncludeLetters: must + "p",
     wordlistMaxSize: practiceSize,
     lettersCount: 100,
   })
 
-  console.log({ lesson: lesson.length })
-
-  console.log({ freq: list.lettersByFrequency.slice(0, lettersUnlocked) })
-
   setState("prompt", "text", lesson)
-
-  console.log(list.ngrams)
 }
 
 main()

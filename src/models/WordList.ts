@@ -33,7 +33,7 @@ export class WordList {
       lesson += randomElement(subset) + " "
     }
 
-    return lesson
+    return lesson.trim()
   }
 
   getSubset(letters: string, mustIncludeLetters: string = "") {

@@ -2,9 +2,20 @@
   --color-bg: #181826;
   --color-bg-lc: #1e1e2f;
   --color-bg-hc: #101019;
-  --color-fg: #444755;
+  --color-fg: #585b70;
   --color-fg-lc: #6c7087;
+  --color-fg-hc: #eeeeee;
   --color-fg-ok: #fefefe;
+
+  --font-mono: "Fira Code", monospace;
+  --font-sans: "Ubuntu", font-sans;
+
+  --font-xs: 0.75rem;
+  --font-s: 0.875rem;
+  --font-m: 1rem;
+  --font-l: 1.5rem;
+  --font-xl: 2rem;
+  --font-xxl: 3rem;
 }
 
 * {
