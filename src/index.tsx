@@ -7,11 +7,12 @@ import App from "./components/App"
 import { WordList } from "./models/WordList.ts"
 import { loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
+import { getNgrams } from "./utils/ngrams.ts"
 
 const root = document.getElementById("root")
 
 async function main() {
-  const listData = await loadWordList("en", 1000)
+  const listData = await loadWordList("en", 200)
 
   if (listData instanceof Error) {
     return
@@ -27,13 +28,21 @@ async function main() {
   console.log(list.lettersByFrequency)
 
   const lesson = list.getLesson({
-    letters: letters + "p",
-    mustIncludeLetters: must + "p",
+    letters: letters,
+    mustIncludeLetters: must,
     wordlistMaxSize: practiceSize,
     lettersCount: 100,
   })
 
   setState("prompt", "text", lesson)
+
+  const ngrams = getNgrams(list.words, 3)
+
+  console.log({ ngrams: ngrams.size })
+
+  // console.log([...ngrams].sort().join("\n"))
+  //
+  // console.log(ngrams)
 }
 
 main()

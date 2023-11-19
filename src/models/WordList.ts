@@ -110,6 +110,10 @@ export class WordList {
     return ngrams
   }
 
+  get words() {
+    return this.#data.words
+  }
+
   get ngrams() {
     if (this.#ngrams.length > 0) {
       return this.#ngrams
