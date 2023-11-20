@@ -132,6 +132,8 @@ function createNgrams(files, maxNgram, minOccurences = 1) {
     docs.push(description)
 
     saveWordlist(outputFile, condensed)
+
+    console.log(`Done: ${capitalize(originalName)} (${ngramNames[maxNgram]})`)
   }
 
   return [
@@ -144,10 +146,10 @@ function main() {
   const files = [
     "monkey-english.json",
     "monkey-english-1k.json",
-    // "monkey-english-5k.json",
-    // "monkey-english-10k.json",
-    // "monkey-english-25k.json",
-    // "monkey-english-450k.json",
+    "monkey-english-5k.json",
+    "monkey-english-10k.json",
+    "monkey-english-25k.json",
+    "monkey-english-450k.json",
   ]
 
   const intro = `
