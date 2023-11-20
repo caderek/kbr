@@ -126,7 +126,7 @@ function createNgrams(files, maxNgram, minOccurences = 1) {
       "- " + stats.ngrams.bigrams.text,
       "- " + stats.ngrams.trigrams.text,
       "- " + stats.ngrams.tetragrams.text,
-      `\nGet it here: [optimized wordlist](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/${outputFile})`,
+      `\nGet it here: [${outputFile}](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/${outputFile})`,
     ].join("\n")
 
     docs.push(description)
