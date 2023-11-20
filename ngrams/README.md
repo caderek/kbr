@@ -1,3 +1,7 @@
+
+# Optimized wordlists for typing software
+
+
 ## BIGRAMS
 
 ### Optimized Monkey English (bigrams)

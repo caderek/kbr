@@ -150,7 +150,12 @@ function main() {
     // "monkey-english-450k.json",
   ]
 
+  const intro = `
+# Optimized wordlists for typing software
+`
+
   const docs = [
+    intro,
     createNgrams(files, 2),
     createNgrams(files, 3),
     createNgrams(files, 4),
