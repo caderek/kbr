@@ -133,9 +133,10 @@ function createNgrams(files, maxNgram, minOccurences = 1) {
     saveWordlist(outputFile, condensed)
   }
 
-  return [`## ${ngramNames[maxNgram].toUpperCase()}`, docs.join("\n\n")].join(
-    "\n\n",
-  )
+  return [
+    `## ${ngramNames[maxNgram].toUpperCase()}`,
+    docs.join("\n\n---\n\n"),
+  ].join("\n\n")
 }
 
 function main() {
@@ -152,7 +153,7 @@ function main() {
     createNgrams(files, 2),
     createNgrams(files, 3),
     createNgrams(files, 4),
-  ].join("\n\n--\n\n")
+  ].join("\n\n")
 
   console.log(docs)
 

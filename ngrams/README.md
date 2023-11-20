@@ -11,6 +11,8 @@ Preserved N-grams:
 - Trigrams: 211/338 (62%)
 - Tetragrams: 139/254 (55%)
 
+---
+
 ### Optimized Monkey English 1k (bigrams)
 
 - Original 999 words condensed to 126 words (13%)
@@ -21,8 +23,6 @@ Preserved N-grams:
 - Bigrams: 303/303 (100%)
 - Trigrams: 387/1263 (31%)
 - Tetragrams: 285/1519 (19%)
-
---
 
 ## TRIGRAMS
 
@@ -37,6 +37,8 @@ Preserved N-grams:
 - Trigrams: 338/338 (100%)
 - Tetragrams: 242/254 (95%)
 
+---
+
 ### Optimized Monkey English 1k (trigrams)
 
 - Original 999 words condensed to 586 words (59%)
@@ -47,8 +49,6 @@ Preserved N-grams:
 - Bigrams: 303/303 (100%)
 - Trigrams: 1263/1263 (100%)
 - Tetragrams: 1166/1519 (77%)
-
---
 
 ## TETRAGRAMS
 
@@ -62,6 +62,8 @@ Preserved N-grams:
 - Bigrams: 192/192 (100%)
 - Trigrams: 338/338 (100%)
 - Tetragrams: 254/254 (100%)
+
+---
 
 ### Optimized Monkey English 1k (tetragrams)
 
