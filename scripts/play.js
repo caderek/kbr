@@ -1,28 +1,5 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs"
 
-function getAlltWordNgrams(word, from = 2, to = 4) {
-  const ngrams = []
-
-  for (let ngramSize = to; ngramSize >= from; ngramSize--) {
-    for (let i = 0; i <= word.length - ngramSize; i++) {
-      const ngram = word.slice(i, i + ngramSize)
-
-      // if (ngrams.some((x) => x.includes(ngram))) {
-      //   continue
-      // }
-
-      ngrams.push(ngram)
-    }
-  }
-
-  // for (let i = 0; i <= word.length - ngramSize; i++) {
-  //   const ngram = word.slice(i, i + ngramSize)
-  //   ngrams.push(ngram)
-  // }
-
-  return new Set(ngrams)
-}
-
 function getWordNgrams(word, ngramSize) {
   const ngrams = []
 
