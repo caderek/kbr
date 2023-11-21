@@ -28,7 +28,7 @@ function readWordlist(file) {
   }
 }
 
-function create(wordlistFile) {
+function create(wordlistFile, minCount = 1) {
   const wordlistName = wordlistFile.match(/[a-z]+-[a-z]+/)[0]
   const words = readWordlist(wordlistFile)
 
@@ -39,7 +39,7 @@ function create(wordlistFile) {
   }
 
   for (let ngramSize = 2; ngramSize < 4; ngramSize++) {
-    const ngrams = getSpecificNgrams(words, ngramSize, 2)
+    const ngrams = getSpecificNgrams(words, ngramSize, minCount)
     console.log(`Total ${ngramNames[ngramSize]}:`, ngrams.size)
 
     const step = steps[ngramSize]
@@ -60,5 +60,5 @@ function create(wordlistFile) {
   }
 }
 
-create("common-english-10k.txt")
-create("monkey-english-10k.json")
+create("common-english-10k.txt", 2)
+create("monkey-english-10k.json", 2)
