@@ -148,12 +148,12 @@ function main() {
     "common-english-1k.txt",
     "common-english-5k.txt",
     "common-english-10k.txt",
-    "common-english-25k.txt",
+    // "common-english-25k.txt",
     "monkey-english-200.json",
     "monkey-english-1k.json",
     "monkey-english-5k.json",
     "monkey-english-10k.json",
-    "monkey-english-25k.json",
+    // "monkey-english-25k.json",
   ]
 
   const intro = `

@@ -1,6 +1,6 @@
 import { getWordNgrams } from "./getWordNgrams.js"
 
-export function getSpecificNgramsWithCount(words, ngramSize, minCount = 1) {
+export function getSpecificNgrams(words, ngramSize, minCount = 1) {
   const ngramsWithCount = new Map()
 
   for (const word of words) {
@@ -19,13 +19,5 @@ export function getSpecificNgramsWithCount(words, ngramSize, minCount = 1) {
     .filter(([_, count]) => count >= minCount)
     .sort((a, b) => b[1] - a[1])
 
-  return sorted
-}
-
-export function getSpecificNgrams(words, ngramSize, minCount = 1) {
-  const ngrams = getSpecificNgramsWithCount(words, ngramSize, minCount).map(
-    ([ngram]) => ngram,
-  )
-
-  return new Set(ngrams)
+  return new Set(sorted.map(([word]) => word))
 }
