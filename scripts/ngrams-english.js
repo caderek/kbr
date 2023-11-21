@@ -28,9 +28,10 @@ function readWordlist(file) {
   }
 }
 
-function create(wordlistFile, minCount = 1) {
-  const wordlistName = wordlistFile.match(/[a-z]+-[a-z]+/)[0]
-  const words = readWordlist(wordlistFile)
+function create(targetWordlistFile, frequencyWorlistFile, minCount = 1) {
+  const wordlistName = targetWordlistFile.match(/[a-z]+-[a-z]+/)[0]
+  const targetWords = readWordlist(targetWordlistFile)
+  const frequencyWords = readWordlist(frequencyWorlistFile)
 
   const OUTPUT_DIR = join("ngrams", "specific")
 
@@ -39,7 +40,17 @@ function create(wordlistFile, minCount = 1) {
   }
 
   for (let ngramSize = 2; ngramSize < 4; ngramSize++) {
-    const ngrams = getSpecificNgrams(words, ngramSize, minCount)
+    const ngramsFrequency = getSpecificNgrams(
+      frequencyWords,
+      ngramSize,
+      minCount,
+    )
+    const ngramsTarget = getSpecificNgrams(targetWords, ngramSize, 1)
+
+    const ngrams = new Set(
+      [...ngramsFrequency].filter((ngram) => ngramsTarget.has(ngram)),
+    )
+
     console.log(`Total ${ngramNames[ngramSize]}:`, ngrams.size)
 
     const step = steps[ngramSize]
@@ -47,7 +58,7 @@ function create(wordlistFile, minCount = 1) {
     for (let i = step; i < ngrams.size + step; i += step) {
       const subset = new Set([...ngrams].slice(0, i))
 
-      const optimized = getWordsWithNgrams(words, subset, ngramSize)
+      const optimized = getWordsWithNgrams(targetWords, subset, ngramSize)
 
       console.log("-------------------------------")
       console.log(`${ngramNames[ngramSize]}`, subset.size)
@@ -60,5 +71,5 @@ function create(wordlistFile, minCount = 1) {
   }
 }
 
-create("common-english-10k.txt", 2)
-create("monkey-english-10k.json", 2)
+create("common-english-10k.txt", "common-english-10k.txt", 2)
+create("monkey-english-10k.json", "monkey-english-10k.json", 2)
