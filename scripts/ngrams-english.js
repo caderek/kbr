@@ -12,6 +12,7 @@ const ngramNames = {
 const steps = {
   2: 100,
   3: 200,
+  4: 200,
 }
 
 const RAW_WORDLISTS_DIR = join("public", "wordlists")
@@ -45,7 +46,7 @@ function create(wordlistName, targetWords, frequencyWords, minCount = 1) {
     mkdirSync(OUTPUT_DIR, { recursive: true })
   }
 
-  for (let ngramSize = 2; ngramSize < 4; ngramSize++) {
+  for (let ngramSize = 2; ngramSize <= 3; ngramSize++) {
     const ngramsFrequency = getSpecificNgrams(
       frequencyWords,
       ngramSize,
@@ -88,7 +89,7 @@ function main() {
   const commonWordlist = cleanWordlist(readWordlist("common-english-10k.txt"))
 
   create("monkey-english", monkeyWordlist, monkeyWordlist, 2)
-  create("common-english", commonWordlist, commonWordlist, 2)
+  // create("common-english", commonWordlist, commonWordlist, 2)
 }
 
 main()

@@ -144,10 +144,10 @@ function createNgrams(files, maxNgram, minOccurences = 1) {
 
 function main() {
   const files = [
-    "common-english-200.txt",
-    "common-english-1k.txt",
-    "common-english-5k.txt",
-    "common-english-10k.txt",
+    // "common-english-200.txt",
+    // "common-english-1k.txt",
+    // "common-english-5k.txt",
+    // "common-english-10k.txt",
     // "common-english-25k.txt",
     "monkey-english-200.json",
     "monkey-english-1k.json",
@@ -160,12 +160,9 @@ function main() {
 # Optimized wordlists for typing software
 `
 
-  const docs = [
-    intro,
-    createNgrams(files, 2),
-    createNgrams(files, 3),
-    createNgrams(files, 4),
-  ].join("\n\n")
+  const docs = [intro, createNgrams(files, 2), createNgrams(files, 3)].join(
+    "\n\n",
+  )
 
   console.log(docs)
 
