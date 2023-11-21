@@ -34,11 +34,11 @@ function cleanWordlist(words) {
   return [...new Set(cleaned)]
 }
 
-function create(targetWordlistFile, frequencyWorlistFile, minCount = 1) {
-  const wordlistName = targetWordlistFile.match(/[a-z]+-[a-z]+/)[0]
-  const targetWords = cleanWordlist(readWordlist(targetWordlistFile))
-  const frequencyWords = cleanWordlist(readWordlist(frequencyWorlistFile))
+function joinWordlists(...wordlists) {
+  return [...new Set(wordlists.flat())]
+}
 
+function create(wordlistName, targetWords, frequencyWords, minCount = 1) {
   const OUTPUT_DIR = join("ngrams", "specific")
 
   if (!existsSync(OUTPUT_DIR)) {
@@ -72,10 +72,23 @@ function create(targetWordlistFile, frequencyWorlistFile, minCount = 1) {
 
       const file = `${wordlistName}-${ngramNames[ngramSize]}-top-${subset.size}__${optimized.length}-words.txt`
 
-      writeFileSync(join(OUTPUT_DIR, file), optimized.join(" "))
+      writeFileSync(join(OUTPUT_DIR, file), optimized.sort().join(" "))
     }
   }
 }
 
-create("common-english-10k.txt", "common-english-10k.txt", 2)
-create("monkey-english-10k.json", "monkey-english-10k.json", 2)
+function main() {
+  const monkeyWordlist = joinWordlists(
+    cleanWordlist(readWordlist("monkey-english-200.json")),
+    cleanWordlist(readWordlist("monkey-english-1k.json")),
+    cleanWordlist(readWordlist("monkey-english-5k.json")),
+    cleanWordlist(readWordlist("monkey-english-10k.json")),
+  )
+
+  const commonWordlist = cleanWordlist(readWordlist("common-english-10k.txt"))
+
+  create("monkey-english", monkeyWordlist, monkeyWordlist, 2)
+  create("common-english", commonWordlist, commonWordlist, 2)
+}
+
+main()
