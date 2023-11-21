@@ -16,7 +16,7 @@ const OUTPUT_DIR = "ngrams"
 function readWordlist(file) {
   const path = join(RAW_WORDLISTS_DIR, file)
 
-  if (file.startsWith("google")) {
+  if (file.endsWith("txt")) {
     return readFileSync(path, { encoding: "utf8" }).trim().split("\n")
   }
 
@@ -144,12 +144,14 @@ function createNgrams(files, maxNgram, minOccurences = 1) {
 
 function main() {
   const files = [
-    "monkey-english.json",
+    "common-english-200.txt",
+    "common-english-1k.txt",
+    "common-english-5k.txt",
+    "common-english-10k.txt",
+    "monkey-english-200.json",
     "monkey-english-1k.json",
     "monkey-english-5k.json",
     "monkey-english-10k.json",
-    "monkey-english-25k.json",
-    "monkey-english-450k.json",
   ]
 
   const intro = `
