@@ -28,10 +28,16 @@ function readWordlist(file) {
   }
 }
 
+function cleanWordlist(words) {
+  const cleaned = words.map((word) => word.toLowerCase().split("-")).flat()
+
+  return [...new Set(cleaned)]
+}
+
 function create(targetWordlistFile, frequencyWorlistFile, minCount = 1) {
   const wordlistName = targetWordlistFile.match(/[a-z]+-[a-z]+/)[0]
-  const targetWords = readWordlist(targetWordlistFile)
-  const frequencyWords = readWordlist(frequencyWorlistFile)
+  const targetWords = cleanWordlist(readWordlist(targetWordlistFile))
+  const frequencyWords = cleanWordlist(readWordlist(frequencyWorlistFile))
 
   const OUTPUT_DIR = join("ngrams", "specific")
 
