@@ -64,6 +64,21 @@ Get it here: [all-bigrams__common-english-10k.txt](https://raw.githubusercontent
 
 ---
 
+### Optimized Common English 25k (bigrams)
+
+- Original 25000 words condensed to 258 words (1%)
+- Original 202843 characters condensed to 1494 characters (1%)
+
+Preserved N-grams:
+
+- Bigrams: 580/580 (100%)
+- Trigrams: 668/5088 (13%)
+- Tetragrams: 549/18299 (3%)
+
+Get it here: [all-bigrams__common-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-bigrams__common-english-25k.txt)
+
+---
+
 ### Optimized Monkey English 200 (bigrams)
 
 - Original 200 words condensed to 85 words (43%)
@@ -121,6 +136,21 @@ Preserved N-grams:
 - Tetragrams: 809/10156 (8%)
 
 Get it here: [all-bigrams__monkey-english-10k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-bigrams__monkey-english-10k.txt)
+
+---
+
+### Optimized Monkey English 25k (bigrams)
+
+- Original 24208 words condensed to 224 words (1%)
+- Original 213193 characters condensed to 1810 characters (1%)
+
+Preserved N-grams:
+
+- Bigrams: 555/555 (100%)
+- Trigrams: 1019/5680 (18%)
+- Tetragrams: 902/24374 (4%)
+
+Get it here: [all-bigrams__monkey-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-bigrams__monkey-english-25k.txt)
 
 ## TRIGRAMS
 
@@ -184,6 +214,21 @@ Get it here: [all-trigrams__common-english-10k.txt](https://raw.githubuserconten
 
 ---
 
+### Optimized Common English 25k (trigrams)
+
+- Original 25000 words condensed to 2227 words (9%)
+- Original 202843 characters condensed to 17261 characters (9%)
+
+Preserved N-grams:
+
+- Bigrams: 580/580 (100%)
+- Trigrams: 5088/5088 (100%)
+- Tetragrams: 7054/18299 (39%)
+
+Get it here: [all-trigrams__common-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-trigrams__common-english-25k.txt)
+
+---
+
 ### Optimized Monkey English 200 (trigrams)
 
 - Original 200 words condensed to 150 words (75%)
@@ -241,6 +286,21 @@ Preserved N-grams:
 - Tetragrams: 4965/10156 (49%)
 
 Get it here: [all-trigrams__monkey-english-10k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-trigrams__monkey-english-10k.txt)
+
+---
+
+### Optimized Monkey English 25k (trigrams)
+
+- Original 24208 words condensed to 2291 words (9%)
+- Original 213193 characters condensed to 19515 characters (9%)
+
+Preserved N-grams:
+
+- Bigrams: 555/555 (100%)
+- Trigrams: 5680/5680 (100%)
+- Tetragrams: 8736/24374 (36%)
+
+Get it here: [all-trigrams__monkey-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-trigrams__monkey-english-25k.txt)
 
 ## TETRAGRAMS
 
@@ -304,6 +364,21 @@ Get it here: [all-tetragrams__common-english-10k.txt](https://raw.githubusercont
 
 ---
 
+### Optimized Common English 25k (tetragrams)
+
+- Original 25000 words condensed to 7569 words (30%)
+- Original 202843 characters condensed to 61963 characters (31%)
+
+Preserved N-grams:
+
+- Bigrams: 580/580 (100%)
+- Trigrams: 5088/5088 (100%)
+- Tetragrams: 18299/18299 (100%)
+
+Get it here: [all-tetragrams__common-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-tetragrams__common-english-25k.txt)
+
+---
+
 ### Optimized Monkey English 200 (tetragrams)
 
 - Original 200 words condensed to 160 words (80%)
@@ -361,3 +436,18 @@ Preserved N-grams:
 - Tetragrams: 10156/10156 (100%)
 
 Get it here: [all-tetragrams__monkey-english-10k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-tetragrams__monkey-english-10k.txt)
+
+---
+
+### Optimized Monkey English 25k (tetragrams)
+
+- Original 24208 words condensed to 9634 words (40%)
+- Original 213193 characters condensed to 83818 characters (39%)
+
+Preserved N-grams:
+
+- Bigrams: 555/555 (100%)
+- Trigrams: 5680/5680 (100%)
+- Tetragrams: 24374/24374 (100%)
+
+Get it here: [all-tetragrams__monkey-english-25k.txt](https://raw.githubusercontent.com/caderek/kbr/main/ngrams/all-tetragrams__monkey-english-25k.txt)

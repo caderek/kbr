@@ -39,23 +39,18 @@ const words = fs
       dict.has(word),
   )
   .sort(([, countA], [, countB]) => countB - countA)
+  .map(([word]) => word)
 
-console.log(words.slice(0, 100))
+const wordlists = {
+  "common-english-200": words.slice(0, 200),
+  "common-english-1k": words.slice(0, 1e3),
+  "common-english-5k": words.slice(0, 5e3),
+  "common-english-10k": words.slice(0, 10e3),
+  "common-english-25k": words.slice(0, 25e3),
+}
 
-const common200 = words.slice(0, 200).map(([w]) => w)
-const common1k = words.slice(0, 1e3).map(([w]) => w)
-const common5k = words.slice(0, 5e3).map(([w]) => w)
-const common10k = words.slice(0, 10e3).map(([w]) => w)
+for (const [name, words] of Object.entries(wordlists)) {
+  fs.writeFileSync(`public/wordlists/${name}.txt`, words.join("\n"))
+}
 
-fs.writeFileSync(
-  "public/wordlists/common-english-200.txt",
-  common200.join("\n"),
-)
-fs.writeFileSync("public/wordlists/common-english-1k.txt", common1k.join("\n"))
-fs.writeFileSync("public/wordlists/common-english-5k.txt", common5k.join("\n"))
-fs.writeFileSync(
-  "public/wordlists/common-english-10k.txt",
-  common10k.join("\n"),
-)
-
-console.log("Words:", words.length)
+console.log("Done!")
