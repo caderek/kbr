@@ -30,7 +30,7 @@ function readWordlist(file) {
 }
 
 function cleanWordlist(words) {
-  const cleaned = words.map((word) => word.toLowerCase().split("-")).flat()
+  const cleaned = words.map((word) => word.toLowerCase().split(/[-\s]+/)).flat()
 
   return [...new Set(cleaned)]
 }
