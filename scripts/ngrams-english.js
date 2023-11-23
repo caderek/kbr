@@ -58,6 +58,15 @@ function verifyNgrams(words, expectedNgrams, ngramSize) {
   return [...expectedNgrams].every((ngram) => actualNgrams.has(ngram))
 }
 
+function calculateAvoidanceRatio(words, avoidWords) {
+  const actual = new Set(words)
+  const avoided = avoidWords.filter((word) => !actual.has(word))
+
+  const ratio = avoided.length / avoidWords.length
+
+  return Number.isNaN(ratio) ? 1 : ratio
+}
+
 function save(results) {
   const OUTPUT_DIR = join("ngrams", "specific")
 
@@ -81,8 +90,9 @@ function createOptimizedWords({
   sliceSize,
   wordlistName,
   allowAdditionalNgrams,
+  avoidWords,
 }) {
-  let maxDensity = 0
+  let maxScore = 0
   let data = null
 
   for (
@@ -98,9 +108,11 @@ function createOptimizedWords({
       ngrams: subset,
       maxNgram: ngramSize,
       allowAdditionalNgrams,
+      avoidWords,
     }).sort()
 
     const density = calculateNgramDensity(optimized, subset, ngramSize)
+    const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
     const isComplete = verifyNgrams(optimized, subset, ngramSize)
 
     const attempt = {
@@ -111,10 +123,13 @@ function createOptimizedWords({
       wordsCount: optimized.length,
       words: optimized,
       density,
+      avoidedanceRatio,
     }
 
-    if (isComplete && attempt.density > maxDensity) {
-      maxDensity = attempt.density
+    const attemptScore = attempt.density + attempt.avoidedanceRatio
+
+    if (isComplete && attemptScore > maxScore) {
+      maxScore = attemptScore
       data = attempt
     }
   }
@@ -129,11 +144,13 @@ function create({
   ngramSize,
   minCount,
   step,
+  avoidWords,
 }) {
   wordlistName ??= ""
   minCount ??= 1
   frequencyWords ??= targetWords
   step ??= 100
+  avoidWords ??= []
 
   const results = []
 
@@ -156,11 +173,14 @@ function create({
       ngramSize,
       sliceSize: i,
       wordlistName,
+      avoidWords,
     }
 
     const data =
       createOptimizedWords({ ...settings, allowAdditionalNgrams: false }) ??
       createOptimizedWords({ ...settings, allowAdditionalNgrams: true })
+
+    avoidWords = [...avoidWords, ...data.words]
 
     if (!data) {
       throw new Error("Cant produce a lists with current criteria!")

@@ -6,9 +6,11 @@ export function getWordsWithNgrams({
   maxNgram,
   maxWords,
   allowAdditionalNgrams,
+  avoidWords,
 }) {
   maxWords ??= Infinity
   allowAdditionalNgrams ??= true
+  const avoid = new Set(avoidWords ?? [])
 
   const ngramsCopy = new Set([...ngrams])
   const list = []
@@ -29,18 +31,25 @@ export function getWordsWithNgrams({
     )
 
     if (wordNgrams.size > 0 && (allowAdditionalNgrams || 1)) {
-      items.push({ word, ngrams: wordNgrams })
+      items.push({
+        word,
+        ngrams: wordNgrams,
+        priority: avoid.has(word) ? 0 : 1,
+      })
     }
   }
 
   while (items.length && list.length < maxWords) {
-    const byNgramsCountThenByShortest = items.sort(
-      (a, b) => b.ngrams.size - a.ngrams.size || a.word.length - b.word.length,
+    const sorted = items.sort(
+      (a, b) =>
+        b.priority - a.priority || // by priority
+        b.ngrams.size - a.ngrams.size || // then by number of ngrams
+        a.word.length - b.word.length, // then by word length
     )
 
-    const best = byNgramsCountThenByShortest[0]
+    const best = sorted[0]
     list.push(best.word)
-    items = byNgramsCountThenByShortest.slice(1)
+    items = sorted.slice(1)
 
     for (const used of best.ngrams) {
       ngramsCopy.delete(used)
