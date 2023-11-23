@@ -2,6 +2,7 @@ import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs"
 import { join } from "node:path"
 import { getSpecificNgrams } from "./getSpecificNgrams.js"
 import { getWordsWithNgrams } from "./getWordsWithNgrams.js"
+import { calculateNgramDensity } from "./calculateNgramDensity.js"
 
 const ngramNames = {
   2: "bigrams",
@@ -39,43 +40,136 @@ function joinWordlists(...wordlists) {
   return [...new Set(wordlists.flat())]
 }
 
-function create(wordlistName, targetWords, frequencyWords, minCount = 1) {
+function skip(obj, keys) {
+  const result = {}
+
+  for (const [key, val] of Object.entries(obj)) {
+    if (!keys.includes(key)) {
+      result[key] = val
+    }
+  }
+
+  return result
+}
+
+function verifyNgrams(words, expectedNgrams, ngramSize) {
+  const actualNgrams = getSpecificNgrams(words, ngramSize)
+
+  return [...expectedNgrams].every((ngram) => actualNgrams.has(ngram))
+}
+
+function save(results) {
   const OUTPUT_DIR = join("ngrams", "specific")
 
   if (!existsSync(OUTPUT_DIR)) {
     mkdirSync(OUTPUT_DIR, { recursive: true })
   }
 
-  for (let ngramSize = 2; ngramSize <= 3; ngramSize++) {
-    const ngramsFrequency = getSpecificNgrams(
-      frequencyWords,
+  for (const item of results) {
+    const fileName = `${item.wordlistName}-${item.ngramName}-top-${item.ngramsCount}__${item.wordsCount}-words.txt`
+    const outputPath = join(OUTPUT_DIR, fileName)
+    writeFileSync(outputPath, item.words.join(" "))
+  }
+}
+
+function createOptimizedWords({
+  minWordLength,
+  maxWordLength,
+  targetWords,
+  ngrams,
+  ngramSize,
+  sliceSize,
+  wordlistName,
+  allowAdditionalNgrams,
+}) {
+  let maxDensity = 0
+  let data = null
+
+  for (
+    let wordLength = minWordLength;
+    wordLength <= maxWordLength;
+    wordLength++
+  ) {
+    const words = targetWords.filter((word) => word.length <= wordLength)
+    const subset = new Set([...ngrams].slice(0, sliceSize))
+
+    const optimized = getWordsWithNgrams({
+      words,
+      ngrams: subset,
+      maxNgram: ngramSize,
+      allowAdditionalNgrams,
+    }).sort()
+
+    const density = calculateNgramDensity(optimized, subset, ngramSize)
+    const isComplete = verifyNgrams(optimized, subset, ngramSize)
+
+    const attempt = {
+      wordlistName,
       ngramSize,
-      minCount,
-    )
-    const ngramsTarget = getSpecificNgrams(targetWords, ngramSize, 1)
+      ngramName: ngramNames[ngramSize],
+      ngramsCount: subset.size,
+      wordsCount: optimized.length,
+      words: optimized,
+      density,
+    }
 
-    const ngrams = new Set(
-      [...ngramsFrequency].filter((ngram) => ngramsTarget.has(ngram)),
-    )
-
-    console.log(`Total ${ngramNames[ngramSize]}:`, ngrams.size)
-
-    const step = steps[ngramSize]
-
-    for (let i = step; i < ngrams.size + step; i += step) {
-      const subset = new Set([...ngrams].slice(0, i))
-
-      const optimized = getWordsWithNgrams(targetWords, subset, ngramSize)
-
-      console.log("-------------------------------")
-      console.log(`${ngramNames[ngramSize]}`, subset.size)
-      console.log("Words:", optimized.length)
-
-      const file = `${wordlistName}-${ngramNames[ngramSize]}-top-${subset.size}__${optimized.length}-words.txt`
-
-      writeFileSync(join(OUTPUT_DIR, file), optimized.sort().join(" "))
+    if (isComplete && attempt.density > maxDensity) {
+      maxDensity = attempt.density
+      data = attempt
     }
   }
+
+  return data
+}
+
+function create({
+  wordlistName,
+  targetWords,
+  frequencyWords,
+  ngramSize,
+  minCount,
+  step,
+}) {
+  wordlistName ??= ""
+  minCount ??= 1
+  frequencyWords ??= targetWords
+  step ??= 100
+
+  const results = []
+
+  const ngramsFrequency = getSpecificNgrams(frequencyWords, ngramSize, minCount)
+  const ngramsTarget = getSpecificNgrams(targetWords, ngramSize, 1)
+
+  const ngrams = new Set(
+    [...ngramsFrequency].filter((ngram) => ngramsTarget.has(ngram)),
+  )
+
+  const minWordLength = ngramSize
+  const maxWordLength = Math.max(...targetWords.map((w) => w.length))
+
+  for (let i = step; i < ngrams.size + step; i += step) {
+    const settings = {
+      minWordLength,
+      maxWordLength,
+      targetWords,
+      ngrams,
+      ngramSize,
+      sliceSize: i,
+      wordlistName,
+    }
+
+    const data =
+      createOptimizedWords({ ...settings, allowAdditionalNgrams: false }) ??
+      createOptimizedWords({ ...settings, allowAdditionalNgrams: true })
+
+    if (!data) {
+      throw new Error("Cant produce a lists with current criteria!")
+    }
+
+    results.push(data)
+  }
+
+  return results
 }
 
 function main() {
@@ -86,10 +180,29 @@ function main() {
     cleanWordlist(readWordlist("monkey-english-10k.json")),
   )
 
-  const commonWordlist = cleanWordlist(readWordlist("common-english-10k.txt"))
+  const monkeyBigrams = create({
+    wordlistName: "monkey-english",
+    targetWords: monkeyWordlist,
+    minCount: 2,
+    ngramSize: 2,
+    step: 100,
+  })
 
-  create("monkey-english", monkeyWordlist, monkeyWordlist, 2)
-  // create("common-english", commonWordlist, commonWordlist, 2)
+  console.log(monkeyBigrams.map((x) => skip(x, ["words", "path"])))
+
+  save(monkeyBigrams)
+
+  // const monkeyTrigrams = create({
+  //   wordlistName: "monkey-english",
+  //   targetWords: monkeyWordlist,
+  //   minCount: 2,
+  //   ngramSize: 3,
+  //   step: 200,
+  // })
+  //
+  // console.log(monkeyTrigrams.map((x) => skip(x, ["words", "path"])))
+  //
+  // save(monkeyTrigrams)
 }
 
 main()

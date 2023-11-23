@@ -1,24 +1,34 @@
 import { getLongestWordNgrams } from "./getLongestWordNgrams.js"
 
-export function getWordsWithNgrams(
+export function getWordsWithNgrams({
   words,
   ngrams,
   maxNgram,
-  maxWords = Infinity,
-) {
+  maxWords,
+  allowAdditionalNgrams,
+}) {
+  maxWords ??= Infinity
+  allowAdditionalNgrams ??= true
+
   const ngramsCopy = new Set([...ngrams])
   const list = []
-
   let items = []
 
   for (const word of words) {
+    const allWordNgrams = getLongestWordNgrams(word, maxNgram)
+
+    if (
+      !allowAdditionalNgrams &&
+      [...allWordNgrams].some((n) => !ngramsCopy.has(n))
+    ) {
+      continue
+    }
+
     const wordNgrams = new Set(
-      [...getLongestWordNgrams(word, maxNgram)].filter((ngram) =>
-        ngramsCopy.has(ngram),
-      ),
+      [...allWordNgrams].filter((ngram) => ngramsCopy.has(ngram)),
     )
 
-    if (wordNgrams.size > 0) {
+    if (wordNgrams.size > 0 && (allowAdditionalNgrams || 1)) {
       items.push({ word, ngrams: wordNgrams })
     }
   }

@@ -1,0 +1,11 @@
+From Monkeytype English 10k
+
+Words: 152
+Bigrams: 297
+Trigrams: 871
+Trigrams density: 100%
+Max word length: 8
+
+---
+
+absolute academic accepted advanced aircraft alcohol aluminum annoying anxiety anybody appetite artistic atrocity attorney autonomy barbecue bathroom behavior belgium benefits between birthday biscuit bizarre bloggers botswana briefly brought buffalo business campaign casualty cellular charcoal cheerful children civilian clinical collapse complete consider corridor costumes courtesy croatia cupboard delivery deployed describe diagnose disagree download electric emphasis endeavor enquiry excluded exercise exhibit expenses featured february feedback firework focused football formerly fraction funeral glasgow goodbye graphics halfway himself hospital illegal imprison increase industry interest involved jacuzzi judicial juvenile language laundry leagues lengthy lifelong mailman malaysia markets maximize meantime medieval metadata modules monthly mountain multiply neighbor notebook obstacle offshore oklahoma original outdoors panorama passport polished possible potatoes property pumpkin quotient receipts refugees regency relaxed remember republic reviewed samurai scenario schools separate services settler shields sleeves slovakia software somewhat specific squeeze steadily suburban suddenly supplies surface swimwear symptoms tanzania taxpayer thirsty thousand together transfer tsunami unlikely written zimbabwe

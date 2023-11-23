@@ -1,0 +1,11 @@
+From Monkeytype English 10k
+
+Words: 200
+Bigrams: 317
+Trigrams: 951
+Trigrams density: 100%
+Max word length: 7
+
+---
+
+abandon ability abolish academy acrylic active adverse affair against albeit alcohol algebra already amateur analogy annoyed another anxiety anybody applaud arrival article ashamed asleep assault asylum athlete balloon beauty because bedroom behave belfast besides between biscuit blanket briefly broadly button canvas capital carbon casinos citizen clarify closely college compare conduct correct costume cottage country crowded cruises curious cynical defense delight denmark deposit details develop differ dilemma distant divorce dynamic elderly empower enrich episode example except execute exhibit exploit extreme firstly flawed forward fossil freedom fridge general glasgow glimpse goodbye grenada grocery halfway harmful healthy helmet horizon hotels hundred immune include injury involve jacuzzi january jewelry journey junior kansas karaoke kidnap kitchen league lesbian liberty machine magnet maximum memoir mexico middle million minimal mirror module monitor morning norfolk observe occupy pacific pattern penguin perhaps phoenix phrase physics picture pointed polymer potato prayer present program pursue rebuild refugee regime relaxed replies require reviews rhythm romania samurai satisfy schools science scripts search secret seeker settler shocked shrink shuffle slowly soldier somehow special spirits sponsor squeeze stopped strange suburbs success suggest summit support surface symptom tackle targets tennis through tobacco triumph trustee tuesday tunnel unknown unlike unusual unveil uruguay visible weaken webcams without worship
