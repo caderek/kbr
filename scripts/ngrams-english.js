@@ -187,6 +187,7 @@ function create({
     }
 
     results.push(data)
+    console.log(`${data.ngramName} ${data.ngramsCount} done!`)
   }
 
   return results
@@ -212,17 +213,20 @@ function main() {
 
   save(monkeyBigrams)
 
-  // const monkeyTrigrams = create({
-  //   wordlistName: "monkey-english",
-  //   targetWords: monkeyWordlist,
-  //   minCount: 2,
-  //   ngramSize: 3,
-  //   step: 200,
-  // })
-  //
-  // console.log(monkeyTrigrams.map((x) => skip(x, ["words", "path"])))
-  //
-  // save(monkeyTrigrams)
+  const avoidWords = monkeyBigrams.map((item) => item.words).flat()
+
+  const monkeyTrigrams = create({
+    wordlistName: "monkey-english",
+    targetWords: monkeyWordlist,
+    minCount: 2,
+    ngramSize: 3,
+    step: 200,
+    avoidWords,
+  })
+
+  console.log(monkeyTrigrams.map((x) => skip(x, ["words", "path"])))
+
+  save(monkeyTrigrams)
 }
 
 main()
