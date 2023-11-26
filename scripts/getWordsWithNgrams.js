@@ -10,7 +10,7 @@ export function getWordsWithNgrams({
 }) {
   maxWords ??= Infinity
   allowAdditionalNgrams ??= true
-  const avoid = new Set(avoidWords ?? [])
+  avoidWords ??= new Set()
 
   const ngramsCopy = new Set([...ngrams])
   const list = []
@@ -34,7 +34,7 @@ export function getWordsWithNgrams({
       items.push({
         word,
         ngrams: wordNgrams,
-        priority: avoid.has(word) ? 0 : 1,
+        priority: avoidWords.has(word) ? 0 : 1,
       })
     }
   }

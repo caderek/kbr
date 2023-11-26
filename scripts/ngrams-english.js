@@ -60,25 +60,35 @@ function verifyNgrams(words, expectedNgrams, ngramSize) {
 
 function calculateAvoidanceRatio(words, avoidWords) {
   const actual = new Set(words)
-  const avoided = avoidWords.filter((word) => !actual.has(word))
+  const avoided = [...avoidWords].filter((word) => !actual.has(word))
 
   const ratio = avoided.length / avoidWords.length
 
   return Number.isNaN(ratio) ? 1 : ratio
 }
 
-function save(results) {
-  const OUTPUT_DIR = join("ngrams", "specific")
+function save(results, cycle) {
+  const OUTPUT_DIR = join("ngrams", "specific", `cycle${cycle}`)
 
   if (!existsSync(OUTPUT_DIR)) {
     mkdirSync(OUTPUT_DIR, { recursive: true })
   }
 
+  const meta = []
+
   for (const item of results) {
     const fileName = `${item.wordlistName}-${item.ngramName}-top-${item.ngramsCount}__${item.wordsCount}-words.txt`
     const outputPath = join(OUTPUT_DIR, fileName)
     writeFileSync(outputPath, item.words.join(" "))
+
+    const metaItem = { ...skip(item, ["words"]), path: outputPath }
+    meta.push(metaItem)
   }
+
+  writeFileSync(
+    join(OUTPUT_DIR, `${results[0].ngramName}-meta.json`),
+    JSON.stringify(meta),
+  )
 }
 
 function createOptimizedWords({
@@ -114,12 +124,13 @@ function createOptimizedWords({
     const density = calculateNgramDensity(optimized, subset, ngramSize)
     const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
     const isComplete = verifyNgrams(optimized, subset, ngramSize)
-
+    const howMany = getSpecificNgrams(optimized, ngramSize).size
     const attempt = {
       wordlistName,
       ngramSize,
       ngramName: ngramNames[ngramSize],
       ngramsCount: subset.size,
+      ngramsTotalCount: howMany,
       wordsCount: optimized.length,
       words: optimized,
       density,
@@ -150,7 +161,7 @@ function create({
   minCount ??= 1
   frequencyWords ??= targetWords
   step ??= 100
-  avoidWords ??= []
+  avoidWords ??= new Set()
 
   const results = []
 
@@ -180,7 +191,7 @@ function create({
       createOptimizedWords({ ...settings, allowAdditionalNgrams: false }) ??
       createOptimizedWords({ ...settings, allowAdditionalNgrams: true })
 
-    avoidWords = [...avoidWords, ...data.words]
+    avoidWords = new Set([...avoidWords, ...data.words])
 
     if (!data) {
       throw new Error("Cant produce a lists with current criteria!")
@@ -201,32 +212,53 @@ function main() {
     cleanWordlist(readWordlist("monkey-english-10k.json")),
   )
 
-  const monkeyBigrams = create({
-    wordlistName: "monkey-english",
-    targetWords: monkeyWordlist,
-    minCount: 2,
-    ngramSize: 2,
-    step: 100,
-  })
+  let cycle = 1
+  const usedWords = new Set()
 
-  console.log(monkeyBigrams.map((x) => skip(x, ["words", "path"])))
+  while (cycle <= 2) {
+    const bigramResults = create({
+      wordlistName: `monkey-english-${cycle}`,
+      targetWords: monkeyWordlist,
+      minCount: 1,
+      ngramSize: 2,
+      step: 100,
+      avoidWords: usedWords,
+    })
 
-  save(monkeyBigrams)
+    const bigramWords = bigramResults.map((item) => item.words).flat()
 
-  const avoidWords = monkeyBigrams.map((item) => item.words).flat()
+    for (const word of bigramWords) {
+      usedWords.add(word)
+    }
 
-  const monkeyTrigrams = create({
-    wordlistName: "monkey-english",
-    targetWords: monkeyWordlist,
-    minCount: 2,
-    ngramSize: 3,
-    step: 200,
-    avoidWords,
-  })
+    console.log(bigramResults.map((x) => skip(x, ["words", "path"])))
 
-  console.log(monkeyTrigrams.map((x) => skip(x, ["words", "path"])))
+    save(bigramResults, cycle)
 
-  save(monkeyTrigrams)
+    const trigramResults = create({
+      wordlistName: "monkey-english",
+      targetWords: monkeyWordlist,
+      minCount: 1,
+      ngramSize: 3,
+      step: 200,
+      avoidWords: usedWords,
+    })
+
+    const trigramWords = trigramResults.map((item) => item.words).flat()
+
+    for (const word of trigramWords) {
+      usedWords.add(word)
+    }
+
+    console.log(trigramResults.map((x) => skip(x, ["words", "path"])))
+
+    save(trigramResults, cycle)
+
+    console.log(`Lesson ${cycle} generated!`)
+    cycle++
+  }
+
+  console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
 
 main()
