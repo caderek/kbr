@@ -65,7 +65,7 @@ function calculateAvoidanceRatio(words, avoidWords) {
   const actual = new Set(words)
   const avoided = [...avoidWords].filter((word) => !actual.has(word))
 
-  const ratio = avoided.length / avoidWords.length
+  const ratio = avoided.length / avoidWords.size
 
   return Number.isNaN(ratio) ? 1 : ratio
 }
@@ -128,9 +128,9 @@ function createOptimizedWords({
   let maxScore = 0
   let data = null
 
-  const avoid = [new Set(), avoidWords]
+  const avoidVariants = [new Set(), avoidWords]
 
-  for (const avoidWords of avoid) {
+  for (const avoid of avoidVariants) {
     for (
       let wordLength = minWordLength;
       wordLength <= maxWordLength;
@@ -144,7 +144,7 @@ function createOptimizedWords({
         ngrams: subset,
         maxNgram: ngramSize,
         allowAdditionalNgrams,
-        avoidWords,
+        avoidWords: avoid,
       }).sort()
 
       const density = calculateNgramDensity(optimized, subset, ngramSize)
@@ -282,8 +282,8 @@ function main() {
 
   save([...bigramResults, ...trigramResults])
 
-  const unused = monkeyWordlist.filter((word) => !usedWords.has(word))
-  console.log(unused.join(" "))
+  // const unused = monkeyWordlist.filter((word) => !usedWords.has(word))
+  // console.log(unused.join(" "))
   console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
 
