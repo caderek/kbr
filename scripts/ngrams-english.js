@@ -31,7 +31,10 @@ function readWordlist(file) {
 }
 
 function cleanWordlist(words) {
-  const cleaned = words.map((word) => word.toLowerCase().split(/[-\s]+/)).flat()
+  const cleaned = words
+    .map((word) => word.toLowerCase().split(/[-'\s]+/))
+    .flat()
+    .filter((word) => word.length > 1)
 
   return [...new Set(cleaned)]
 }
@@ -67,8 +70,8 @@ function calculateAvoidanceRatio(words, avoidWords) {
   return Number.isNaN(ratio) ? 1 : ratio
 }
 
-function save(results, cycle) {
-  const OUTPUT_DIR = join("ngrams", "specific", `cycle${cycle}`)
+function save(results, startIndex) {
+  const OUTPUT_DIR = join("ngrams", "specific")
 
   if (!existsSync(OUTPUT_DIR)) {
     mkdirSync(OUTPUT_DIR, { recursive: true })
@@ -76,8 +79,12 @@ function save(results, cycle) {
 
   const meta = []
 
-  for (const item of results) {
-    const fileName = `${item.wordlistName}-${item.ngramName}-top-${item.ngramsCount}__${item.wordsCount}-words.txt`
+  for (const [index, item] of results.entries()) {
+    const fileName = `lesson-${String(index + startIndex).padStart(2, "0")}__${
+      item.wordlistName
+    }-${item.ngramName}-top-${item.sliceStart}-${
+      item.sliceStart + item.ngramsCount
+    }.txt`
     const outputPath = join(OUTPUT_DIR, fileName)
     writeFileSync(outputPath, item.words.join(" "))
 
@@ -91,13 +98,28 @@ function save(results, cycle) {
   )
 }
 
+function getSteps(ngramsSize, step) {
+  const steps = []
+
+  for (let i = step; i < ngramsSize + step; i += step) {
+    if (i !== step) {
+      steps.push({ sliceStart: i - step, sliceEnd: i })
+    }
+
+    steps.push({ sliceStart: 0, sliceEnd: i })
+  }
+
+  return steps
+}
+
 function createOptimizedWords({
   minWordLength,
   maxWordLength,
   targetWords,
   ngrams,
   ngramSize,
-  sliceSize,
+  sliceStart,
+  sliceEnd,
   wordlistName,
   allowAdditionalNgrams,
   avoidWords,
@@ -111,7 +133,7 @@ function createOptimizedWords({
     wordLength++
   ) {
     const words = targetWords.filter((word) => word.length <= wordLength)
-    const subset = new Set([...ngrams].slice(0, sliceSize))
+    const subset = new Set([...ngrams].slice(sliceStart, sliceEnd))
 
     const optimized = getWordsWithNgrams({
       words,
@@ -131,6 +153,8 @@ function createOptimizedWords({
       ngramName: ngramNames[ngramSize],
       ngramsCount: subset.size,
       ngramsTotalCount: howMany,
+      sliceStart,
+      sliceEnd,
       wordsCount: optimized.length,
       words: optimized,
       density,
@@ -175,14 +199,17 @@ function create({
   const minWordLength = ngramSize
   const maxWordLength = Math.max(...targetWords.map((w) => w.length))
 
-  for (let i = step; i < ngrams.size + step; i += step) {
+  const steps = getSteps(ngrams.size, step)
+
+  for (const { sliceStart, sliceEnd } of steps) {
     const settings = {
       minWordLength,
       maxWordLength,
       targetWords,
       ngrams,
       ngramSize,
-      sliceSize: i,
+      sliceStart,
+      sliceEnd,
       wordlistName,
       avoidWords,
     }
@@ -198,7 +225,7 @@ function create({
     }
 
     results.push(data)
-    console.log(`${data.ngramName} ${data.ngramsCount} done!`)
+    console.log(`${data.ngramName} ${data.sliceStart}-${data.sliceEnd} done!`)
   }
 
   return results
@@ -212,51 +239,49 @@ function main() {
     cleanWordlist(readWordlist("monkey-english-10k.json")),
   )
 
-  let cycle = 1
   const usedWords = new Set()
 
-  while (cycle <= 2) {
-    const bigramResults = create({
-      wordlistName: `monkey-english-${cycle}`,
-      targetWords: monkeyWordlist,
-      minCount: 1,
-      ngramSize: 2,
-      step: 100,
-      avoidWords: usedWords,
-    })
+  const bigramResults = create({
+    wordlistName: `monkey-english`,
+    targetWords: monkeyWordlist,
+    minCount: 1,
+    ngramSize: 2,
+    step: 100,
+    avoidWords: usedWords,
+  })
 
-    const bigramWords = bigramResults.map((item) => item.words).flat()
+  const bigramWords = bigramResults.map((item) => item.words).flat()
 
-    for (const word of bigramWords) {
-      usedWords.add(word)
-    }
-
-    console.log(bigramResults.map((x) => skip(x, ["words", "path"])))
-
-    save(bigramResults, cycle)
-
-    const trigramResults = create({
-      wordlistName: "monkey-english",
-      targetWords: monkeyWordlist,
-      minCount: 1,
-      ngramSize: 3,
-      step: 200,
-      avoidWords: usedWords,
-    })
-
-    const trigramWords = trigramResults.map((item) => item.words).flat()
-
-    for (const word of trigramWords) {
-      usedWords.add(word)
-    }
-
-    console.log(trigramResults.map((x) => skip(x, ["words", "path"])))
-
-    save(trigramResults, cycle)
-
-    console.log(`Lesson ${cycle} generated!`)
-    cycle++
+  for (const word of bigramWords) {
+    usedWords.add(word)
   }
+
+  console.log(bigramResults.map((x) => skip(x, ["words", "path"])))
+
+  save(bigramResults, 1)
+
+  const trigramResults = create({
+    wordlistName: "monkey-english",
+    targetWords: monkeyWordlist,
+    minCount: 1,
+    ngramSize: 3,
+    step: 200,
+    avoidWords: usedWords,
+  })
+
+  const trigramWords = trigramResults.map((item) => item.words).flat()
+
+  for (const word of trigramWords) {
+    usedWords.add(word)
+  }
+
+  console.log(trigramResults.map((x) => skip(x, ["words", "path"])))
+
+  save(trigramResults, bigramResults.length)
+
+  const unused = monkeyWordlist.filter((word) => !usedWords.has(word))
+
+  console.log(unused.join(" "))
 
   console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
