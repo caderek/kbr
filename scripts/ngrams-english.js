@@ -70,7 +70,7 @@ function calculateAvoidanceRatio(words, avoidWords) {
   return Number.isNaN(ratio) ? 1 : ratio
 }
 
-function save(results, startIndex) {
+function save(results) {
   const OUTPUT_DIR = join("ngrams", "specific")
 
   if (!existsSync(OUTPUT_DIR)) {
@@ -80,7 +80,7 @@ function save(results, startIndex) {
   const meta = []
 
   for (const [index, item] of results.entries()) {
-    const fileName = `lesson-${String(index + startIndex).padStart(2, "0")}__${
+    const fileName = `lesson-${String(index + 1).padStart(2, "0")}__${
       item.wordlistName
     }-${item.ngramName}-top-${item.sliceStart}-${
       item.sliceStart + item.ngramsCount
@@ -88,14 +88,15 @@ function save(results, startIndex) {
     const outputPath = join(OUTPUT_DIR, fileName)
     writeFileSync(outputPath, item.words.join(" "))
 
-    const metaItem = { ...skip(item, ["words"]), path: outputPath }
+    const metaItem = {
+      ...skip(item, ["words"]),
+      path: outputPath,
+      lesson: index + 1,
+    }
     meta.push(metaItem)
   }
 
-  writeFileSync(
-    join(OUTPUT_DIR, `${results[0].ngramName}-meta.json`),
-    JSON.stringify(meta),
-  )
+  writeFileSync(join(OUTPUT_DIR, `meta.json`), JSON.stringify(meta))
 }
 
 function getSteps(ngramsSize, step) {
@@ -258,8 +259,6 @@ function main() {
 
   console.log(bigramResults.map((x) => skip(x, ["words", "path"])))
 
-  save(bigramResults, 1)
-
   const trigramResults = create({
     wordlistName: "monkey-english",
     targetWords: monkeyWordlist,
@@ -277,12 +276,10 @@ function main() {
 
   console.log(trigramResults.map((x) => skip(x, ["words", "path"])))
 
-  save(trigramResults, bigramResults.length)
+  save([...bigramResults, ...trigramResults])
 
   const unused = monkeyWordlist.filter((word) => !usedWords.has(word))
-
   console.log(unused.join(" "))
-
   console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
 
