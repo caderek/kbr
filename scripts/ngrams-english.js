@@ -83,7 +83,7 @@ function save(results) {
     const fileName = `lesson-${String(index + 1).padStart(2, "0")}__${
       item.wordlistName
     }-${item.ngramName}-top-${item.sliceStart}-${
-      item.sliceStart + item.ngramsCount
+      item.sliceStart + item.targetedNgramsCount
     }.txt`
     const outputPath = join(OUTPUT_DIR, fileName)
     writeFileSync(outputPath, item.words.join(" "))
@@ -128,50 +128,46 @@ function createOptimizedWords({
   let maxScore = 0
   let data = null
 
-  // const avoidVariants = [new Set(), avoidWords]
-  const avoidVariants = [avoidWords]
+  for (
+    let wordLength = minWordLength;
+    wordLength <= maxWordLength;
+    wordLength++
+  ) {
+    const words = targetWords.filter((word) => word.length <= wordLength)
+    const subset = new Set([...ngrams].slice(sliceStart, sliceEnd))
 
-  for (const avoid of avoidVariants) {
-    for (
-      let wordLength = minWordLength;
-      wordLength <= maxWordLength;
-      wordLength++
-    ) {
-      const words = targetWords.filter((word) => word.length <= wordLength)
-      const subset = new Set([...ngrams].slice(sliceStart, sliceEnd))
+    const optimized = getWordsWithNgrams({
+      words,
+      ngrams: subset,
+      maxNgram: ngramSize,
+      allowAdditionalNgrams,
+      avoidWords,
+    }).sort()
 
-      const optimized = getWordsWithNgrams({
-        words,
-        ngrams: subset,
-        maxNgram: ngramSize,
-        allowAdditionalNgrams,
-        avoidWords: avoid,
-      }).sort()
+    const density = calculateNgramDensity(optimized, subset, ngramSize)
+    const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
+    const isComplete = verifyNgrams(optimized, subset, ngramSize)
+    const howMany = getSpecificNgrams(optimized, ngramSize).size
+    const attempt = {
+      wordlistName,
+      ngramSize,
+      ngramName: ngramNames[ngramSize],
+      targetedNgramsCount: subset.size,
+      totalNgramsCount: howMany,
+      targetedNgrams: Array.from(subset).join(" "),
+      sliceStart,
+      sliceEnd,
+      wordsCount: optimized.length,
+      words: optimized,
+      density,
+      avoidedanceRatio,
+    }
 
-      const density = calculateNgramDensity(optimized, subset, ngramSize)
-      const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
-      const isComplete = verifyNgrams(optimized, subset, ngramSize)
-      const howMany = getSpecificNgrams(optimized, ngramSize).size
-      const attempt = {
-        wordlistName,
-        ngramSize,
-        ngramName: ngramNames[ngramSize],
-        ngramsCount: subset.size,
-        ngramsTotalCount: howMany,
-        sliceStart,
-        sliceEnd,
-        wordsCount: optimized.length,
-        words: optimized,
-        density,
-        avoidedanceRatio,
-      }
+    const attemptScore = attempt.density + attempt.avoidedanceRatio
 
-      const attemptScore = attempt.density + attempt.avoidedanceRatio
-
-      if (isComplete && attemptScore > maxScore) {
-        maxScore = attemptScore
-        data = attempt
-      }
+    if (isComplete && attemptScore > maxScore) {
+      maxScore = attemptScore
+      data = attempt
     }
   }
 
@@ -283,8 +279,6 @@ function main() {
 
   save([...bigramResults, ...trigramResults])
 
-  // const unused = monkeyWordlist.filter((word) => !usedWords.has(word))
-  // console.log(unused.join(" "))
   console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
 
