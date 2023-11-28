@@ -128,7 +128,8 @@ function createOptimizedWords({
   let maxScore = 0
   let data = null
 
-  const avoidVariants = [new Set(), avoidWords]
+  // const avoidVariants = [new Set(), avoidWords]
+  const avoidVariants = [avoidWords]
 
   for (const avoid of avoidVariants) {
     for (
