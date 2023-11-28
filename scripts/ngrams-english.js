@@ -128,45 +128,49 @@ function createOptimizedWords({
   let maxScore = 0
   let data = null
 
-  for (
-    let wordLength = minWordLength;
-    wordLength <= maxWordLength;
-    wordLength++
-  ) {
-    const words = targetWords.filter((word) => word.length <= wordLength)
-    const subset = new Set([...ngrams].slice(sliceStart, sliceEnd))
+  const avoid = [new Set(), avoidWords]
 
-    const optimized = getWordsWithNgrams({
-      words,
-      ngrams: subset,
-      maxNgram: ngramSize,
-      allowAdditionalNgrams,
-      avoidWords,
-    }).sort()
+  for (const avoidWords of avoid) {
+    for (
+      let wordLength = minWordLength;
+      wordLength <= maxWordLength;
+      wordLength++
+    ) {
+      const words = targetWords.filter((word) => word.length <= wordLength)
+      const subset = new Set([...ngrams].slice(sliceStart, sliceEnd))
 
-    const density = calculateNgramDensity(optimized, subset, ngramSize)
-    const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
-    const isComplete = verifyNgrams(optimized, subset, ngramSize)
-    const howMany = getSpecificNgrams(optimized, ngramSize).size
-    const attempt = {
-      wordlistName,
-      ngramSize,
-      ngramName: ngramNames[ngramSize],
-      ngramsCount: subset.size,
-      ngramsTotalCount: howMany,
-      sliceStart,
-      sliceEnd,
-      wordsCount: optimized.length,
-      words: optimized,
-      density,
-      avoidedanceRatio,
-    }
+      const optimized = getWordsWithNgrams({
+        words,
+        ngrams: subset,
+        maxNgram: ngramSize,
+        allowAdditionalNgrams,
+        avoidWords,
+      }).sort()
 
-    const attemptScore = attempt.density + attempt.avoidedanceRatio
+      const density = calculateNgramDensity(optimized, subset, ngramSize)
+      const avoidedanceRatio = calculateAvoidanceRatio(optimized, avoidWords)
+      const isComplete = verifyNgrams(optimized, subset, ngramSize)
+      const howMany = getSpecificNgrams(optimized, ngramSize).size
+      const attempt = {
+        wordlistName,
+        ngramSize,
+        ngramName: ngramNames[ngramSize],
+        ngramsCount: subset.size,
+        ngramsTotalCount: howMany,
+        sliceStart,
+        sliceEnd,
+        wordsCount: optimized.length,
+        words: optimized,
+        density,
+        avoidedanceRatio,
+      }
 
-    if (isComplete && attemptScore > maxScore) {
-      maxScore = attemptScore
-      data = attempt
+      const attemptScore = attempt.density + attempt.avoidedanceRatio
+
+      if (isComplete && attemptScore > maxScore) {
+        maxScore = attemptScore
+        data = attempt
+      }
     }
   }
 
