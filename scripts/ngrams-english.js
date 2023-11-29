@@ -10,12 +10,6 @@ const ngramNames = {
   4: "tetragrams",
 }
 
-const steps = {
-  2: 100,
-  3: 200,
-  4: 200,
-}
-
 const RAW_WORDLISTS_DIR = join("public", "wordlists")
 
 function readWordlist(file) {
@@ -70,6 +64,50 @@ function calculateAvoidanceRatio(words, avoidWords) {
   return Number.isNaN(ratio) ? 1 : ratio
 }
 
+function createREADMETable(ngrams) {
+  const headers =
+    `| Lesson | Topic | Type | Words | Wordlist |\n` +
+    `| ------ | ----- | ---- | ----- | -------- |\n`
+
+  return (
+    headers +
+    ngrams
+      .map((item, index) => {
+        const type = item.sliceStart === 0 && index !== 0 ? "repetition" : "new"
+        return (
+          `| Lesson ${item.lesson} ` +
+          `| Top ${item.sliceStart}-${item.sliceEnd} ${item.ngramName} ` +
+          `| ${type} ` +
+          `| ${item.wordsCount} ` +
+          `| [Open lesson ${item.lesson}](https://raw.githubusercontent.com/caderek/kbr/main/${item.path}) |`
+        )
+      })
+      .join("\n")
+  )
+}
+
+function createREADME(meta) {
+  const template = readFileSync("scripts/NGRAMS-README.template.md", {
+    encoding: "utf8",
+  })
+
+  const bigrams = meta.filter((item) => item.ngramName === "bigrams")
+  const trigrams = meta.filter((item) => item.ngramName === "trigrams")
+
+  const bigramsContent = createREADMETable(bigrams)
+  const trigramsContent = createREADMETable(trigrams)
+
+  return template
+    .replace(
+      /<!--BIGRAMS-->(.|\n|\r)+<!--\/BIGRAMS-->/,
+      `<!--BIGRAMS-->\n\n${bigramsContent}\n\n<!--/BIGRAMS-->`,
+    )
+    .replace(
+      /<!--TRIGRAMS-->(.|\n|\r)+<!--\/TRIGRAMS-->/,
+      `<!--TRIGRAMS-->\n\n${trigramsContent}\n\n<!--/TRIGRAMS-->`,
+    )
+}
+
 function save(results) {
   const OUTPUT_DIR = join("ngrams", "specific")
 
@@ -91,12 +129,14 @@ function save(results) {
     const metaItem = {
       ...skip(item, ["words"]),
       path: outputPath,
-      lesson: index + 1,
     }
     meta.push(metaItem)
   }
 
+  const readme = createREADME(meta)
+
   writeFileSync(join(OUTPUT_DIR, `meta.json`), JSON.stringify(meta))
+  writeFileSync(join(OUTPUT_DIR, `README.md`), readme)
 }
 
 function getSteps(ngramsSize, step) {
@@ -258,7 +298,9 @@ function main() {
     usedWords.add(word)
   }
 
-  console.log(bigramResults.map((x) => skip(x, ["words", "path"])))
+  console.log(
+    bigramResults.map((x) => skip(x, ["words", "path", "targetedNgrams"])),
+  )
 
   const trigramResults = create({
     wordlistName: "monkey-english",
@@ -275,9 +317,16 @@ function main() {
     usedWords.add(word)
   }
 
-  console.log(trigramResults.map((x) => skip(x, ["words", "path"])))
+  console.log(
+    trigramResults.map((x) => skip(x, ["words", "path", "targetedNgrams"])),
+  )
 
-  save([...bigramResults, ...trigramResults])
+  const results = [...bigramResults, ...trigramResults].map((item, index) => ({
+    ...item,
+    lesson: index + 1,
+  }))
+
+  save(results)
 
   console.log({ allWords: monkeyWordlist.length, usdWords: usedWords.size })
 }
