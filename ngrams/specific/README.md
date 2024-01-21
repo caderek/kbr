@@ -17,7 +17,7 @@ How to use the training sets:
 
 - pick a target WPM (words per minute) - a good starting point is 40 WPM (advanced users can pick higher targets),
 - load the first lesson as a custom wordlist on Monkeytype (you can randomize the list - number of words equal to your target WPM or time 60 is a good option),
-- if you achieve your target WPM as an average of the last 10 tests (you can check it on your [Monkeytype account page](https://monkeytype.com/account)), you can move to the next lesson.
+- if you achieve your target WPM and 98%+ accuracy as an average of the last 10 tests (you can check it on your [Monkeytype account page](https://monkeytype.com/account)), you can move to the next lesson.
 
 _Tip: Ideally, you should be able to achieve your average target WPM with punctuation turned on._
 
