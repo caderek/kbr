@@ -11,6 +11,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "epubjs": "^0.3.93",
     "solid-js": "^1.7.8"
   },
   "devDependencies": {

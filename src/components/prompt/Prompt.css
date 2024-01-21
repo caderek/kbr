@@ -2,7 +2,7 @@
   background-color: var(--color-bg);
   position: relative;
   width: min(90vw, 60rem);
-  height: 12rem;
+  height: 36rem;
 }
 
 .prompt textarea,
