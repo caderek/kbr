@@ -16,10 +16,11 @@ let words = fs
 shuffleArray(words)
 
 let i = 1
+const chunkSize = 10
 
 while (words.length) {
-  const chunk = words.slice(0, 20)
-  words = words.slice(20)
+  const chunk = words.slice(0, chunkSize)
+  words = words.slice(chunkSize)
   fs.writeFileSync(
     `ngrams/packed/packed__all_bigrams_part_${i}.txt`,
     chunk.join(" "),
