@@ -18,6 +18,7 @@ shuffleArray(words)
 let i = 1
 const chunkSize = 10
 const maxLength = String(Math.ceil(words.length / chunkSize)).length
+console.log(maxLength)
 
 while (words.length) {
   const chunk = words.slice(0, chunkSize)
@@ -25,6 +26,7 @@ while (words.length) {
   fs.writeFileSync(
     `ngrams/packed/packed__all_bigrams_part_${String(i).padStart(
       maxLength,
+      "0",
     )}.txt`,
     chunk.join(" "),
   )
