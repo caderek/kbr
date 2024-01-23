@@ -3,38 +3,14 @@ import { join } from "node:path"
 import { getSpecificNgrams } from "./getSpecificNgrams.js"
 import { getWordsWithNgrams } from "./getWordsWithNgrams.js"
 import { calculateNgramDensity } from "./calculateNgramDensity.js"
+import { cleanWordlist } from "./cleanWordlist.js"
+import { joinWordlists } from "./joinWordlists.js"
+import { readWordlist } from "./readWordlist.js"
 
 const ngramNames = {
   2: "bigrams",
   3: "trigrams",
   4: "tetragrams",
-}
-
-const RAW_WORDLISTS_DIR = join("public", "wordlists")
-
-function readWordlist(file) {
-  const path = join(RAW_WORDLISTS_DIR, file)
-
-  if (file.endsWith("txt")) {
-    return readFileSync(path, { encoding: "utf8" }).trim().split("\n")
-  }
-
-  if (file.startsWith("monkey")) {
-    return JSON.parse(readFileSync(path, { encoding: "utf8" })).words
-  }
-}
-
-function cleanWordlist(words) {
-  const cleaned = words
-    .map((word) => word.toLowerCase().split(/[-'\s]+/))
-    .flat()
-    .filter((word) => word.length > 1)
-
-  return [...new Set(cleaned)]
-}
-
-function joinWordlists(...wordlists) {
-  return [...new Set(wordlists.flat())]
 }
 
 function skip(obj, keys) {
