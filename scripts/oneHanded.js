@@ -34,7 +34,7 @@ const monkeyWordlist = joinWordlists(
   cleanWordlist(readWordlist("monkey-english-10k.json")),
 )
 
-const OUT_DIR = path.join("excercises", "one-handed")
+const OUT_DIR = path.join("exercises", "one-handed")
 
 if (!fs.existsSync(OUT_DIR)) {
   fs.mkdirSync(OUT_DIR, { recursive: true })
