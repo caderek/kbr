@@ -34,6 +34,26 @@ const monkeyWordlist = joinWordlists(
   cleanWordlist(readWordlist("monkey-english-10k.json")),
 )
 
+function removeContained(words) {
+  const unique = []
+
+  for (const word of words) {
+    const isContained = words.some((other) => {
+      if (word === other) {
+        return false
+      }
+
+      return other.includes(word)
+    })
+
+    if (!isContained) {
+      unique.push(word)
+    }
+  }
+
+  return unique
+}
+
 const OUT_DIR = path.join("exercises", "one-handed")
 
 if (!fs.existsSync(OUT_DIR)) {
@@ -41,12 +61,15 @@ if (!fs.existsSync(OUT_DIR)) {
 }
 
 for (const [name, letters] of Object.entries(layouts)) {
-  const left = monkeyWordlist.filter((word) =>
-    new RegExp(`^[${letters.left}]+$`).test(word),
+  const left = removeContained(
+    monkeyWordlist.filter((word) =>
+      new RegExp(`^[${letters.left}]+$`).test(word),
+    ),
   )
-
-  const right = monkeyWordlist.filter((word) =>
-    new RegExp(`^[${letters.right}]+$`).test(word),
+  const right = removeContained(
+    monkeyWordlist.filter((word) =>
+      new RegExp(`^[${letters.right}]+$`).test(word),
+    ),
   )
 
   const OUt_DIR_LAYOUT = path.join(OUT_DIR, name)
