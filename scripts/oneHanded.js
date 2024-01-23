@@ -60,4 +60,8 @@ for (const [name, letters] of Object.entries(layouts)) {
     path.join(OUt_DIR_LAYOUT, "right.txt"),
     right.sort().join(" "),
   )
+  fs.writeFileSync(
+    path.join(OUt_DIR_LAYOUT, "left-right.txt"),
+    [...left, ...right].sort().join(" "),
+  )
 }
