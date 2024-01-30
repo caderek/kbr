@@ -146,15 +146,21 @@ export class Epub {
         .map((node) => cleanText(node.textContent ?? ""))
         .filter((text) => text !== "")
 
-      if (
-        (h1.length > 0 || h2.length > 0 || paragraphs.length > 0) &&
-        h1.toLowerCase() !== "contents" &&
-        h2.toLowerCase() !== "contents"
-      ) {
-        const rawTitle = [h1, h2].filter((x) => x !== "").join(" - ")
-        const title = rawTitle || paragraphs[0].slice(0, 50).trim() + "..."
+      if (h1.length > 0 || h2.length > 0 || paragraphs.length > 0) {
+        let title = [h1, h2].filter((x) => x !== "").join(" - ")
 
-        parts.push({ title, paragraphs })
+        if (title === "") {
+          const beginning = paragraphs[0].slice(0, 50).trim()
+          title += beginning
+
+          if (beginning.length > 50) {
+            title += "..."
+          }
+        }
+
+        if (title.toLowerCase() !== "contents") {
+          parts.push({ title, paragraphs })
+        }
       }
     }
 
