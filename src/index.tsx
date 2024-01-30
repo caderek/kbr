@@ -8,14 +8,26 @@ import { WordList } from "./models/WordList.ts"
 import { loadBookTxt, loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
 import { getNgrams } from "./utils/ngrams.ts"
+import { Epub } from "./libs/ebook/epub.ts"
+
+async function loadEpub() {
+  // const res = await fetch("books/a_study_in_scarlet.epub")
+  const res = await fetch("books/dracula.epub")
+  // const res = await fetch("books/the_princess_bride.epub")
+  // const res = await fetch("books/got.epub")
+  const data = await res.blob()
+  console.log(data)
+
+  const book = new Epub(data)
+  await book.load()
+}
+
+loadEpub()
 
 const root = document.getElementById("root")
 
 async function main() {
   const listData = await loadWordList("monkey-english-1k")
-  const bookData = await loadBookTxt("a_study_in_scarlet")
-
-  console.log(bookData)
 
   if (listData instanceof Error) {
     return
