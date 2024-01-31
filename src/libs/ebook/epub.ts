@@ -2,6 +2,12 @@ import { BlobReader, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
 
+type FlatElement = {
+  type: string
+  id: string
+  text: string
+}
+
 export class Epub {
   #reader
   constructor(zipBlob: Blob) {
@@ -46,23 +52,25 @@ export class Epub {
 
   async #readFile(filePath: string, entries: Entry[]) {
     const ext = filePath.split(".").at(-1)
-    const metaFile = entries.find((entry) => entry.filename === filePath)
+    const file = entries.find(
+      (entry) =>
+        entry.filename === filePath || entry.filename.endsWith(filePath),
+    )
 
-    if (metaFile === undefined || metaFile.getData == undefined) {
+    if (file === undefined || file.getData == undefined) {
       throw new Error("Incorrect epub file")
     }
 
     const metaWriter = new TextWriter()
-    const metaText = await metaFile.getData(metaWriter)
+    const text = (await file.getData(metaWriter)).replace(/<script.*>/g, "")
     const parser = new DOMParser()
 
     switch (ext) {
       case "xml":
       case "opf": // structure data
-      case "ncx": // deprecated tablle of contents
-        return parser.parseFromString(metaText, "text/xml")
+        return parser.parseFromString(text, "text/xml")
       default:
-        return parser.parseFromString(metaText, "text/html")
+        return parser.parseFromString(text, "application/xhtml+xml")
     }
   }
 
@@ -107,6 +115,16 @@ export class Epub {
 
     const manifest = Object.fromEntries(manifestEntries)
 
+    console.log({ manifest })
+
+    const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
+      [])[1]
+
+    const toc = await this.#readFile(tocEntry.path, entries)
+
+    console.log("--- TOC --------------------------")
+    console.log(toc)
+
     const spine = [...(content.querySelectorAll("spine > itemref") ?? [])].map(
       (item) => {
         const id = item.getAttribute("idref")
@@ -122,6 +140,8 @@ export class Epub {
       },
     )
 
+    console.log({ spine })
+
     console.log("--- INFO -----------------")
     console.log(info)
 
@@ -130,60 +150,96 @@ export class Epub {
     for (const item of spine) {
       const content = await this.#readFile(item.path, entries)
 
-      const h1 =
-        [...content.querySelectorAll("h1")]
-          .map((node) => cleanText(node.textContent ?? ""))
-          .filter((text) => text !== "")
-          .at(-1) ?? ""
+      for (const tag of ["h1", "h2", "h3", "h4", "h5", "h6"]) {
+        content.querySelectorAll(tag).forEach((node) => {
+          const anchors = [] as HTMLElement[]
+          node.querySelectorAll("a[id]").forEach((a) => {
+            const p = document.createElement("p")
+            p.id = a.id
+            p.dataset.type = "anchor"
+            anchors.push(p)
+          })
 
-      const h2 =
-        [...content.querySelectorAll("h2")]
-          .map((node) => cleanText(node.textContent ?? ""))
-          .filter((text) => text !== "")
-          .at(-1) ?? ""
+          const box = document.createElement("div")
 
-      const paragraphs = [...content.querySelectorAll("p")]
-        .map((node) => cleanText(node.textContent ?? ""))
-        .filter((text) => text !== "")
+          const p = document.createElement("p")
+          p.textContent = node.textContent
+          p.dataset.type = tag
 
-      if (h1.length > 0 || h2.length > 0 || paragraphs.length > 0) {
-        let title = [h1, h2].filter((x) => x !== "").join(" - ")
+          box.replaceChildren(...anchors, p)
+          node.parentNode?.replaceChild(box, node)
+        })
+      }
 
-        if (title === "") {
-          const beginning = paragraphs[0].slice(0, 50).trim()
-          title += beginning
+      content.querySelectorAll("a[id]").forEach((node) => {
+        const p = document.createElement("p")
+        p.textContent = node.textContent
+        p.id = node.id
+        p.dataset.type = "anchor"
+        node.parentNode?.replaceChild(p, node)
+      })
 
-          if (beginning.length > 50) {
-            title += "..."
+      const flatElements: FlatElement[] = []
+
+      content.querySelectorAll("p").forEach((node) => {
+        if (node.dataset.type) {
+          const text = cleanText(node.textContent ?? "")
+
+          if (node.dataset.type.startsWith("h") && text === "") {
+            return
           }
+
+          flatElements.push({
+            type: node.dataset.type,
+            id: node.id,
+            text,
+          })
+
+          return
         }
 
-        if (title.toLowerCase() !== "contents") {
-          parts.push({ title, paragraphs })
+        const text = (node.textContent ?? "").trim()
+
+        if (text === "") {
+          return
         }
+
+        const p = document.createElement("p")
+        p.textContent = text
+        p.dataset.type = "paragraph"
+        flatElements.push({
+          type: "paragraph",
+          id: node.id,
+          text: cleanText(text),
+        })
+      })
+
+      if (flatElements.length > 0) {
+        parts.push({
+          path: item.path,
+          entries: flatElements,
+        })
       }
     }
 
     console.log("--- PARTS -----------------")
-    for (const part of parts) {
-      console.log(part)
-    }
+    console.log(parts)
+
+    const all = parts
+      .flat()
+      .filter((entry) => entry.type === "paragraph")
+      .map((entry) => entry.text)
+      .join(" ")
+
+    const special = [
+      ...new Set(
+        [...all].filter((char) => (char.codePointAt(0) ?? Infinity) > 127),
+      ),
+    ].join(" ")
+
+    console.log("--- SPECIAL -----------------")
+    console.log(special)
 
     return { info, parts }
-
-    // const all = parts
-    //   .map((part) => part.paragraphs)
-    //   .flat(Infinity)
-    //   .join(" ")
-
-    // console.log("--- SPECIAL -----------------")
-    //
-    // const special = [
-    //   ...new Set(
-    //     [...all].filter((char) => (char.codePointAt(0) ?? Infinity) > 255),
-    //   ),
-    // ].join(" ")
-    //
-    // console.log(special)
   }
 }
