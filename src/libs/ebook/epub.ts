@@ -8,6 +8,13 @@ type FlatElement = {
   text: string
 }
 
+type TocElement = {
+  label: string
+  path: string
+  id: string
+  children: TocElement[]
+}
+
 export class Epub {
   #reader
   constructor(zipBlob: Blob) {
@@ -84,6 +91,22 @@ export class Epub {
     return { path: rootFilePath, mime: rootFileMime }
   }
 
+  #readToc(element: Element) {
+    const toc: TocElement[] = [
+      ...element.querySelectorAll(":scope > navPoint"),
+    ].map((navPoint) => {
+      const label = cleanText(
+        navPoint.querySelector("navLabel")?.textContent ?? "",
+      )
+      const link = navPoint.querySelector("content")?.getAttribute("src") ?? ""
+      const [path, id] = link.split("#")
+      const children = this.#readToc(navPoint)
+      return { label, path, id, children }
+    })
+
+    return toc
+  }
+
   async #readStuctureFile(structureFilePath: string, entries: Entry[]) {
     const content = await this.#readFile(structureFilePath, entries)
     const metadata = content.querySelector("metadata")
@@ -120,7 +143,13 @@ export class Epub {
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]
 
-    const toc = await this.#readFile(tocEntry.path, entries)
+    let toc: TocElement[] | null = null
+
+    if (tocEntry) {
+      const tocContent = await this.#readFile(tocEntry.path, entries)
+      console.log(tocContent)
+      toc = this.#readToc(tocContent.querySelector("navMap"))
+    }
 
     console.log("--- TOC --------------------------")
     console.log(toc)
@@ -149,6 +178,16 @@ export class Epub {
 
     for (const item of spine) {
       const content = await this.#readFile(item.path, entries)
+
+      content.body.querySelectorAll("[id]").forEach((node) => {
+        if (!["a", "img"].includes(node.tagName)) {
+          const p = document.createElement("p")
+          p.id = node.id
+          p.dataset.type = "anchor"
+
+          node.parentNode?.insertBefore(p, node)
+        }
+      })
 
       for (const tag of ["h1", "h2", "h3", "h4", "h5", "h6"]) {
         content.querySelectorAll(tag).forEach((node) => {

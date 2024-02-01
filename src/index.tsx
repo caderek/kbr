@@ -14,11 +14,11 @@ async function loadEpub() {
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
-  const res = await fetch("books/got.epub")
+  // const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
-  // const res = await fetch(
-  //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
-  // )
+  const res = await fetch(
+    "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
+  )
   const data = await res.blob()
   console.log(data)
 
@@ -57,13 +57,9 @@ async function main() {
     "prompt",
     "text",
     `The pigs sometimes joined in at critical moments--they dragged them 
-with desperate slowness up the slope to the top of the quarry, where ahey were toppled over the edge, to shatter to pieces below. 
-Transporting the stone when it was once broken was comparatively 
-simple. The horses carried it off in cart-loads, the sheep dragged 
-single blocks, even Muriel and Benjamin yoked themselves into an old 
-governess-cart and did their share. By late summer a sufficient store 
-of stone had accumulated, and then the building began, under the 
-superintendence of the pigs.`,
+with desperate slowness up the slope to the top of the quarry, where ahey were toppled over the edge, to shatter to pieces below.`
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " "),
   )
 
   const ngrams = getNgrams(list.words, 3)
