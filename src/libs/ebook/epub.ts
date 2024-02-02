@@ -8,11 +8,20 @@ type FlatElement = {
   text: string
 }
 
+type Part = {
+  path: string
+  entries: FlatElement[]
+}
+
 type TocElement = {
   label: string
   path: string
   id: string
-  children: TocElement[]
+}
+
+type Chapter = {
+  title: string
+  paragraphs: string[]
 }
 
 export class Epub {
@@ -32,7 +41,7 @@ export class Epub {
       throw new Error("Incorrect epub file")
     }
 
-    const content = await this.#readStuctureFile(rootFile.path, entries)
+    const content = await this.#extractContent(rootFile.path, entries)
 
     await this.#reader.close()
     return content
@@ -91,23 +100,103 @@ export class Epub {
     return { path: rootFilePath, mime: rootFileMime }
   }
 
-  #readToc(element: Element) {
-    const toc: TocElement[] = [
+  #readToc(element: Element, parentLabel?: string) {
+    const toc: TocElement[][] = [
       ...element.querySelectorAll(":scope > navPoint"),
     ].map((navPoint) => {
-      const label = cleanText(
+      const currentLabel = cleanText(
         navPoint.querySelector("navLabel")?.textContent ?? "",
       )
+
+      const label = parentLabel
+        ? `${parentLabel} - ${currentLabel}`
+        : currentLabel
+
       const link = navPoint.querySelector("content")?.getAttribute("src") ?? ""
       const [path, id] = link.split("#")
-      const children = this.#readToc(navPoint)
-      return { label, path, id, children }
+      const children = this.#readToc(navPoint, label)
+      return children.length > 0 ? children : [{ label, path, id }]
     })
 
-    return toc
+    return toc.flat()
   }
 
-  async #readStuctureFile(structureFilePath: string, entries: Entry[]) {
+  #prepareBookWithoutToc(parts: Part[]) {
+    const chapters: Chapter[] = []
+
+    for (const { entries } of parts) {
+      let title: string[] = []
+      let paragraphs: string[] = []
+
+      let prevType: string | null = null
+
+      for (const entry of entries) {
+        if (entry.type === "anchor" || !entry.text) {
+          continue
+        }
+
+        if (entry.type.startsWith("h")) {
+          if (prevType === "paragraph") {
+            chapters.push({
+              title: cleanText(title.join(" ")),
+              paragraphs,
+            })
+
+            title = []
+            paragraphs = []
+          }
+
+          title.push(entry.text)
+        }
+
+        if (entry.type === "paragraph") {
+          if (prevType === null) {
+            const fragment =
+              entry.text.slice(0, 50) + (entry.text.length > 50 ? "..." : "")
+
+            title.push(fragment)
+          }
+
+          paragraphs.push(entry.text)
+        }
+
+        prevType = entry.type
+      }
+
+      if (paragraphs.length > 0) {
+        chapters.push({
+          title: cleanText(title.join(" ")),
+          paragraphs,
+        })
+      }
+    }
+
+    return chapters.filter(
+      ({ title }) => !title.toLowerCase().includes("project gutenberg"),
+    )
+  }
+
+  #prepareBookWithToc(parts: Part[], toc: TocElement[]) {
+    console.log("PREPARING WITH TOC")
+    const sequence = parts
+      .map((part) => {
+        part.entries.unshift({
+          type: "path",
+          id: part.path,
+          text: "",
+        })
+        return part.entries
+      })
+      .flat()
+
+    console.log({ sequence })
+
+    for (const item of toc) {
+      console.log(item)
+    }
+  }
+
+  async #extractContent(structureFilePath: string, entries: Entry[]) {
     const content = await this.#readFile(structureFilePath, entries)
     const metadata = content.querySelector("metadata")
 
@@ -261,8 +350,15 @@ export class Epub {
       }
     }
 
+    const book =
+      toc === null
+        ? this.#prepareBookWithoutToc(parts)
+        : this.#prepareBookWithToc(parts, toc)
+
     console.log("--- PARTS -----------------")
     console.log(parts)
+    console.log("--- BOOK -----------------")
+    console.log(book)
 
     const all = parts
       .flat()
