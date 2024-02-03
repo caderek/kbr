@@ -11,9 +11,16 @@ import { getNgrams } from "./utils/ngrams.ts"
 import { Epub } from "./libs/ebook/epub.ts"
 
 async function loadEpub() {
+  const res = await fetch("books/harry_potter_2.epub")
+  // const res = await fetch("books/cell.epub")
+  // const res = await fetch("books/dotknij_mnie.epub")
+  // const res = await fetch("start_a_fire_1.epub")
+  // const res = await fetch("start_a_fire_2.epub")
+  // const res = await fetch("start_a_fire_3.epub")
+  // const res = await fetch("start_a_fire_3.epub")
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
-  const res = await fetch("books/the_princess_bride.epub")
+  // const res = await fetch("books/the_princess_bride.epub")
   // const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch(

@@ -1,6 +1,7 @@
 import { BlobReader, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
+import { getCharset } from "../charsets"
 
 type FlatElement = {
   type: string
@@ -24,6 +25,8 @@ type Chapter = {
 
 export class Epub {
   #reader
+  #cleanText = (text: string) => text
+
   constructor(zipBlob: Blob) {
     const blobReader = new BlobReader(zipBlob)
     this.#reader = new ZipReader(blobReader)
@@ -31,7 +34,6 @@ export class Epub {
 
   async load() {
     const entries = await this.#reader.getEntries()
-
     await this.#verifyMimeFile(entries)
     const rootFile = await this.#readMetaInfo(entries)
 
@@ -102,7 +104,7 @@ export class Epub {
     const toc: TocElement[][] = [
       ...element.querySelectorAll(":scope > navPoint"),
     ].map((navPoint) => {
-      const currentLabel = cleanText(
+      const currentLabel = this.#cleanText(
         navPoint.querySelector("navLabel")?.textContent ?? "",
       )
 
@@ -137,7 +139,7 @@ export class Epub {
         if (entry.type.startsWith("h")) {
           if (prevType === "paragraph") {
             chapters.push({
-              title: cleanText(title.join(" ")),
+              title: this.#cleanText(title.join(" ")),
               paragraphs,
             })
 
@@ -164,7 +166,7 @@ export class Epub {
 
       if (paragraphs.length > 0) {
         chapters.push({
-          title: cleanText(title.join(" - ")),
+          title: this.#cleanText(title.join(" - ")),
           paragraphs,
         })
       }
@@ -175,7 +177,8 @@ export class Epub {
 
   #findChapterStart(chapter: TocElement, sequence: FlatElement[]) {
     return sequence.findIndex(
-      (entry) => entry.path === chapter.path && entry.id === chapter.id,
+      (entry) =>
+        entry.path === chapter.path && (!chapter.id || entry.id === chapter.id),
     )
   }
 
@@ -189,6 +192,10 @@ export class Epub {
       const nextChapter = toc[i + 1]
 
       const from = this.#findChapterStart(currentChapter, sequence)
+
+      if (from === -1) {
+        continue
+      }
 
       const to = nextChapter
         ? this.#findChapterStart(nextChapter, sequence)
@@ -221,14 +228,27 @@ export class Epub {
       }
 
       if (paragraphs.length > 0) {
+        const missingTitleParts = title.filter(
+          (chunk) =>
+            !currentChapter.label
+              .toLowerCase()
+              .includes(chunk.toLowerCase().trim()),
+        )
+
         chapters.push({
-          title:
-            title.length === 0
-              ? currentChapter.label
-              : cleanText(title.join(" - ")),
+          title: this.#cleanText(
+            [currentChapter.label, ...missingTitleParts]
+              .map((chunk) => chunk.trim())
+              .join(" - "),
+          ),
           paragraphs,
         })
       }
+    }
+
+    if (chapters.length === 0) {
+      console.warn("Incorrect epub format, defaulting to reading without ToC")
+      return this.#prepareBookWithoutToc(parts)
     }
 
     return chapters
@@ -244,6 +264,8 @@ export class Epub {
         .filter((node) => node.tagName.startsWith("dc:"))
         .map((node) => [node.tagName.slice(3), node.textContent]),
     )
+    const charset = getCharset(info.language ?? "?")
+    this.#cleanText = cleanText(charset)
 
     const manifestEntries = [
       ...(content.querySelectorAll("manifest > item") ?? []),
@@ -338,7 +360,7 @@ export class Epub {
 
       content.querySelectorAll("p").forEach((node) => {
         if (node.dataset.type) {
-          const text = cleanText(node.textContent ?? "")
+          const text = this.#cleanText(node.textContent ?? "")
 
           if (node.dataset.type.startsWith("h") && text === "") {
             return
@@ -367,7 +389,7 @@ export class Epub {
           type: "paragraph",
           id: node.id,
           path: item.path,
-          text: cleanText(text),
+          text: this.#cleanText(text),
         })
       })
 
@@ -383,24 +405,27 @@ export class Epub {
 
     const chapters = rawChapters.filter(({ title }) => {
       const titleLow = title.toLowerCase()
-      return !titleLow.includes("project gutenberg") && titleLow !== "contents"
+      return (
+        !titleLow.includes("project gutenberg") &&
+        titleLow !== "contents" &&
+        titleLow !== "copyright" &&
+        titleLow !== "about the publisher" &&
+        titleLow !== "title page"
+      )
     })
 
-    // const all = parts
-    //   .flat()
-    //   .filter((entry) => entry.type === "paragraph")
-    //   .map((entry) => entry.text)
-    //   .join(" ")
-    //
-    // const special = [
-    //   ...new Set(
-    //     [...all].filter((char) => (char.codePointAt(0) ?? Infinity) > 127),
-    //   ),
-    // ].join(" ")
-    //
-    // console.log("--- SPECIAL -----------------")
-    // console.log(special)
+    const all = chapters
+      .map((chapter) => chapter.paragraphs)
+      .flat()
+      .join(" ")
 
-    return { info, chapters }
+    const special = [
+      ...new Set([...all].filter((char) => !charset.has(char))),
+    ].join(" ")
+
+    console.log("--- SPECIAL -----------------")
+    console.log(special)
+
+    return { info, chapters, charset }
   }
 }
