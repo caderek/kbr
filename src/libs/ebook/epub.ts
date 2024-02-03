@@ -4,14 +4,12 @@ import { cleanText } from "../cleanText"
 
 type FlatElement = {
   type: string
+  path: string
   id: string
   text: string
 }
 
-type Part = {
-  path: string
-  entries: FlatElement[]
-}
+type Part = FlatElement[]
 
 type TocElement = {
   label: string
@@ -41,10 +39,10 @@ export class Epub {
       throw new Error("Incorrect epub file")
     }
 
-    const content = await this.#extractContent(rootFile.path, entries)
+    const book = await this.#extractContent(rootFile.path, entries)
 
     await this.#reader.close()
-    return content
+    return book
   }
 
   async #verifyMimeFile(entries: Entry[]) {
@@ -100,7 +98,7 @@ export class Epub {
     return { path: rootFilePath, mime: rootFileMime }
   }
 
-  #readToc(element: Element, parentLabel?: string) {
+  #readToc(element: Element, prefix: string, parentLabel?: string) {
     const toc: TocElement[][] = [
       ...element.querySelectorAll(":scope > navPoint"),
     ].map((navPoint) => {
@@ -113,8 +111,9 @@ export class Epub {
         : currentLabel
 
       const link = navPoint.querySelector("content")?.getAttribute("src") ?? ""
-      const [path, id] = link.split("#")
-      const children = this.#readToc(navPoint, label)
+      const [rawPath, id] = link.split("#")
+      const path = `${prefix}${rawPath}`
+      const children = this.#readToc(navPoint, prefix, label)
       return children.length > 0 ? children : [{ label, path, id }]
     })
 
@@ -124,7 +123,7 @@ export class Epub {
   #prepareBookWithoutToc(parts: Part[]) {
     const chapters: Chapter[] = []
 
-    for (const { entries } of parts) {
+    for (const entries of parts) {
       let title: string[] = []
       let paragraphs: string[] = []
 
@@ -165,40 +164,80 @@ export class Epub {
 
       if (paragraphs.length > 0) {
         chapters.push({
-          title: cleanText(title.join(" ")),
+          title: cleanText(title.join(" - ")),
           paragraphs,
         })
       }
     }
 
-    return chapters.filter(
-      ({ title }) => !title.toLowerCase().includes("project gutenberg"),
+    return chapters
+  }
+
+  #findChapterStart(chapter: TocElement, sequence: FlatElement[]) {
+    return sequence.findIndex(
+      (entry) => entry.path === chapter.path && entry.id === chapter.id,
     )
   }
 
   #prepareBookWithToc(parts: Part[], toc: TocElement[]) {
-    console.log("PREPARING WITH TOC")
-    const sequence = parts
-      .map((part) => {
-        part.entries.unshift({
-          type: "path",
-          id: part.path,
-          text: "",
+    const sequence = parts.flat()
+
+    const chapters: Chapter[] = []
+
+    for (let i = 0; i < toc.length; i++) {
+      const currentChapter = toc[i]
+      const nextChapter = toc[i + 1]
+
+      const from = this.#findChapterStart(currentChapter, sequence)
+
+      const to = nextChapter
+        ? this.#findChapterStart(nextChapter, sequence)
+        : sequence.length
+
+      let title: string[] = []
+      let paragraphs: string[] = []
+
+      for (let j = from; j < to; j++) {
+        const entry = sequence[j]
+
+        if (entry.type.startsWith("h")) {
+          if (paragraphs.length === 0) {
+            title.push(entry.text)
+          } else {
+            paragraphs.push(entry.text)
+          }
+        } else if (entry.type === "paragraph") {
+          if (
+            title.length === 0 &&
+            paragraphs.length === 0 &&
+            currentChapter.label
+              .toLowerCase()
+              .includes(entry.text.toLowerCase())
+          ) {
+            continue // skip chapter title as normal paragraph
+          }
+          paragraphs.push(entry.text)
+        }
+      }
+
+      if (paragraphs.length > 0) {
+        chapters.push({
+          title:
+            title.length === 0
+              ? currentChapter.label
+              : cleanText(title.join(" - ")),
+          paragraphs,
         })
-        return part.entries
-      })
-      .flat()
-
-    console.log({ sequence })
-
-    for (const item of toc) {
-      console.log(item)
+      }
     }
+
+    return chapters
   }
 
   async #extractContent(structureFilePath: string, entries: Entry[]) {
     const content = await this.#readFile(structureFilePath, entries)
     const metadata = content.querySelector("metadata")
+    const prefix = structureFilePath.startsWith("OEBPS/") ? "OEBPS/" : ""
 
     const info = Object.fromEntries(
       [...(metadata?.children ?? [])]
@@ -211,7 +250,6 @@ export class Epub {
     ].map((item) => {
       const mime = item.getAttribute("media-type") ?? ""
       const file = item.getAttribute("href") ?? ""
-      const prefix = structureFilePath.startsWith("OEBPS/") ? "OEBPS/" : ""
       const path = `${prefix}${file}`
 
       return [
@@ -227,8 +265,6 @@ export class Epub {
 
     const manifest = Object.fromEntries(manifestEntries)
 
-    console.log({ manifest })
-
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]
 
@@ -236,12 +272,8 @@ export class Epub {
 
     if (tocEntry) {
       const tocContent = await this.#readFile(tocEntry.path, entries)
-      console.log(tocContent)
-      toc = this.#readToc(tocContent.querySelector("navMap"))
+      toc = this.#readToc(tocContent.querySelector("navMap"), prefix)
     }
-
-    console.log("--- TOC --------------------------")
-    console.log(toc)
 
     const spine = [...(content.querySelectorAll("spine > itemref") ?? [])].map(
       (item) => {
@@ -257,11 +289,6 @@ export class Epub {
         }
       },
     )
-
-    console.log({ spine })
-
-    console.log("--- INFO -----------------")
-    console.log(info)
 
     const parts = []
 
@@ -320,6 +347,7 @@ export class Epub {
           flatElements.push({
             type: node.dataset.type,
             id: node.id,
+            path: item.path,
             text,
           })
 
@@ -338,43 +366,41 @@ export class Epub {
         flatElements.push({
           type: "paragraph",
           id: node.id,
+          path: item.path,
           text: cleanText(text),
         })
       })
 
       if (flatElements.length > 0) {
-        parts.push({
-          path: item.path,
-          entries: flatElements,
-        })
+        parts.push(flatElements)
       }
     }
 
-    const book =
+    const rawChapters =
       toc === null
         ? this.#prepareBookWithoutToc(parts)
         : this.#prepareBookWithToc(parts, toc)
 
-    console.log("--- PARTS -----------------")
-    console.log(parts)
-    console.log("--- BOOK -----------------")
-    console.log(book)
+    const chapters = rawChapters.filter(({ title }) => {
+      const titleLow = title.toLowerCase()
+      return !titleLow.includes("project gutenberg") && titleLow !== "contents"
+    })
 
-    const all = parts
-      .flat()
-      .filter((entry) => entry.type === "paragraph")
-      .map((entry) => entry.text)
-      .join(" ")
+    // const all = parts
+    //   .flat()
+    //   .filter((entry) => entry.type === "paragraph")
+    //   .map((entry) => entry.text)
+    //   .join(" ")
+    //
+    // const special = [
+    //   ...new Set(
+    //     [...all].filter((char) => (char.codePointAt(0) ?? Infinity) > 127),
+    //   ),
+    // ].join(" ")
+    //
+    // console.log("--- SPECIAL -----------------")
+    // console.log(special)
 
-    const special = [
-      ...new Set(
-        [...all].filter((char) => (char.codePointAt(0) ?? Infinity) > 127),
-      ),
-    ].join(" ")
-
-    console.log("--- SPECIAL -----------------")
-    console.log(special)
-
-    return { info, parts }
+    return { info, chapters }
   }
 }

@@ -13,17 +13,18 @@ import { Epub } from "./libs/ebook/epub.ts"
 async function loadEpub() {
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
-  // const res = await fetch("books/the_princess_bride.epub")
-  const res = await fetch("books/got.epub")
+  const res = await fetch("books/the_princess_bride.epub")
+  // const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch(
   //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
   // )
   const data = await res.blob()
-  console.log(data)
-
   const book = new Epub(data)
-  await book.load()
+  const content = await book.load()
+
+  console.log("--- BOOK ---------------")
+  console.log(content)
 }
 
 loadEpub()
