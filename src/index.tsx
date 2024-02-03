@@ -20,14 +20,18 @@ async function loadEpub() {
   // const res = await fetch("books/harry_potter_2.epub")
   // const res = await fetch("books/cell.epub")
   // const res = await fetch("books/dotknij_mnie.epub")
+  // const res = await fetch("books/start_a_fire_1.epub")
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
   // const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
-  const res = await fetch(
-    "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
-  )
+  // const res = await fetch("books/madness.epub")
+  // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
+  const res = await fetch("books/guards_guards.epub")
+  // const res = await fetch(
+  //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
+  // )
   const data = await res.blob()
   const book = new Epub(data)
   const content = await book.load()

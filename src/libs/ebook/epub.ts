@@ -5,7 +5,7 @@ import { getCharset } from "../charsets"
 
 const SKIP_TITLES_BY_LANG = {
   en: ["contents", "copyright", "about the publisher", "title page"],
-  pl: ["spis treści"],
+  pl: ["spis treści", "strona redakcyjna"],
 }
 const SKIP_TITLES = new Set(Object.values(SKIP_TITLES_BY_LANG).flat())
 
@@ -29,6 +29,14 @@ type Chapter = {
   paragraphs: string[]
 }
 
+type Info = { [key: string]: string | null }
+
+type Book = {
+  info: Info
+  chapters: Chapter[]
+  charset: Set<string>
+}
+
 export class Epub {
   #reader
   #cleanText = (text: string) => text
@@ -38,7 +46,7 @@ export class Epub {
     this.#reader = new ZipReader(blobReader)
   }
 
-  async load() {
+  async load(): Promise<Book> {
     const entries = await this.#reader.getEntries()
     await this.#verifyMimeFile(entries)
     const rootFile = await this.#readMetaInfo(entries)
@@ -327,7 +335,7 @@ export class Epub {
       const content = await this.#readFile(item.path, entries)
 
       content.body.querySelectorAll("br").forEach((node) => {
-        const nl = document.createTextNode("\n\n")
+        const nl = document.createTextNode("{{BR}}")
 
         node.parentNode?.replaceChild(nl, node)
       })
@@ -397,7 +405,7 @@ export class Epub {
           return
         }
 
-        for (const text of allText.split(/\n{2,}/)) {
+        for (const text of allText.split("{{BR}}")) {
           const pText = this.#cleanText(text)
 
           flatElements.push({
