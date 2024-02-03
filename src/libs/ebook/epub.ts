@@ -3,6 +3,12 @@ import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
 import { getCharset } from "../charsets"
 
+const SKIP_TITLES_BY_LANG = {
+  en: ["contents", "copyright", "about the publisher", "title page"],
+  pl: ["spis treści"],
+}
+const SKIP_TITLES = new Set(Object.values(SKIP_TITLES_BY_LANG).flat())
+
 type FlatElement = {
   type: string
   path: string
@@ -227,7 +233,10 @@ export class Epub {
         }
       }
 
-      if (paragraphs.length > 0) {
+      if (
+        paragraphs.length > 0 &&
+        !SKIP_TITLES.has(paragraphs[0].toLowerCase())
+      ) {
         const missingTitleParts = title.filter(
           (chunk) =>
             !currentChapter.label
@@ -317,6 +326,12 @@ export class Epub {
     for (const item of spine) {
       const content = await this.#readFile(item.path, entries)
 
+      content.body.querySelectorAll("br").forEach((node) => {
+        const nl = document.createTextNode("\n\n")
+
+        node.parentNode?.replaceChild(nl, node)
+      })
+
       content.body.querySelectorAll("[id]").forEach((node) => {
         if (!["a", "img"].includes(node.tagName)) {
           const p = document.createElement("p")
@@ -376,21 +391,22 @@ export class Epub {
           return
         }
 
-        const text = (node.textContent ?? "").trim()
+        const allText = (node.textContent ?? "").trim()
 
-        if (text === "") {
+        if (allText === "") {
           return
         }
 
-        const p = document.createElement("p")
-        p.textContent = text
-        p.dataset.type = "paragraph"
-        flatElements.push({
-          type: "paragraph",
-          id: node.id,
-          path: item.path,
-          text: this.#cleanText(text),
-        })
+        for (const text of allText.split(/\n{2,}/)) {
+          const pText = this.#cleanText(text)
+
+          flatElements.push({
+            type: "paragraph",
+            id: node.id,
+            path: item.path,
+            text: pText,
+          })
+        }
       })
 
       if (flatElements.length > 0) {
@@ -407,10 +423,8 @@ export class Epub {
       const titleLow = title.toLowerCase()
       return (
         !titleLow.includes("project gutenberg") &&
-        titleLow !== "contents" &&
-        titleLow !== "copyright" &&
-        titleLow !== "about the publisher" &&
-        titleLow !== "title page"
+        !SKIP_TITLES.has(titleLow) &&
+        ![...SKIP_TITLES].some((skipTitle) => titleLow.includes(skipTitle))
       )
     })
 

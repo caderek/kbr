@@ -5,37 +5,40 @@ import { setState } from "./state/state.ts"
 import "./index.css"
 import App from "./components/App"
 import { WordList } from "./models/WordList.ts"
-import { loadBookTxt, loadWordList } from "./io/loaders.ts"
+import { loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
 import { getNgrams } from "./utils/ngrams.ts"
 import { Epub } from "./libs/ebook/epub.ts"
 
 async function loadEpub() {
-  const res = await fetch("books/quo_vadis.epub")
+  // const res = await fetch("books/quo_vadis.epub")
+  // const res = await fetch("books/monte_cristo.epub")
+  // const res = await fetch("books/ogniem_i_mieczem.epub")
   // const res = await fetch("books/anne_new.epub")
   // const res = await fetch("books/anne_old.epub")
   // const res = await fetch("books/anne_old_no_images.epub")
   // const res = await fetch("books/harry_potter_2.epub")
   // const res = await fetch("books/cell.epub")
   // const res = await fetch("books/dotknij_mnie.epub")
-  // const res = await fetch("start_a_fire_1.epub")
-  // const res = await fetch("start_a_fire_2.epub")
-  // const res = await fetch("start_a_fire_3.epub")
-  // const res = await fetch("start_a_fire_3.epub")
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
   // const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
-  // const res = await fetch(
-  //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
-  // )
+  const res = await fetch(
+    "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
+  )
   const data = await res.blob()
   const book = new Epub(data)
   const content = await book.load()
 
   console.log("--- BOOK ---------------")
   console.log(content)
+
+  for (const chapter of content.chapters.slice(0, 5)) {
+    console.log(`%c${chapter.title}`, "color: lime")
+    console.log(chapter.paragraphs.join("\n\n"))
+  }
 }
 
 loadEpub()

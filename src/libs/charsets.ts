@@ -1,5 +1,8 @@
-const en = `\`1234567890-=~!@#$%^&*()_+qwertyuiop[]\\QWERTYUIOP{}|asdfghjkl;'ASDFGHJKL:"zxcvbnm,./ZXCVBNM<>? `
+const symbols = `\`1234567890-=~!@#$%^&*()_+[]\\{}|;':",./<>? `
+const en = symbols + `qwertyuiopQWERTYUIOPasdfghjklASDFGHJKLzxcvbnmZXCVBNM`
 const pl = en + "ąĄćĆęĘłŁńŃóÓśŚźŹżŻ"
+const ua =
+  symbols + "аАбБвВгГґҐдДеЕєЄжЖзЗиИіІїЇйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩьЬюЮяЯ"
 
 export function getCharset(language: string) {
   const low = language.toLowerCase()
@@ -8,13 +11,20 @@ export function getCharset(language: string) {
     case "pl":
     case "pl-pl":
     case "polish":
+    case "polski":
       return new Set(pl)
+    case "uk":
+    case "uk-uk":
+    case "ukrainian":
+    case "українська":
+      return new Set(ua)
     default:
       return new Set(en)
   }
 }
 
 export const replacements: { [char: string]: string } = {
+  // Symbols
   "’": "'",
   "‘": "'",
   "»": ">>",
@@ -32,6 +42,7 @@ export const replacements: { [char: string]: string } = {
   "¿": "?",
   "¡": "!",
 
+  // Latin
   ằ: "a",
   Ằ: "A",
   å: "a",
@@ -96,6 +107,72 @@ export const replacements: { [char: string]: string } = {
   Ź: "Z",
   ż: "z",
   Ż: "Z",
-  // á ë â £ ô ï
-  // "": "",
+
+  // Cyrillic
+  а: "a",
+  А: "A",
+  б: "b",
+  Б: "B",
+  в: "v",
+  В: "V",
+  г: "h",
+  Г: "H",
+  ґ: "g",
+  Ґ: "G",
+  д: "d",
+  Д: "D",
+  е: "e",
+  Е: "E",
+  є: "ie",
+  Є: "Ie",
+  ж: "zh",
+  Ж: "Zh",
+  з: "z",
+  З: "Z",
+  и: "y",
+  И: "Y",
+  і: "i",
+  І: "I",
+  ї: "i",
+  Ї: "I",
+  й: "y",
+  Й: "Y",
+  к: "k",
+  К: "K",
+  л: "l",
+  Л: "L",
+  м: "m",
+  М: "M",
+  н: "n",
+  Н: "N",
+  о: "o",
+  О: "O",
+  п: "p",
+  П: "P",
+  р: "r",
+  Р: "R",
+  с: "s",
+  С: "S",
+  т: "t",
+  Т: "T",
+  у: "u",
+  У: "U",
+  ф: "f",
+  Ф: "F",
+  х: "kh",
+  Х: "Kh",
+  ц: "c",
+  Ц: "C",
+  ч: "ch",
+  Ч: "Ch",
+  ш: "sh",
+  Ш: "Sh",
+  щ: "shch",
+  Щ: "Shch",
+  ь: "",
+  Ь: "",
+  ю: "iu",
+  Ю: "Iu",
+  я: "",
+  Я: "",
 }
