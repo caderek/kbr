@@ -1,10 +1,17 @@
 import { BlobReader, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
-import { getCharset } from "../charsets"
+import { getCharset, replacements } from "../charsets"
 
 const SKIP_TITLES_BY_LANG = {
-  en: ["contents", "copyright", "about the publisher", "title page"],
+  en: [
+    "contents",
+    "copyright",
+    "about the publisher",
+    "title page",
+    "license",
+    "bibliography",
+  ],
   pl: ["spis treści", "strona redakcyjna"],
 }
 const SKIP_TITLES = new Set(Object.values(SKIP_TITLES_BY_LANG).flat())
@@ -62,18 +69,14 @@ export class Epub {
   }
 
   async #verifyMimeFile(entries: Entry[]) {
-    const mimeFile = entries[0]
+    const mimeFile = entries.find((entry) => entry.filename === "mimetype")
 
-    if (
-      mimeFile === undefined ||
-      mimeFile.getData == undefined ||
-      mimeFile.filename !== "mimetype"
-    ) {
+    if (mimeFile === undefined || mimeFile.getData == undefined) {
       throw new Error("Incorrect epub file")
     }
 
     const mimeWriter = new TextWriter()
-    const mimeText = await mimeFile.getData(mimeWriter)
+    const mimeText = (await mimeFile.getData(mimeWriter)).trim()
 
     if (mimeText !== "application/epub+zip") {
       throw new Error("Incorrect epub file")
@@ -92,7 +95,10 @@ export class Epub {
     }
 
     const metaWriter = new TextWriter()
-    const text = (await file.getData(metaWriter)).replace(/<script.*>/g, "")
+    const text = (await file.getData(metaWriter))
+      .replace(/<script.*\/script>/gs, "")
+      .replace(/<script.*>/g, "")
+
     const parser = new DOMParser()
 
     switch (ext) {
@@ -198,7 +204,6 @@ export class Epub {
 
   #prepareBookWithToc(parts: Part[], toc: TocElement[]) {
     const sequence = parts.flat()
-
     const chapters: Chapter[] = []
 
     for (let i = 0; i < toc.length; i++) {
@@ -362,8 +367,15 @@ export class Epub {
 
           const box = document.createElement("div")
 
+          const text = (node.textContent ?? "")
+            .split("{{BR}}")
+            .map((chunk) => chunk.trim())
+            .filter(Boolean)
+            .join(" - ")
+
           const p = document.createElement("p")
-          p.textContent = node.textContent
+
+          p.textContent = text
           p.dataset.type = tag
 
           box.replaceChildren(...anchors, p)
@@ -408,6 +420,10 @@ export class Epub {
         for (const text of allText.split("{{BR}}")) {
           const pText = this.#cleanText(text)
 
+          if (pText === "") {
+            continue
+          }
+
           flatElements.push({
             type: "paragraph",
             id: node.id,
@@ -442,11 +458,16 @@ export class Epub {
       .join(" ")
 
     const special = [
-      ...new Set([...all].filter((char) => !charset.has(char))),
-    ].join(" ")
+      ...new Set(
+        [...all].filter(
+          (char) => !charset.has(char) && !replacements.letters[char],
+        ),
+      ),
+    ]
 
     console.log("--- SPECIAL -----------------")
-    console.log(special)
+    console.log(special.join())
+    console.log(special.map((char) => char.charCodeAt(0)))
 
     return { info, chapters, charset }
   }

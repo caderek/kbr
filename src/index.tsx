@@ -28,7 +28,15 @@ async function loadEpub() {
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch("books/madness.epub")
   // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
-  const res = await fetch("books/guards_guards.epub")
+  // const res = await fetch("books/guards_guards.epub")
+  // const res = await fetch("books/blindsight.epub")
+  // const res = await fetch("books/little_brother.epub")
+  // const res = await fetch("books/ember.epub")
+  // const res = await fetch("books/typhoon.epub")
+  // const res = await fetch("books/the_vector.epub")
+  // const res = await fetch("books/rifters_1_starfish.epub")
+  // const res = await fetch("books/rifters_2_maelstrom.epub")
+  const res = await fetch("books/rifters_3_behemoth.epub")
   // const res = await fetch(
   //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
   // )
@@ -39,7 +47,16 @@ async function loadEpub() {
   console.log("--- BOOK ---------------")
   console.log(content)
 
+  const wpm = 50
+
   for (const chapter of content.chapters.slice(0, 5)) {
+    const chars = chapter.paragraphs.join(" ").length
+    const words = Math.floor(chars / 5)
+    const time = Math.round(words / wpm)
+    console.log(
+      `%c${chars} characters, ${words} words, estimated time: ${time} min`,
+      "color: cyan",
+    )
     console.log(`%c${chapter.title}`, "color: lime")
     console.log(chapter.paragraphs.join("\n\n"))
   }
