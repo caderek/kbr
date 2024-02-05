@@ -4,17 +4,52 @@ import { cleanText } from "../cleanText"
 import { getCharset, replacements } from "../charsets"
 
 const SKIP_TITLES_BY_LANG = {
-  en: [
-    "contents",
-    "copyright",
-    "about the publisher",
-    "title page",
-    "license",
-    "bibliography",
-  ],
-  pl: ["spis treści", "strona redakcyjna"],
+  phrases: {
+    en: [
+      "contents",
+      "copyright",
+      "about the publisher",
+      "title page",
+      "license",
+      "bibliography",
+      "creative commons licensing information",
+      "acknowledgements",
+      "acknowledgments",
+      "project gutenberg",
+      "books by",
+      "about the author",
+      "about this ebook",
+      "about this book",
+      "other titles by ",
+      "biographical note",
+    ],
+    pl: [
+      "spis treści",
+      "strona redakcyjna",
+      "o tej publikacji",
+      "o autorze",
+      "bibliografia",
+    ],
+  },
+  patterns: {
+    en: [],
+    pl: [],
+  },
 }
-const SKIP_TITLES = new Set(Object.values(SKIP_TITLES_BY_LANG).flat())
+
+const SKIP_TITLES = {
+  phrases: new Set(Object.values(SKIP_TITLES_BY_LANG.phrases).flat()),
+  patterns: Object.values(SKIP_TITLES_BY_LANG.patterns).flat() as RegExp[],
+}
+
+function shouldSkip(title: string) {
+  const titleLow = title.toLowerCase()
+  return (
+    SKIP_TITLES.phrases.has(titleLow) ||
+    [...SKIP_TITLES.phrases].some((phrase) => titleLow.includes(phrase)) ||
+    SKIP_TITLES.patterns.some((pattern) => pattern.test(titleLow))
+  )
+}
 
 type FlatElement = {
   type: string
@@ -42,6 +77,14 @@ type Book = {
   info: Info
   chapters: Chapter[]
   charset: Set<string>
+}
+
+function stripSymbols(str: string) {
+  return str
+    .toLowerCase()
+    .replace(/[~!@#$%^&*()_+\-=\[\]\{\};',./:"<>?]+/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
 }
 
 export class Epub {
@@ -242,27 +285,39 @@ export class Epub {
           ) {
             continue // skip chapter title as normal paragraph
           }
+
+          if (paragraphs.length === 0 && entry.text === "***") {
+            continue
+          }
+
+          if (paragraphs.at(-1) === "***" && entry.text === "***") {
+            continue
+          }
+
           paragraphs.push(entry.text)
         }
       }
 
       if (
         paragraphs.length > 0 &&
-        !SKIP_TITLES.has(paragraphs[0].toLowerCase())
+        !SKIP_TITLES.phrases.has(paragraphs[0].toLowerCase())
       ) {
         const missingTitleParts = title.filter(
           (chunk) =>
-            !currentChapter.label
-              .toLowerCase()
-              .includes(chunk.toLowerCase().trim()),
+            !stripSymbols(currentChapter.label).includes(stripSymbols(chunk)),
         )
 
+        const tempTitle = this.#cleanText(
+          [currentChapter.label, ...missingTitleParts]
+            .map((chunk) => chunk.trim())
+            .join(" - "),
+        )
+
+        const withoutPageNumber = tempTitle.replace(/\.+\s*\d+/, "").trim()
+        const finalTitle = withoutPageNumber || tempTitle
+
         chapters.push({
-          title: this.#cleanText(
-            [currentChapter.label, ...missingTitleParts]
-              .map((chunk) => chunk.trim())
-              .join(" - "),
-          ),
+          title: finalTitle,
           paragraphs,
         })
       }
@@ -443,14 +498,7 @@ export class Epub {
         ? this.#prepareBookWithoutToc(parts)
         : this.#prepareBookWithToc(parts, toc)
 
-    const chapters = rawChapters.filter(({ title }) => {
-      const titleLow = title.toLowerCase()
-      return (
-        !titleLow.includes("project gutenberg") &&
-        !SKIP_TITLES.has(titleLow) &&
-        ![...SKIP_TITLES].some((skipTitle) => titleLow.includes(skipTitle))
-      )
-    })
+    const chapters = rawChapters.filter(({ title }) => !shouldSkip(title))
 
     const all = chapters
       .map((chapter) => chapter.paragraphs)

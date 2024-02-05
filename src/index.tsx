@@ -9,6 +9,7 @@ import { loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
 import { getNgrams } from "./utils/ngrams.ts"
 import { Epub } from "./libs/ebook/epub.ts"
+console.clear()
 
 async function loadEpub() {
   // const res = await fetch("books/quo_vadis.epub")
@@ -36,10 +37,8 @@ async function loadEpub() {
   // const res = await fetch("books/the_vector.epub")
   // const res = await fetch("books/rifters_1_starfish.epub")
   // const res = await fetch("books/rifters_2_maelstrom.epub")
-  const res = await fetch("books/rifters_3_behemoth.epub")
-  // const res = await fetch(
-  //   "books/the_hundred-year-old_man_who_climbed_out_the_window_and_disappeared.epub",
-  // )
+  // const res = await fetch("books/rifters_3_behemoth.epub")
+  const res = await fetch("books/the_hundred-year-old_man.epub")
   const data = await res.blob()
   const book = new Epub(data)
   const content = await book.load()
@@ -47,18 +46,71 @@ async function loadEpub() {
   console.log("--- BOOK ---------------")
   console.log(content)
 
-  const wpm = 50
+  function formatMinutes(minutes: number) {
+    const h = Math.floor(minutes / 60)
+    const m = minutes % 60
 
-  for (const chapter of content.chapters.slice(0, 5)) {
+    let pretty = []
+
+    if (h > 0) {
+      pretty.push(`${h}h`)
+    }
+
+    if (m > 0) {
+      pretty.push(`${m}m`)
+    } else if (h === 0) {
+      pretty.push(`<1m`)
+    }
+
+    return pretty.join(" ")
+  }
+
+  function formatNum(num: number) {
+    return new Intl.NumberFormat("en-US").format(num)
+  }
+
+  const wpm = 50
+  let totalTime = 0
+  let totalChars = 0
+  let totalWords = 0
+
+  for (const [index, chapter] of content.chapters.entries()) {
     const chars = chapter.paragraphs.join(" ").length
     const words = Math.floor(chars / 5)
     const time = Math.round(words / wpm)
+    totalChars += chars
+    totalWords += words
+    totalTime += time
+
+    console.log(`%c${chapter.title}`, "color: lime")
+
     console.log(
-      `%c${chars} characters, ${words} words, estimated time: ${time} min`,
+      `%c${formatNum(chars)} characters, ${formatNum(
+        words,
+      )} words, estimated time: ${formatMinutes(time)}`,
       "color: cyan",
     )
-    console.log(`%c${chapter.title}`, "color: lime")
-    console.log(chapter.paragraphs.join("\n\n"))
+
+    if (index < 5 || index === content.chapters.length - 1) {
+      // console.log(chapter.paragraphs.join("\n\n"))
+    }
+  }
+
+  console.log(
+    `%c${formatNum(content.chapters.length)} chapters, ${formatNum(
+      totalChars,
+    )} characters, ${formatNum(
+      totalWords,
+    )} words, estimated time: ${formatMinutes(totalTime)}`,
+    "color: orange",
+  )
+
+  for (const [key, val] of Object.entries(content.info).sort((a, b) =>
+    a[0].localeCompare(b[0]),
+  )) {
+    if (key !== "description") {
+      console.log(`%c${key}: ${val}`, "color: yellow")
+    }
   }
 }
 
@@ -80,8 +132,6 @@ async function main() {
   const letters = list.lettersByFrequency.slice(0, lettersUnlocked)
   const must = "" //letters.slice(-1)
 
-  console.log(list.lettersByFrequency)
-
   const lesson = list.getLesson({
     letters: letters,
     mustIncludeLetters: must,
@@ -92,19 +142,12 @@ async function main() {
   setState(
     "prompt",
     "text",
-    `The pigs sometimes joined in at critical moments--they dragged them 
-with desperate slowness up the slope to the top of the quarry, where ahey were toppled over the edge, to shatter to pieces below.`
+    `The quick brown fox jumps over the lazy dog.`
       .replace(/\n+/g, " ")
       .replace(/\s+/g, " "),
   )
 
   const ngrams = getNgrams(list.words, 3)
-
-  console.log({ ngrams: ngrams.size })
-
-  // console.log([...ngrams].sort().join("\n"))
-  //
-  // console.log(ngrams)
 }
 
 main()
