@@ -118,6 +118,18 @@ async function loadEpub() {
       console.log(`%c${key}:`, "color: hotpink", val)
     }
   }
+
+  let bookTxt = content.chapters
+    .map((chapter) => [chapter.title, ...chapter.paragraphs].join("\n\n"))
+    .join("\n\n\n")
+
+  const file = new File([bookTxt], "book.txt")
+
+  const url = URL.createObjectURL(file)
+  const dw = document.createElement("a") as HTMLAnchorElement
+  dw.href = url
+  dw.download = "book.txt"
+  dw.click()
 }
 
 loadEpub()
