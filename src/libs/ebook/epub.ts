@@ -51,6 +51,16 @@ function shouldSkip(title: string) {
   )
 }
 
+type TocEntry = [
+  string,
+  {
+    path: string
+    mime: string
+    ext: string
+    type: string
+  },
+]
+
 type FlatElement = {
   type: string
   path: string
@@ -175,10 +185,16 @@ export class Epub {
         ? `${parentLabel} - ${currentLabel}`
         : currentLabel
 
+      let nextLabel: string | undefined = label
+
+      if (shouldSkip(currentLabel)) {
+        nextLabel = parentLabel ? parentLabel : undefined
+      }
+
       const link = navPoint.querySelector("content")?.getAttribute("src") ?? ""
       const [rawPath, id] = link.split("#")
       const path = `${prefix}${rawPath}`
-      const children = this.#readToc(navPoint, prefix, label)
+      const children = this.#readToc(navPoint, prefix, nextLabel)
       return children.length > 0 ? children : [{ label, path, id }]
     })
 
@@ -344,7 +360,7 @@ export class Epub {
     const charset = getCharset(info.language ?? "?")
     this.#cleanText = cleanText(charset)
 
-    const manifestEntries = [
+    const manifestEntries: TocEntry[] = [
       ...(content.querySelectorAll("manifest > item") ?? []),
     ].map((item) => {
       const mime = item.getAttribute("media-type") ?? ""
@@ -356,7 +372,7 @@ export class Epub {
         {
           path,
           mime,
-          ext: file.split(".").at(-1),
+          ext: file.split(".").at(-1) ?? "txt",
           type: getFileType(mime),
         },
       ]
@@ -371,7 +387,11 @@ export class Epub {
 
     if (tocEntry) {
       const tocContent = await this.#readFile(tocEntry.path, entries)
-      toc = this.#readToc(tocContent.querySelector("navMap"), prefix)
+      const tocNode = tocContent.querySelector("navMap")
+
+      if (tocNode) {
+        toc = this.#readToc(tocNode, prefix)
+      }
     }
 
     const spine = [...(content.querySelectorAll("spine > itemref") ?? [])].map(
@@ -392,6 +412,10 @@ export class Epub {
     const parts = []
 
     for (const item of spine) {
+      if (item === null) {
+        continue
+      }
+
       const content = await this.#readFile(item.path, entries)
 
       content.body.querySelectorAll("br").forEach((node) => {

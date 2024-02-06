@@ -15,9 +15,12 @@ async function loadEpub() {
   // const res = await fetch("books/quo_vadis.epub")
   // const res = await fetch("books/monte_cristo.epub")
   // const res = await fetch("books/ogniem_i_mieczem.epub")
-  // const res = await fetch("books/anne_new.epub")
   // const res = await fetch("books/anne_old.epub")
   // const res = await fetch("books/anne_old_no_images.epub")
+  // const res = await fetch("books/anne_1.epub")
+  // const res = await fetch("books/anne_2.epub")
+  // const res = await fetch("books/anne_3.epub")
+  // const res = await fetch("books/anne_4.epub")
   // const res = await fetch("books/harry_potter_2.epub")
   // const res = await fetch("books/cell.epub")
   // const res = await fetch("books/dotknij_mnie.epub")
@@ -25,7 +28,7 @@ async function loadEpub() {
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
-  // const res = await fetch("books/got.epub")
+  const res = await fetch("books/got.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch("books/madness.epub")
   // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
@@ -38,7 +41,12 @@ async function loadEpub() {
   // const res = await fetch("books/rifters_1_starfish.epub")
   // const res = await fetch("books/rifters_2_maelstrom.epub")
   // const res = await fetch("books/rifters_3_behemoth.epub")
-  const res = await fetch("books/the_hundred-year-old_man.epub")
+  // const res = await fetch("books/the_hundred-year-old_man.epub")
+
+  if (!res.ok) {
+    throw new Error("File cannot be fetched")
+  }
+
   const data = await res.blob()
   const book = new Epub(data)
   const content = await book.load()
@@ -92,7 +100,7 @@ async function loadEpub() {
     )
 
     if (index < 5 || index === content.chapters.length - 1) {
-      // console.log(chapter.paragraphs.join("\n\n"))
+      console.log(chapter.paragraphs.join("\n\n"))
     }
   }
 
@@ -109,7 +117,7 @@ async function loadEpub() {
     a[0].localeCompare(b[0]),
   )) {
     if (key !== "description") {
-      console.log(`%c${key}: ${val}`, "color: yellow")
+      console.log(`%c${key}:`, "color: hotpink", val)
     }
   }
 }
