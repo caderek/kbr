@@ -74,6 +74,7 @@ function drawText(
 
   for (const [i, chunk] of title.entries()) {
     const y = start + i * lineHeight
+
     ctx.fillText(chunk.toUpperCase(), ctx.canvas.width / 2, y, 310)
   }
 }
@@ -88,14 +89,18 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
   ctx.fillStyle = colors.bg
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
+  ctx.strokeStyle = colors.fg2
+  ctx.strokeRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 60)
+  ctx.fillStyle = colors.bg
+  ctx.fillRect(50, 0, ctx.canvas.width - 100, ctx.canvas.height)
+  ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 100)
+
   ctx.strokeStyle = colors.fg
   ctx.strokeRect(20, 20, ctx.canvas.width - 40, ctx.canvas.height - 40)
-  ctx.strokeStyle = colors.fg2
-  ctx.strokeRect(25, 25, ctx.canvas.width - 50, ctx.canvas.height - 50)
 
   ctx.textAlign = "center"
 
-  ctx.font = "bold 48px serif"
+  ctx.font = "bold 48px 'Times New Roman'"
   ctx.fillStyle = colors.fg
 
   const rawTitle = info.title ?? "No Title"
@@ -109,7 +114,7 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
     TITLE_MAX_LINES,
   )
 
-  ctx.font = "bold 24px sans-serif"
+  ctx.font = "bold 24px Arial"
   ctx.fillStyle = colors.fg2
 
   const rawAuthor = info.creator ?? info.author ?? "Authot Unknown"
