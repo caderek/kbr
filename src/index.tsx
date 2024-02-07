@@ -10,8 +10,10 @@ import { Epub } from "./libs/ebook/epub.ts"
 console.clear()
 
 async function loadEpub() {
-  // const res = await fetch("books/quo_vadis.epub")
-  // const res = await fetch("books/monte_cristo.epub")
+  const res = await fetch("books/quo_vadis.epub")
+  // const res = await fetch(
+  //   "books/alexandre-dumas_the-count-of-monte-cristo.epub",
+  // )
   // const res = await fetch("books/ogniem_i_mieczem.epub")
   // const res = await fetch("books/anne_old.epub")
   // const res = await fetch("books/anne_old_no_images.epub")
@@ -26,7 +28,8 @@ async function loadEpub() {
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
-  const res = await fetch("books/got.epub")
+  // const res = await fetch("books/got.epub")
+  // const res = await fetch("books/bram-stoker_dracula_advanced.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch("books/madness.epub")
   // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
@@ -88,18 +91,18 @@ async function loadEpub() {
     totalWords += words
     totalTime += time
 
-    console.log(`%c${chapter.title}`, "color: lime")
-
-    console.log(
-      `%c${formatNum(chars)} characters, ${formatNum(
-        words,
-      )} words, estimated time: ${formatMinutes(time)}`,
-      "color: cyan",
-    )
-
-    if (index < 5 || index === content.chapters.length - 1) {
-      console.log(chapter.paragraphs.join("\n\n"))
-    }
+    // console.log(`%c${chapter.title}`, "color: lime")
+    //
+    // console.log(
+    //   `%c${formatNum(chars)} characters, ${formatNum(
+    //     words,
+    //   )} words, estimated time: ${formatMinutes(time)}`,
+    //   "color: cyan",
+    // )
+    //
+    // if (index < 5 || index === content.chapters.length - 1) {
+    //   console.log(chapter.paragraphs.join("\n\n"))
+    // }
   }
 
   console.log(
@@ -129,7 +132,7 @@ async function loadEpub() {
   const dw = document.createElement("a") as HTMLAnchorElement
   dw.href = url
   dw.download = "book.txt"
-  dw.click()
+  // dw.click()
 }
 
 loadEpub()

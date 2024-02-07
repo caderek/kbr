@@ -28,6 +28,7 @@ type Replacements = { [char: string]: string }
 export function shouldIgnore(char: string) {
   const code = char.charCodeAt(0)
   return (
+    code === 0x2060 || // Word Joiner
     code <= 0x1f || // Control characters
     (code >= 0x7f && code <= 0x9f) || // Control characters
     (code >= 0xe000 && code <= 0xf8ff) || // Private Use Area

@@ -1,7 +1,23 @@
-import { BlobReader, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
+import {
+  BlobReader,
+  BlobWriter,
+  ZipReader,
+  TextWriter,
+  Entry,
+} from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
 import { getCharset, replacements } from "../charsets"
+import { prepareCover } from "./prepareCover"
+import type {
+  ManifestEntry,
+  FlatElement,
+  Part,
+  TocElement,
+  Chapter,
+  Info,
+  Book,
+} from "./types"
 
 const SKIP_TITLES_BY_LANG = {
   phrases: {
@@ -22,6 +38,8 @@ const SKIP_TITLES_BY_LANG = {
       "about this book",
       "other titles by ",
       "biographical note",
+      "imprint",
+      "colophon",
     ],
     pl: [
       "spis treści",
@@ -49,44 +67,6 @@ function shouldSkip(title: string) {
     [...SKIP_TITLES.phrases].some((phrase) => titleLow.includes(phrase)) ||
     SKIP_TITLES.patterns.some((pattern) => pattern.test(titleLow))
   )
-}
-
-type TocEntry = [
-  string,
-  {
-    path: string
-    mime: string
-    ext: string
-    type: string
-  },
-]
-
-type FlatElement = {
-  type: string
-  path: string
-  id: string
-  text: string
-}
-
-type Part = FlatElement[]
-
-type TocElement = {
-  label: string
-  path: string
-  id: string
-}
-
-type Chapter = {
-  title: string
-  paragraphs: string[]
-}
-
-type Info = { [key: string]: string | null }
-
-type Book = {
-  info: Info
-  chapters: Chapter[]
-  charset: Set<string>
 }
 
 function stripSymbols(str: string) {
@@ -147,8 +127,8 @@ export class Epub {
       throw new Error("Incorrect epub file")
     }
 
-    const metaWriter = new TextWriter()
-    const text = (await file.getData(metaWriter))
+    const textWriter = new TextWriter()
+    const text = (await file.getData(textWriter))
       .replace(/<script.*\/script>/gs, "")
       .replace(/<script.*>/g, "")
 
@@ -347,6 +327,38 @@ export class Epub {
     return chapters
   }
 
+  async #getCover(
+    manifestEntries: ManifestEntry[],
+    entries: Entry[],
+    info: Info,
+  ) {
+    const coverEntry = (manifestEntries.find(
+      ([key, entry]) =>
+        entry.type === "image" &&
+        (entry.path.includes("cover") || key.includes("cover")),
+    ) ?? [])[1]
+
+    if (!coverEntry) {
+      return prepareCover(null, info)
+    }
+
+    const entry = entries.find(
+      (entry) =>
+        entry.filename === coverEntry.path ||
+        entry.filename.endsWith(coverEntry.path),
+    )
+
+    if (entry === undefined || entry.getData == undefined) {
+      throw new Error("Incorrect epub file")
+    }
+
+    const blob = await entry.getData(new BlobWriter())
+    const file = new File([blob], "cover", { type: coverEntry.mime })
+
+    // return prepareCover(file, info)
+    return prepareCover(null, info)
+  }
+
   async #extractContent(structureFilePath: string, entries: Entry[]) {
     const content = await this.#readFile(structureFilePath, entries)
     const metadata = content.querySelector("metadata")
@@ -360,7 +372,7 @@ export class Epub {
     const charset = getCharset(info.language ?? "?")
     this.#cleanText = cleanText(charset)
 
-    const manifestEntries: TocEntry[] = [
+    const manifestEntries: ManifestEntry[] = [
       ...(content.querySelectorAll("manifest > item") ?? []),
     ].map((item) => {
       const mime = item.getAttribute("media-type") ?? ""
@@ -379,6 +391,12 @@ export class Epub {
     })
 
     const manifest = Object.fromEntries(manifestEntries)
+
+    const cover = await this.#getCover(manifestEntries, entries, info)
+
+    if (cover) {
+      document.body.appendChild(cover)
+    }
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]
