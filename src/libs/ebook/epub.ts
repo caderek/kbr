@@ -18,6 +18,9 @@ import type {
   Info,
   Book,
 } from "./types"
+import { extractGenres } from "./extractGenres"
+import { sanitizeDescription } from "./sanitizeDescription"
+import { toUrlIfPossible } from "./toUrlIfPossible"
 
 const SKIP_TITLES_BY_LANG = {
   phrases: {
@@ -339,7 +342,10 @@ export class Epub {
     ) ?? [])[1]
 
     if (!coverEntry) {
-      return prepareCover(null, info)
+      return {
+        original: null,
+        standard: await prepareCover(null, info),
+      }
     }
 
     const entry = entries.find(
@@ -356,19 +362,101 @@ export class Epub {
     const file = new File([blob], "cover", { type: coverEntry.mime })
 
     // return prepareCover(file, info)
-    return prepareCover(null, info)
+    return {
+      original: await prepareCover(file, info),
+      standard: await prepareCover(null, info),
+    }
+  }
+
+  #getInfo(content: Document): Info {
+    console.log(content)
+    const metadata = content.querySelector("metadata")
+    const children = [...(metadata?.children ?? [])]
+
+    const subject = children
+      .filter((node) => node.tagName === "dc:subject")
+      .map((node) => node.textContent)
+      .filter((item) => item !== null) as string[]
+
+    const title =
+      children.find((node) => node.tagName === "dc:title")?.textContent ?? null
+
+    const author =
+      children.find((node) => node.tagName === "dc:creator")?.textContent ??
+      null
+
+    const rights =
+      children.find((node) => node.tagName === "dc:rights")?.textContent ?? null
+
+    const publisher =
+      children.find((node) => node.tagName === "dc:publisher")?.textContent ??
+      null
+
+    const language =
+      children.find((node) => node.tagName === "dc:language")?.textContent ??
+      null
+
+    const uid = children.find((node) => node.id === "uid")?.textContent ?? null
+
+    const seSource =
+      uid && uid.startsWith("url:https://standardebooks.org")
+        ? uid.slice(4)
+        : null
+
+    const source = toUrlIfPossible(
+      seSource ??
+        children.find((node) => node.tagName === "dc:source")?.textContent ??
+        null,
+    )
+
+    const subjectSE = children
+      .filter((node) => node.getAttribute("property") === "se:subject")
+      .map((node) => node.textContent)
+      .filter((item) => item !== null) as string[]
+
+    const dates = children
+      .filter((node) => node.tagName === "dc:date")
+      .map((node) => ((node.textContent ?? "").match(/\d{4}/) ?? [])[0])
+      .filter((item) => item !== undefined)
+
+    const date = dates.length > 0 ? Math.min(...dates.map(Number)) : null
+
+    const longDescription =
+      children.find(
+        (node) => node.getAttribute("property") === "se:long-description",
+      )?.textContent ?? null
+
+    const description =
+      children.find((node) => node.tagName === "dc:description")?.textContent ??
+      null
+
+    const genres = extractGenres(
+      subject,
+      subjectSE,
+      description ?? longDescription ?? undefined,
+    )
+
+    const info = {
+      title,
+      author,
+      language,
+      description: sanitizeDescription(description),
+      longDescription: sanitizeDescription(longDescription),
+      date,
+      genres,
+      rights,
+      publisher,
+      source,
+    }
+
+    return info
   }
 
   async #extractContent(structureFilePath: string, entries: Entry[]) {
     const content = await this.#readFile(structureFilePath, entries)
-    const metadata = content.querySelector("metadata")
     const prefix = structureFilePath.startsWith("OEBPS/") ? "OEBPS/" : ""
+    const info = this.#getInfo(content)
 
-    const info = Object.fromEntries(
-      [...(metadata?.children ?? [])]
-        .filter((node) => node.tagName.startsWith("dc:"))
-        .map((node) => [node.tagName.slice(3), node.textContent]),
-    )
     const charset = getCharset(info.language ?? "?")
     this.#cleanText = cleanText(charset)
 
@@ -394,9 +482,10 @@ export class Epub {
 
     const cover = await this.#getCover(manifestEntries, entries, info)
 
-    if (cover) {
-      document.body.appendChild(cover)
+    if (cover.original) {
+      document.body.appendChild(cover.original)
     }
+    document.body.appendChild(cover.standard)
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]

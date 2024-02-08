@@ -7,20 +7,12 @@ const AUTHOR_LINE_HEIGHT = 30
 const AUTHOR_CHARS_PER_LINE = 20
 const AUTHOR_MAX_LINES = 3
 
-const keywords = {
-  horror: ["horror", "terror", "monster"],
-}
-
-function hasKeywords(text: string, keywords: string[]) {
-  return keywords.some((keyword) => text.includes(keyword))
-}
-
-function getCoverColors(text: string) {
-  if (hasKeywords(text, keywords.horror)) {
+function getCoverColors(genres: Set<string>) {
+  if (genres.has("horror")) {
     return { bg: "#0d0a10", fg: "#a80d20", fg2: "#a80d20aa" }
   }
 
-  if (hasKeywords(text, ["historic"])) {
+  if (genres.has("history")) {
     return { bg: "#1a0f10", fg: "#c27427", fg2: "#c27427aa" }
   }
 
@@ -80,17 +72,16 @@ function drawText(
 }
 
 function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
-  const infoText = `${info.title ?? ""} ${info.subject ?? ""} ${
-    info.description ?? ""
-  }`
-  const colors = getCoverColors(infoText)
-  console.log(infoText)
+  const colors = getCoverColors(info.genres)
 
   ctx.fillStyle = colors.bg
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
   ctx.strokeStyle = colors.fg2
-  ctx.strokeRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 60)
+  ctx.beginPath()
+  ctx.roundRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 56, 15)
+  ctx.roundRect(32, 32, ctx.canvas.width - 64, ctx.canvas.height - 64, 12)
+  ctx.stroke()
   ctx.fillStyle = colors.bg
   ctx.fillRect(50, 0, ctx.canvas.width - 100, ctx.canvas.height)
   ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 100)
@@ -117,7 +108,7 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
   ctx.font = "bold 24px Arial"
   ctx.fillStyle = colors.fg2
 
-  const rawAuthor = info.creator ?? info.author ?? "Authot Unknown"
+  const rawAuthor = info.author ?? "Authot Unknown"
 
   drawText(
     ctx,
@@ -144,17 +135,10 @@ export async function prepareCover(file: File | null, info: Info) {
     const fileUrl = URL.createObjectURL(file)
     const img = await loadImage(fileUrl)
 
-    ctx.drawImage(
-      img,
-      0,
-      0,
-      img.width,
-      img.height,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-    )
+    console.log({ w: img.width, h: img.height })
+    console.dir(img)
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
   } else {
     drawCover(ctx, info)
   }

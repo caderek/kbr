@@ -14,7 +14,7 @@ async function loadEpub() {
   // const res = await fetch(
   //   "books/alexandre-dumas_the-count-of-monte-cristo.epub",
   // )
-  // const res = await fetch("books/ogniem_i_mieczem.epub")
+  const res = await fetch("books/ogniem_i_mieczem.epub")
   // const res = await fetch("books/anne_old.epub")
   // const res = await fetch("books/anne_old_no_images.epub")
   // const res = await fetch("books/anne_1.epub")
@@ -27,7 +27,7 @@ async function loadEpub() {
   // const res = await fetch("books/start_a_fire_1.epub")
   // const res = await fetch("books/a_study_in_scarlet.epub")
   // const res = await fetch("books/dracula.epub")
-  const res = await fetch("books/the_princess_bride.epub")
+  // const res = await fetch("books/the_princess_bride.epub")
   // const res = await fetch("books/got.epub")
   // const res = await fetch("books/bram-stoker_dracula_advanced.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
@@ -114,12 +114,8 @@ async function loadEpub() {
     "color: orange",
   )
 
-  for (const [key, val] of Object.entries(content.info).sort((a, b) =>
-    a[0].localeCompare(b[0]),
-  )) {
-    if (key !== "description") {
-      console.log(`%c${key}:`, "color: hotpink", val)
-    }
+  for (const [key, val] of Object.entries(content.info)) {
+    console.log(`%c${key}:`, "color: hotpink", val)
   }
 
   let bookTxt = content.chapters

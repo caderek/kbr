@@ -28,7 +28,18 @@ export type Chapter = {
   paragraphs: string[]
 }
 
-export type Info = { [key: string]: string | null }
+export type Info = {
+  title: string | null
+  author: string | null
+  language: string | null
+  description: string[]
+  longDescription: string[]
+  date: number | null
+  genres: Set<string>
+  rights: string | null
+  publisher: string | null
+  source: string | URL | null
+}
 
 export type Book = {
   info: Info
