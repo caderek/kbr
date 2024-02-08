@@ -16,7 +16,11 @@ function getCoverColors(genres: Set<string>) {
     return { bg: "#1a0f10", fg: "#c27427", fg2: "#c27427aa" }
   }
 
-  return { bg: "#0f111a", fg: "#5973de", fg2: "#5973deaa" }
+  if (genres.has("fiction")) {
+    return { bg: "#1a0f10", fg: "#c27427", fg2: "#c27427aa" }
+  }
+
+  return { bg: "#121212", fg: "#c4c4c4", fg2: "#c4c4c4aa" }
 }
 
 async function loadImage(url: string) {

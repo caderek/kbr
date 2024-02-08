@@ -34,7 +34,7 @@ export type Info = {
   language: string | null
   description: string[]
   longDescription: string[]
-  date: number | null
+  year: number | null
   genres: Set<string>
   rights: string | null
   publisher: string | null

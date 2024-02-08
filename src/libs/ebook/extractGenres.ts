@@ -7,9 +7,20 @@ const genreKeywords = {
   horror: ["horror", "terror", "monster"],
   thriller: ["thriller"],
   history: ["history", "historic", "historical"],
+  fantasy: ["fantasy"],
+  children: ["juvenile fiction"],
+  action: ["action"],
+  romance: ["romance", "love"],
+  "science-fiction": ["science-fiction", "science fiction"],
+
   // other
   pirates: ["pirate"],
   revenge: ["revenge"],
+  "coming-of-age": ["bildungsroman", "coming of age", "coming-of-age"],
+  friendship: ["friendship"],
+  psychological: ["psychological"],
+  gothic: ["gothic"],
+  vampires: ["vampire"],
 }
 
 function hasKeywords(text: string, keywords: string[]) {
@@ -21,6 +32,8 @@ export function extractGenres(
   subjectSE: string[],
   description?: string,
 ): Set<string> {
+  console.log({ subject, subjectSE, description })
+
   const genres = new Set(subjectSE.map((item) => item.trim().toLowerCase()))
 
   // use description only as a last resort (potential false-positives)

@@ -414,12 +414,12 @@ export class Epub {
       .map((node) => node.textContent)
       .filter((item) => item !== null) as string[]
 
-    const dates = children
+    const years = children
       .filter((node) => node.tagName === "dc:date")
       .map((node) => ((node.textContent ?? "").match(/\d{4}/) ?? [])[0])
       .filter((item) => item !== undefined)
 
-    const date = dates.length > 0 ? Math.min(...dates.map(Number)) : null
+    const year = years.length > 0 ? Math.min(...years.map(Number)) : null
 
     const longDescription =
       children.find(
@@ -442,7 +442,7 @@ export class Epub {
       language,
       description: sanitizeDescription(description),
       longDescription: sanitizeDescription(longDescription),
-      date,
+      year,
       genres,
       rights,
       publisher,
