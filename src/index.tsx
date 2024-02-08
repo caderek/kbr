@@ -29,7 +29,7 @@ async function loadEpub() {
   // const res = await fetch("books/dracula.epub")
   // const res = await fetch("books/the_princess_bride.epub")
   // const res = await fetch("books/got.epub")
-  const res = await fetch("books/bram-stoker_dracula_advanced.epub")
+  // const res = await fetch("books/bram-stoker_dracula_advanced.epub")
   // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
   // const res = await fetch("books/madness.epub")
   // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
@@ -42,7 +42,7 @@ async function loadEpub() {
   // const res = await fetch("books/rifters_1_starfish.epub")
   // const res = await fetch("books/rifters_2_maelstrom.epub")
   // const res = await fetch("books/rifters_3_behemoth.epub")
-  // const res = await fetch("books/the_hundred-year-old_man.epub")
+  const res = await fetch("books/the_hundred-year-old_man.epub")
 
   if (!res.ok) {
     throw new Error("File cannot be fetched")

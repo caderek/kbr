@@ -11,6 +11,7 @@ const genreKeywords = {
   children: ["juvenile fiction"],
   action: ["action"],
   romance: ["romance", "love"],
+  erotic: ["erotic", "sex"],
   "science-fiction": ["science-fiction", "science fiction"],
 
   // other
@@ -21,6 +22,10 @@ const genreKeywords = {
   psychological: ["psychological"],
   gothic: ["gothic"],
   vampires: ["vampire"],
+  dragons: ["dragon"],
+  survival: ["survival"],
+  magic: ["magic"],
+  humor: ["humor", "humour"],
 }
 
 function hasKeywords(text: string, keywords: string[]) {
