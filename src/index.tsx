@@ -7,42 +7,11 @@ import App from "./components/App"
 import { loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
 import { Epub } from "./libs/ebook/epub.ts"
+import books from "./books.ts"
 console.clear()
 
 async function loadEpub() {
-  // const res = await fetch("books/quo_vadis.epub")
-  // const res = await fetch(
-  //   "books/alexandre-dumas_the-count-of-monte-cristo.epub",
-  // )
-  // const res = await fetch("books/ogniem_i_mieczem.epub")
-  // const res = await fetch("books/anne_old.epub")
-  // const res = await fetch("books/anne_old_no_images.epub")
-  // const res = await fetch("books/anne_1.epub")
-  // const res = await fetch("books/anne_2.epub")
-  // const res = await fetch("books/anne_3.epub")
-  // const res = await fetch("books/anne_4.epub")
-  // const res = await fetch("books/harry_potter_2.epub")
-  // const res = await fetch("books/cell.epub")
-  // const res = await fetch("books/dotknij_mnie.epub")
-  // const res = await fetch("books/start_a_fire_1.epub")
-  // const res = await fetch("books/a_study_in_scarlet.epub")
-  // const res = await fetch("books/dracula.epub")
-  // const res = await fetch("books/the_princess_bride.epub")
-  // const res = await fetch("books/got.epub")
-  // const res = await fetch("books/bram-stoker_dracula_advanced.epub")
-  // const res = await fetch("books/the_girl_who_saved_the_king_of_sweden.epub")
-  // const res = await fetch("books/madness.epub")
-  // const res = await fetch("books/The-Island-of-Doctor-Moreau.epub")
-  // const res = await fetch("books/guards_guards.epub")
-  // const res = await fetch("books/blindsight.epub")
-  // const res = await fetch("books/little_brother.epub")
-  // const res = await fetch("books/ember.epub")
-  // const res = await fetch("books/typhoon.epub")
-  // const res = await fetch("books/the_vector.epub")
-  // const res = await fetch("books/rifters_1_starfish.epub")
-  // const res = await fetch("books/rifters_2_maelstrom.epub")
-  // const res = await fetch("books/rifters_3_behemoth.epub")
-  const res = await fetch("books/the_hundred-year-old_man.epub")
+  const res = await fetch(books[0])
 
   if (!res.ok) {
     throw new Error("File cannot be fetched")

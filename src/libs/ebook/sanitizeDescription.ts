@@ -13,16 +13,16 @@ export function sanitizeDescription(description: string | null) {
   console.log(document)
 
   if (document.body.textContent === description) {
-    return [description]
+    return [description].filter(Boolean)
   }
 
   const paragraphs = document.querySelectorAll("p")
 
   if (paragraphs.length === 0) {
-    return [document.body.textContent as string]
+    return [document.body.textContent as string].filter(Boolean)
   }
 
   return [...paragraphs]
     .map((paragraph) => paragraph.textContent)
-    .filter((p) => typeof p === "string") as string[]
+    .filter((p) => typeof p === "string" && p !== "") as string[]
 }

@@ -376,7 +376,7 @@ export class Epub {
     const subject = children
       .filter((node) => node.tagName === "dc:subject")
       .map((node) => node.textContent)
-      .filter((item) => item !== null) as string[]
+      .filter((item) => item !== null && item.trim() !== "") as string[]
 
     const title =
       children.find((node) => node.tagName === "dc:title")?.textContent ?? null
@@ -412,7 +412,7 @@ export class Epub {
     const subjectSE = children
       .filter((node) => node.getAttribute("property") === "se:subject")
       .map((node) => node.textContent)
-      .filter((item) => item !== null) as string[]
+      .filter((item) => item !== null && item.trim() !== "") as string[]
 
     const years = children
       .filter((node) => node.tagName === "dc:date")
@@ -421,14 +421,16 @@ export class Epub {
 
     const year = years.length > 0 ? Math.min(...years.map(Number)) : null
 
-    const longDescription =
+    const longDescription = sanitizeDescription(
       children.find(
         (node) => node.getAttribute("property") === "se:long-description",
-      )?.textContent ?? null
+      )?.textContent ?? null,
+    )
 
-    const description =
+    const description = sanitizeDescription(
       children.find((node) => node.tagName === "dc:description")?.textContent ??
-      null
+        null,
+    )
 
     const genres = extractGenres(
       subject,
@@ -440,8 +442,8 @@ export class Epub {
       title,
       author,
       language,
-      description: sanitizeDescription(description),
-      longDescription: sanitizeDescription(longDescription),
+      description,
+      longDescription,
       year,
       genres,
       rights,

@@ -8,19 +8,75 @@ const AUTHOR_CHARS_PER_LINE = 20
 const AUTHOR_MAX_LINES = 3
 
 function getCoverColors(genres: Set<string>) {
+  if (genres.has("children")) {
+    return { bg: "#BFDB38", fg: "#00425A", fg2: "#00425ACC" }
+  }
+
+  if (genres.has("young-adult")) {
+    return { bg: "#37264D", fg: "#ACFFAD", fg2: "#ACFFADCC" }
+  }
+
   if (genres.has("horror")) {
-    return { bg: "#0d0a10", fg: "#a80d20", fg2: "#a80d20aa" }
+    return { bg: "#0D0A10", fg: "#A80D20", fg2: "#A80D20CC" }
+  }
+
+  if (genres.has("mystery") || genres.has("crime") || genres.has("thriller")) {
+    return { bg: "#151722", fg: "#C4C4C4", fg2: "#C4C4C4CC" }
+  }
+
+  if (genres.has("fantasy")) {
+    return { bg: "#361A4D", fg: "#FEC260", fg2: "#FEC260CC" }
+  }
+
+  if (genres.has("science-fiction")) {
+    return { bg: "#0E131E", fg: "#A5FB38", fg2: "#A5FB38CC" }
+  }
+
+  if (genres.has("adventure")) {
+    return { bg: "#18291F", fg: "#FFCA42", fg2: "#FFCA42CC" }
+  }
+
+  if (genres.has("romance") || genres.has("erotic")) {
+    return { bg: "#261E2B", fg: "#FF2E63", fg2: "#FF2E63CC" }
+  }
+
+  if (genres.has("drama") || genres.has("poetry")) {
+    return { bg: "#331D2C", fg: "#EFE1D1", fg2: "#EFE1D1CC" }
+  }
+
+  if (genres.has("comedy")) {
+    return { bg: "#4E1839", fg: "#FB8B24", fg2: "#FB8B24CC" }
+  }
+
+  if (genres.has("satire")) {
+    return { bg: "#272121", fg: "#FF4D00", fg2: "#FF4D00CC" }
+  }
+
+  if (genres.has("philosophy") || genres.has("spirituality")) {
+    return { bg: "#1F2544", fg: "#FFD0EC", fg2: "#FFD0ECCC" }
+  }
+
+  if (
+    genres.has("biography") ||
+    genres.has("autobiography") ||
+    genres.has("memoir")
+  ) {
+    return { bg: "#2D2424", fg: "#E0C097", fg2: "#E0C097CC" }
   }
 
   if (genres.has("history")) {
-    return { bg: "#1a0f10", fg: "#c27427", fg2: "#c27427aa" }
+    return { bg: "#1A0F10", fg: "#DB8A3A", fg2: "#DB8A3ACC" }
   }
 
   if (genres.has("fiction")) {
-    return { bg: "#1a0f10", fg: "#c27427", fg2: "#c27427aa" }
+    return { bg: "#222831", fg: "#00ADB5", fg2: "#00ADB5CC" }
   }
 
-  return { bg: "#121212", fg: "#c4c4c4", fg2: "#c4c4c4aa" }
+  if (genres.has("nonfiction")) {
+    return { bg: "#222831", fg: "#FFD369", fg2: "#FFD369CC" }
+  }
+
+  return { bg: "#222831", fg: "#CBE4DE", fg2: "#CBE4DECC" }
 }
 
 async function loadImage(url: string) {
@@ -81,14 +137,22 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
   ctx.fillStyle = colors.bg
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-  ctx.strokeStyle = colors.fg2
+  ctx.lineWidth = 2
+  ctx.strokeStyle = colors.fg
   ctx.beginPath()
-  ctx.roundRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 56, 15)
   ctx.roundRect(32, 32, ctx.canvas.width - 64, ctx.canvas.height - 64, 12)
   ctx.stroke()
   ctx.fillStyle = colors.bg
   ctx.fillRect(50, 0, ctx.canvas.width - 100, ctx.canvas.height)
   ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 100)
+
+  ctx.strokeStyle = colors.fg
+  ctx.beginPath()
+  ctx.roundRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 56, 15)
+  ctx.stroke()
+  ctx.fillStyle = colors.bg
+  ctx.fillRect(57, 0, ctx.canvas.width - 116, ctx.canvas.height)
+  ctx.fillRect(0, 57, ctx.canvas.width, ctx.canvas.height - 116)
 
   ctx.strokeStyle = colors.fg
   ctx.strokeRect(20, 20, ctx.canvas.width - 40, ctx.canvas.height - 40)
