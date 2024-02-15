@@ -32,8 +32,8 @@ export type Info = {
   title: string | null
   author: string | null
   language: string | null
-  description: string[]
-  longDescription: string[]
+  description: string | null
+  longDescription: string[] | null
   year: number | null
   genres: Set<string>
   rights: string | null

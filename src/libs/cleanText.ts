@@ -4,8 +4,12 @@ export const cleanText = (charsets: Set<string>) => (text: string) => {
   const base = text
     .replace(/\n+/g, " ")
     .replace(/\t+/g, " ")
-    .replace("THE FULL PROJECT GUTENBERG LICENSE", "") // removes empty page at the end of PG books
+    // .replace("THE FULL PROJECT GUTENBERG LICENSE", "") // removes empty page at the end of PG books
     .replace(/^[* ]+$/, "***")
+    .replace(/\s*\. \. \./g, "...")
+    .replace(/\s--\s/g, " - ")
+    .replace(/[,.?!][A-Z]/g, (v) => `${v[0]} ${v[1]}`) // fix no space between end of sentence and new sentence
+    .replace(/\s[,.?!]/g, (v) => v[1]) // remove space before interpunction
     .trim()
 
   const cleaned: string[] = []

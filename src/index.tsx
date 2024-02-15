@@ -24,6 +24,8 @@ async function loadEpub() {
   console.log("--- BOOK ---------------")
   console.log(content)
 
+  console.log(content.info.longDescription.join("\n\n"))
+
   function formatMinutes(minutes: number) {
     const h = Math.floor(minutes / 60)
     const m = minutes % 60
@@ -52,7 +54,7 @@ async function loadEpub() {
   let totalChars = 0
   let totalWords = 0
 
-  for (const [index, chapter] of content.chapters.entries()) {
+  for (const [_, chapter] of content.chapters.entries()) {
     const chars = chapter.paragraphs.join(" ").length
     const words = Math.floor(chars / 5)
     const time = Math.round(words / wpm)

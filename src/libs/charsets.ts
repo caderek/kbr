@@ -9,14 +9,8 @@ export function getCharset(language: string) {
 
   switch (low) {
     case "pl":
-    case "pl-pl":
-    case "polish":
-    case "polski":
       return new Set(pl)
     case "uk":
-    case "uk-uk":
-    case "ukrainian":
-    case "українська":
       return new Set(ua)
     default:
       return new Set(en)

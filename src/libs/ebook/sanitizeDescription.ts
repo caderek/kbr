@@ -1,6 +1,11 @@
-export function sanitizeDescription(description: string | null) {
+import { cleanText } from "../cleanText"
+
+export function sanitizeDescription(
+  description: string | null,
+  clean: (text: string) => string,
+) {
   if (description === null) {
-    return []
+    return null
   }
 
   const parser = new DOMParser()
@@ -13,16 +18,18 @@ export function sanitizeDescription(description: string | null) {
   console.log(document)
 
   if (document.body.textContent === description) {
-    return [description].filter(Boolean)
+    return [description].filter(Boolean).map(clean)
   }
 
   const paragraphs = document.querySelectorAll("p")
 
   if (paragraphs.length === 0) {
-    return [document.body.textContent as string].filter(Boolean)
+    return [document.body.textContent as string].filter(Boolean).map(clean)
   }
 
-  return [...paragraphs]
-    .map((paragraph) => paragraph.textContent)
-    .filter((p) => typeof p === "string" && p !== "") as string[]
+  return (
+    [...paragraphs]
+      .map((paragraph) => paragraph.textContent)
+      .filter((p) => typeof p === "string" && p !== "") as string[]
+  ).map(clean)
 }

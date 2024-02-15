@@ -21,6 +21,7 @@ import type {
 import { extractGenres } from "./extractGenres"
 import { sanitizeDescription } from "./sanitizeDescription"
 import { toUrlIfPossible } from "./toUrlIfPossible"
+import { getLanguage } from "../getLanguage"
 
 const SKIP_TITLES_BY_LANG = {
   phrases: {
@@ -82,6 +83,7 @@ function stripSymbols(str: string) {
 
 export class Epub {
   #reader
+  #charset: Set<string> = new Set()
   #cleanText = (text: string) => text
 
   constructor(zipBlob: Blob) {
@@ -369,9 +371,16 @@ export class Epub {
   }
 
   #getInfo(content: Document): Info {
-    console.log(content)
     const metadata = content.querySelector("metadata")
     const children = [...(metadata?.children ?? [])]
+
+    const language = getLanguage(
+      children.find((node) => node.tagName === "dc:language")?.textContent ??
+        undefined,
+    )
+
+    this.#charset = getCharset(language ?? "?")
+    this.#cleanText = cleanText(this.#charset)
 
     const subject = children
       .filter((node) => node.tagName === "dc:subject")
@@ -390,10 +399,6 @@ export class Epub {
 
     const publisher =
       children.find((node) => node.tagName === "dc:publisher")?.textContent ??
-      null
-
-    const language =
-      children.find((node) => node.tagName === "dc:language")?.textContent ??
       null
 
     const uid = children.find((node) => node.id === "uid")?.textContent ?? null
@@ -421,21 +426,35 @@ export class Epub {
 
     const year = years.length > 0 ? Math.min(...years.map(Number)) : null
 
-    const longDescription = sanitizeDescription(
+    let longDescription = sanitizeDescription(
       children.find(
         (node) => node.getAttribute("property") === "se:long-description",
       )?.textContent ?? null,
+      this.#cleanText,
     )
 
-    const description = sanitizeDescription(
+    let rawDescription = sanitizeDescription(
       children.find((node) => node.tagName === "dc:description")?.textContent ??
         null,
+      this.#cleanText,
     )
+
+    let description: string | null = null
+
+    if (!longDescription && rawDescription) {
+      longDescription = rawDescription
+    }
+
+    if (!rawDescription && longDescription) {
+      description = longDescription[0] ?? null
+    } else if (rawDescription) {
+      description = rawDescription[0]
+    }
 
     const genres = extractGenres(
       subject,
       subjectSE,
-      description ?? longDescription ?? undefined,
+      rawDescription ?? longDescription ?? undefined,
     )
 
     const info = {
@@ -458,9 +477,6 @@ export class Epub {
     const content = await this.#readFile(structureFilePath, entries)
     const prefix = structureFilePath.startsWith("OEBPS/") ? "OEBPS/" : ""
     const info = this.#getInfo(content)
-
-    const charset = getCharset(info.language ?? "?")
-    this.#cleanText = cleanText(charset)
 
     const manifestEntries: ManifestEntry[] = [
       ...(content.querySelectorAll("manifest > item") ?? []),
@@ -641,7 +657,7 @@ export class Epub {
     const special = [
       ...new Set(
         [...all].filter(
-          (char) => !charset.has(char) && !replacements.letters[char],
+          (char) => !this.#charset.has(char) && !replacements.letters[char],
         ),
       ),
     ]
@@ -650,6 +666,6 @@ export class Epub {
     console.log(special.join())
     console.log(special.map((char) => char.charCodeAt(0)))
 
-    return { info, chapters, charset }
+    return { info, chapters, charset: this.#charset }
   }
 }

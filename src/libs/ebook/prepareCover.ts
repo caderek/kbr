@@ -137,23 +137,6 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
   ctx.fillStyle = colors.bg
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-  ctx.lineWidth = 2
-  ctx.strokeStyle = colors.fg
-  ctx.beginPath()
-  ctx.roundRect(32, 32, ctx.canvas.width - 64, ctx.canvas.height - 64, 12)
-  ctx.stroke()
-  ctx.fillStyle = colors.bg
-  ctx.fillRect(50, 0, ctx.canvas.width - 100, ctx.canvas.height)
-  ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 100)
-
-  ctx.strokeStyle = colors.fg
-  ctx.beginPath()
-  ctx.roundRect(28, 28, ctx.canvas.width - 56, ctx.canvas.height - 56, 15)
-  ctx.stroke()
-  ctx.fillStyle = colors.bg
-  ctx.fillRect(57, 0, ctx.canvas.width - 116, ctx.canvas.height)
-  ctx.fillRect(0, 57, ctx.canvas.width, ctx.canvas.height - 116)
-
   ctx.strokeStyle = colors.fg
   ctx.strokeRect(20, 20, ctx.canvas.width - 40, ctx.canvas.height - 40)
 
@@ -176,7 +159,7 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
   ctx.font = "bold 24px Arial"
   ctx.fillStyle = colors.fg2
 
-  const rawAuthor = info.author ?? "Authot Unknown"
+  const rawAuthor = info.author ?? "Author Unknown"
 
   drawText(
     ctx,
