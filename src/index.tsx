@@ -8,6 +8,7 @@ import { loadWordList } from "./io/loaders.ts"
 import "./boot/registerKeybindings.ts"
 import { Epub } from "./libs/ebook/epub.ts"
 import books from "./books.ts"
+import "./libs/fs.ts"
 console.clear()
 
 async function loadEpub() {
@@ -24,7 +25,9 @@ async function loadEpub() {
   console.log("--- BOOK ---------------")
   console.log(content)
 
-  console.log(content.info.longDescription.join("\n\n"))
+  if (content.info.longDescription) {
+    console.log(content.info.longDescription.join("\n\n"))
+  }
 
   function formatMinutes(minutes: number) {
     const h = Math.floor(minutes / 60)
