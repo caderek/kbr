@@ -1,5 +1,5 @@
 import "./Prompt.css"
-import { state, setState } from "../../state/state.ts"
+import state from "../../state/state.ts"
 import { createSignal, createEffect, For } from "solid-js"
 import {
   addStrokeToText,
@@ -9,69 +9,49 @@ import {
 import { zip } from "../../utils/array.ts"
 
 function Prompt() {
-  let started = false
-  let times: number[] = []
-  let strokes: string[] = []
-  let prompt = ""
-  let input = ""
-  let caret = 0
-
-  const [chars, setChars] = createSignal<[string, string][]>([])
-
-  createEffect(() => {
-    started = false
-    times = []
-    strokes = []
-    prompt = state.prompt.text
-    input = ""
-    caret = 0
-    setChars(state.prompt.text.split("").map((char) => [char, ""]))
-  })
-
   return (
     <section class="prompt">
-      <div class="letter-display">
-        <For each={chars()}>
-          {([char, style], index) => (
-            <span classList={{ [style]: true, caret: index() === caret }}>
-              {char}
-            </span>
+      <div class="paragraphs">
+        <For each={state.get.prompt.paragraphs}>
+          {(paragraph, paragraphNum) => (
+            <p data-wpm="57 WPM" data-acc="98% ACC">
+              <For each={paragraph.split(" ")}>
+                {(word, wordNum) => (
+                  <span class="word">
+                    {
+                      <For each={word.split("")}>
+                        {(letter, letterNum) => (
+                          <span class="letter">{letter}</span>
+                        )}
+                      </For>
+                    }{" "}
+                  </span>
+                )}
+              </For>
+            </p>
           )}
         </For>
       </div>
-      <textarea
-        class="input"
-        autofocus
-        spellcheck={false}
-        onInput={(e) => {
-          if (!started) {
-            started = true
-          }
-
-          const text = e.target.value
-          times.push(Date.now())
-
-          const stroke = getStroke(e)
-          input = addStrokeToText(input, stroke)
-          const styles = getLetterStyles(state.prompt.text, input)
-          caret = input.length
-          setChars(zip([...prompt], styles))
-
-          if (text.length === prompt.length) {
-            const timePerChar = (times.at(-1) - times.at(0)) / prompt.length
-            const cpm = Math.round((60 * 1000) / timePerChar)
-            const wpm = Math.round(cpm / 5)
-            console.log({ cpm, wpm })
-            console.log(strokes)
-
-            setState("prompt", "done", true)
-            setState("prompt", "wpm", wpm)
-          }
-        }}
-        autocomplete="off"
-      ></textarea>
     </section>
   )
 }
+
+let i = 0
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault()
+    const elements = document.querySelectorAll(".paragraphs p")
+    const element = elements[i]
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    })
+    elements.forEach((el) => {
+      el.style.borderLeft = "solid 8px transparent"
+    })
+    element.style.borderLeft = "solid 8px var(--color-bg-hc)"
+    i = (i + 1) % elements.length
+  }
+})
 
 export default Prompt

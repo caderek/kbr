@@ -20,6 +20,7 @@ export default [
   // "books/epub_custom/the_hundred-year-old_man.epub",
   // "books/epub_custom/the_princess_bride.epub",
   // "books/epub_custom/wiedzmin_czas_pogardy.epub",
+  // "books/epub_public_domain_other/the_yellow_wallpaper.epub",
   // "books/epub_public_domain_other/The-Island-of-Doctor-Moreau.epub",
   // "books/epub_public_domain_other/a_study_in_scarlet.epub",
   // "books/epub_public_domain_other/anne_1.epub",

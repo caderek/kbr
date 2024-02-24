@@ -1,5 +1,5 @@
 import { Storage } from "../io/persistance"
-import { createEffect } from "solid-js"
+import { createEffect, createRoot } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { State } from "../types/common"
 
@@ -21,16 +21,21 @@ const defaultState: State = {
     historicalWPMs: [],
   },
   prompt: {
-    text: "",
+    currentParagraph: 0,
+    paragraphs: [],
     done: false,
     wpm: 0,
   },
 }
 
-const [state, setState] = createStore(savedState ?? defaultState)
+const state = createRoot(() => {
+  const [state, setState] = createStore(savedState ?? defaultState)
 
-createEffect(() => {
-  storage.save(state)
+  createEffect(() => {
+    storage.save(state)
+  })
+
+  return { get: state, set: setState }
 })
 
-export { state, setState }
+export default state

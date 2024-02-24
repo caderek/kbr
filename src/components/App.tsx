@@ -7,7 +7,7 @@ function App() {
     <>
       <main>
         <Prompt />
-        <Results />
+        {/* <Results /> */}
       </main>
     </>
   )

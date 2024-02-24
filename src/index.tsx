@@ -1,6 +1,5 @@
-/* @refresh reload */
 import { render } from "solid-js/web"
-import { setState } from "./state/state.ts"
+import state from "./state/state.ts"
 
 import "./index.css"
 import App from "./components/App"
@@ -9,7 +8,7 @@ import "./boot/registerKeybindings.ts"
 import { Epub } from "./libs/ebook/epub.ts"
 import books from "./books.ts"
 import "./libs/fs.ts"
-console.clear()
+// console.clear()
 
 async function loadEpub() {
   const res = await fetch(books[0])
@@ -103,26 +102,25 @@ async function loadEpub() {
   dw.href = url
   dw.download = "book.txt"
   // dw.click()
+  //
+  return content
 }
-
-loadEpub()
 
 const root = document.getElementById("root")
 
 async function main() {
+  const book = await loadEpub()
   const listData = await loadWordList("monkey-english-1k")
 
   if (listData instanceof Error) {
     return
   }
 
-  setState(
-    "prompt",
-    "text",
-    `The quick brown fox jumps over the lazy dog.`
-      .replace(/\n+/g, " ")
-      .replace(/\s+/g, " "),
-  )
+  state.set("prompt", "paragraphs", book.chapters[1].paragraphs)
+
+  console.log("PAGES:")
+
+  console.log(book.chapters[3].paragraphs.join(" ").length / (5 * 350))
 }
 
 main()

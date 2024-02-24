@@ -17,7 +17,8 @@ export type State = {
     historicalWPMs: number[][]
   }
   prompt: {
-    text: string
+    currentParagraph: number
+    paragraphs: string[]
     done: boolean
     wpm: number
   }

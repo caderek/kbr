@@ -1,21 +1,25 @@
 :root {
-  --color-bg: #181826;
-  --color-bg-lc: #1e1e2f;
-  --color-bg-hc: #101019;
-  --color-fg: #585b70;
-  --color-fg-lc: #6c7087;
-  --color-fg-hc: #cdd6f4;
-  --color-fg-ok: #cdd6f4;
+  --color-bg: #15161e;
+  --color-bg-lc: #1a1b26;
+  --color-bg-hc: #101017;
+  --color-fg: #9aa5ce;
+  --color-fg-lc: #565f89;
+  --color-fg-hc: #cfc9c2;
+  --color-fg-ok: #9ece6a;
+  --color-fg-warning: #e0af68;
+  --color-fg-error: #f7768e;
 
   --font-mono: "Fira Code", monospace;
+  --font-mono: "PT Mono", monospace;
   --font-sans: "Ubuntu", font-sans;
 
   --font-xs: 0.75rem;
   --font-s: 0.875rem;
   --font-m: 1rem;
-  --font-l: 1.5rem;
-  --font-xl: 2rem;
-  --font-xxl: 3rem;
+  --font-l: 1.25rem;
+  --font-xl: 1.5rem;
+  --font-2xl: 2rem;
+  --font-3xl: 3rem;
 }
 
 * {
@@ -32,6 +36,6 @@ html {
 
 body {
   background-color: var(--color-bg);
-  display: grid;
-  place-content: center;
+  /* display: grid; */
+  /* place-content: center; */
 }

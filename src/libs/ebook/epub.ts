@@ -501,9 +501,9 @@ export class Epub {
     const cover = await this.#getCover(manifestEntries, entries, info)
 
     if (cover.original) {
-      document.body.appendChild(cover.original)
+      // document.body.appendChild(cover.original)
     }
-    document.body.appendChild(cover.standard)
+    // document.body.appendChild(cover.standard)
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]
