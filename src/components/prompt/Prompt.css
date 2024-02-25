@@ -80,9 +80,19 @@
 }
 
 .prompt span {
-  border-left: solid 2px transparent;
+  /* border-left: solid 2px transparent; */
+  /* letter-spacing: -2px; */
+}
+
+.prompt .special {
+  color: var(--color-fg-lc);
+  user-select: none;
 }
 
 .prompt .caret {
-  border-left: solid 2px var(--color-fg-hc);
+  /* border-left: solid 2px var(--color-fg-hc); */
+  /* border-bottom: solid 2px var(--color-fg-hc); */
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-weight: bold;
 }

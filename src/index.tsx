@@ -116,11 +116,19 @@ async function main() {
     return
   }
 
-  state.set("prompt", "paragraphs", book.chapters[1].paragraphs)
+  const chapterNum = 1
+  const paragraphNum = 0
+  state.set("charset", book.charset)
+  state.set(
+    "prompt",
+    "paragraphs",
+    book.chapters[chapterNum].paragraphs.slice(0, 5).map((x) => x + "⏎"),
+  )
+  state.set("prompt", "currentParagraph", paragraphNum)
 
   console.log("PAGES:")
 
-  console.log(book.chapters[3].paragraphs.join(" ").length / (5 * 350))
+  console.log(book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 350))
 }
 
 main()

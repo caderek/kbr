@@ -9,6 +9,7 @@ const savedState = storage.load()
 
 const defaultState: State = {
   lang: "en",
+  charset: new Set(),
   targetWPM: 35,
   progress: {
     currentLetter: null,
@@ -26,9 +27,17 @@ const defaultState: State = {
     done: false,
     wpm: 0,
   },
+  options: {
+    caret: "line",
+    font: "PT Mono",
+    fontSize: 20,
+    backspaceWholeWord: false,
+    replaceUnknownChars: false,
+  },
 }
 
 const state = createRoot(() => {
+  // TODO merge default and saved state or full migration
   const [state, setState] = createStore(savedState ?? defaultState)
 
   createEffect(() => {

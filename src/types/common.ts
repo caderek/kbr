@@ -5,6 +5,7 @@ export type WordListData = {
 
 export type State = {
   lang: "en" | "pl"
+  charset: Set<string>
   targetWPM: number
   progress: {
     currentLetter: null | number
@@ -21,5 +22,12 @@ export type State = {
     paragraphs: string[]
     done: boolean
     wpm: number
+  }
+  options: {
+    caret: "line" | "block" | "floor"
+    font: string
+    fontSize: number
+    backspaceWholeWord: boolean
+    replaceUnknownChars: boolean
   }
 }
