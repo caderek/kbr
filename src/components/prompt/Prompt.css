@@ -30,6 +30,7 @@
 .prompt .paragraphs {
   color: var(--color-fg);
   word-break: break-word;
+  white-space: break-spaces;
 }
 
 .prompt .paragraphs > p {
@@ -77,15 +78,11 @@
 
 .prompt .error {
   color: var(--color-fg-error);
+  font-weight: bold;
 }
 
 .prompt .inaccurate {
   background: var(--color-bg-inaccurate);
-}
-
-.prompt span {
-  /* border-left: solid 2px transparent; */
-  /* letter-spacing: -2px; */
 }
 
 .prompt .special {

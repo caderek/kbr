@@ -29,5 +29,6 @@ export type State = {
     fontSize: number
     backspaceWholeWord: boolean
     replaceUnknownChars: boolean
+    showTypos: boolean
   }
 }

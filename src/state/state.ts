@@ -33,6 +33,7 @@ const defaultState: State = {
     fontSize: 20,
     backspaceWholeWord: false,
     replaceUnknownChars: false,
+    showTypos: true,
   },
 }
 

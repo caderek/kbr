@@ -18,6 +18,39 @@ type Typed = {
   charNum: number
 }
 
+const EXTRA_KEYS = new Set([
+  "Escape",
+  "F1",
+  "F2",
+  "F3",
+  "F4",
+  "F5",
+  "F6",
+  "F7",
+  "F8",
+  "F9",
+  "F10",
+  "F11",
+  "F12",
+  "Insert",
+  "Delete",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+  "NumLock",
+  "Control",
+  "Alt",
+  "AltGraph",
+  "Shift",
+  "CapsLock",
+  "Meta",
+])
+
 function Prompt() {
   const [originalWords, setOriginalWords] = createSignal([[]] as string[][][])
 
@@ -50,10 +83,8 @@ function Prompt() {
 
   const handleTyping = (e: KeyboardEvent) => {
     if (
-      e.key === "ALt" ||
-      e.key === "AltGraph" ||
-      e.key === "Shift" ||
-      e.key === "Control"
+      e.key !== "Backspace" &&
+      (EXTRA_KEYS.has(e.key) || e.metaKey || e.ctrlKey)
     ) {
       return
     }
@@ -122,6 +153,12 @@ function Prompt() {
     const expectedChar =
       originalWords()[typed.paragraphNum][typed.wordNum][typed.charNum]
 
+    if (expectedChar === "⏎" && e.key !== "Enter") {
+      // TODO indicate that the user has to press enter to end the paragraph
+      return
+    }
+
+    // If the expected character is not in the current charset, accept any key
     const char = state.get.charset.has(expectedChar) ? e.key : expectedChar
 
     setTyped("words", typed.paragraphNum, typed.wordNum, typed.charNum, char)
@@ -186,7 +223,8 @@ function Prompt() {
   return (
     <section class="prompt">
       <div class="console">
-        P: {typed.paragraphNum} | W: {typed.wordNum} | C: {typed.charNum}
+        Paragraph: {typed.paragraphNum} | Word: {typed.wordNum} | Char:{" "}
+        {typed.charNum}
       </div>
       <div class="paragraphs">
         <For each={originalWords()}>
@@ -228,6 +266,19 @@ function Prompt() {
                             const isCorrect = () =>
                               currentChar() === expectedChar()
 
+                            const getTypedChar = () => {
+                              let typedChar =
+                                typed.words[paragraphNum()][wordNum()][
+                                  charNum()
+                                ]
+
+                              if (typedChar === " " && letter !== " ") {
+                                typedChar = "␣"
+                              }
+
+                              return typedChar ?? letter
+                            }
+
                             return (
                               <span
                                 classList={{
@@ -241,7 +292,9 @@ function Prompt() {
                                   special: letter === "⏎",
                                 }}
                               >
-                                {letter}
+                                {state.get.options.showTypos
+                                  ? getTypedChar()
+                                  : letter}
                               </span>
                             )
                           }}
