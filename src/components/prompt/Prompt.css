@@ -79,6 +79,10 @@
   color: var(--color-fg-error);
 }
 
+.prompt .inaccurate {
+  background: var(--color-bg-inaccurate);
+}
+
 .prompt span {
   /* border-left: solid 2px transparent; */
   /* letter-spacing: -2px; */
@@ -95,4 +99,8 @@
   background: var(--color-fg);
   color: var(--color-bg);
   font-weight: bold;
+}
+
+.console {
+  color: var(--color-fg);
 }

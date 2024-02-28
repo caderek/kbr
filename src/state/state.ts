@@ -38,7 +38,8 @@ const defaultState: State = {
 
 const state = createRoot(() => {
   // TODO merge default and saved state or full migration
-  const [state, setState] = createStore(savedState ?? defaultState)
+  // const [state, setState] = createStore(savedState ?? defaultState)
+  const [state, setState] = createStore(defaultState)
 
   createEffect(() => {
     storage.save(state)

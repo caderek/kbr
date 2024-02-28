@@ -118,11 +118,18 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 4)
+  // const paragraphs = [
+  //   // "hello world ".repeat(1).trim(),
+  //   "you suck",
+  //   // "not źle at all",
+  // ]
+
   state.set("charset", book.charset)
   state.set(
     "prompt",
     "paragraphs",
-    book.chapters[chapterNum].paragraphs.slice(0, 5).map((x) => x + "⏎"),
+    paragraphs.map((x) => x + "⏎"),
   )
   state.set("prompt", "currentParagraph", paragraphNum)
 
