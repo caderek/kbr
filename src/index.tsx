@@ -118,12 +118,31 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 4)
+  // const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 4)
   // const paragraphs = [
   //   // "hello world ".repeat(1).trim(),
   //   "you suck",
   //   // "not źle at all",
   // ]
+  const paragraphs = [
+    "hello",
+    "world",
+    "people",
+    "this",
+    "the",
+    "school",
+    "cat",
+    "dog",
+    "there",
+    "crust",
+    "batman",
+    "middle",
+    "man",
+    "women",
+    "cycle",
+    "stop",
+    "little",
+  ]
 
   state.set("charset", book.charset)
   state.set(

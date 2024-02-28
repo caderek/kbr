@@ -158,6 +158,31 @@ function Prompt() {
     window.removeEventListener("keydown", handleTyping)
   })
 
+  // Scroll lines automatically
+  createEffect((prev) => {
+    // Needed only for the effect to trigger on changes to these props
+    if (typed.paragraphNum < 0 || typed.wordNum < 0) {
+      return prev
+    }
+
+    const node = document.querySelector(".word.active") as HTMLSpanElement
+
+    if (node) {
+      const offset = window.scrollY + node.getBoundingClientRect().top
+
+      if (offset !== prev) {
+        node.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        })
+
+        return offset
+      }
+    }
+
+    return prev
+  }, 0)
+
   return (
     <section class="prompt">
       <div class="console">
@@ -177,9 +202,17 @@ function Prompt() {
                     !currentWord().includes(null) &&
                     currentWord().join("") !== expectedWord().join("")
 
+                  const isActive = () =>
+                    paragraphNum() === typed.paragraphNum &&
+                    wordNum() === typed.wordNum
+
                   return (
                     <span
-                      classList={{ word: true, inaccurate: isInaccurate() }}
+                      classList={{
+                        word: true,
+                        inaccurate: isInaccurate(),
+                        active: isActive(),
+                      }}
                     >
                       {
                         <For each={word}>
@@ -234,10 +267,10 @@ function Prompt() {
 //     const elements = document.querySelectorAll(".paragraphs .word")
 //     const element = elements[j]
 //
-//     element.scrollIntoView({
-//       behavior: "smooth",
-//       block: "center",
-//     })
+// element.scrollIntoView({
+//   behavior: "smooth",
+//   block: "center",
+// })
 //     elements.forEach((el) => {
 //       el.style.background = "transparent"
 //     })
