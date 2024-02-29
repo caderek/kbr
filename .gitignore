@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 public/books
+books
 node_modules
 dist
 dist-ssr

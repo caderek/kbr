@@ -1,15 +1,15 @@
 import "./Prompt.css"
 import state from "../../state/state.ts"
 import { createSignal, createEffect, For, onMount, onCleanup } from "solid-js"
-import { createStore, unwrap } from "solid-js/store"
-import {
-  addStrokeToText,
-  getLetterStyles,
-  getStroke,
-} from "./prompt-helpers.ts"
-import { zip } from "../../utils/array.ts"
-import { argv0 } from "process"
-import { preview } from "vite"
+import { createStore } from "solid-js/store"
+// import {
+//   addStrokeToText,
+//   getLetterStyles,
+//   getStroke,
+// } from "./prompt-helpers.ts"
+// import { zip } from "../../utils/array.ts"
+// import { argv0 } from "process"
+// import { preview } from "vite"
 
 type Typed = {
   words: (string | null)[][][]
@@ -221,10 +221,17 @@ function Prompt() {
   }, 0)
 
   return (
-    <section class="prompt">
+    <section
+      classList={{
+        prompt: true,
+        "caret-line": state.get.options.caret === "line",
+        "caret-block": state.get.options.caret === "block",
+        "caret-floor": state.get.options.caret === "floor",
+      }}
+    >
       <div class="console">
         Paragraph: {typed.paragraphNum} | Word: {typed.wordNum} | Char:{" "}
-        {typed.charNum}
+        {typed.charNum} | WPM: 0 | ACC: 0
       </div>
       <div class="paragraphs">
         <For each={originalWords()}>
@@ -273,7 +280,7 @@ function Prompt() {
                                 ]
 
                               if (typedChar === " " && letter !== " ") {
-                                typedChar = "␣"
+                                typedChar = "_" // "␣"
                               }
 
                               return typedChar ?? letter

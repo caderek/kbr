@@ -1,5 +1,3 @@
-import { cleanText } from "../cleanText"
-
 export function sanitizeDescription(
   description: string | null,
   clean: (text: string) => string,

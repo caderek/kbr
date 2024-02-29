@@ -5,7 +5,7 @@ import type { State } from "../types/common"
 
 const storage = new Storage()
 
-const savedState = storage.load()
+// const savedState = storage.load()
 
 const defaultState: State = {
   lang: "en",

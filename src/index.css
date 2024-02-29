@@ -10,9 +10,16 @@
   --color-fg-warning: #e0af68;
   --color-fg-error: #f7768e;
 
-  --font-mono: "Fira Code", monospace;
+  --font-sans: "Open Sans";
   --font-mono: "PT Mono", monospace;
-  --font-sans: "Ubuntu", font-sans;
+
+  --font-prompt: "Fira Code", monospace;
+  --font-prompt: "JetBrians Mono", monospace;
+  --font-prompt: "OpenDyslexicMono";
+  --font-prompt: "Recursive Mono Casual Static";
+  --font-prompt: "Merriweather";
+  --font-prompt: "OpenDyslexic3";
+  --font-prompt: "PT Mono", monospace;
 
   --font-xs: 0.75rem;
   --font-s: 0.875rem;

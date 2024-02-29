@@ -6,7 +6,6 @@
   padding-bottom: 3rem;
 }
 
-.prompt textarea,
 .prompt div {
   width: 100%;
   top: 0;
@@ -14,7 +13,7 @@
   background: transparent;
   resize: none;
   padding: 1rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-prompt);
   font-size: 1.25rem;
   outline: none;
 }
@@ -90,12 +89,26 @@
   user-select: none;
 }
 
-.prompt .caret {
-  /* border-left: solid 2px var(--color-fg-hc); */
-  /* border-bottom: solid 2px var(--color-fg-hc); */
+.prompt.caret-block .caret {
   background: var(--color-fg);
   color: var(--color-bg);
   font-weight: bold;
+}
+
+.prompt.caret-line .paragraphs {
+  letter-spacing: -2px;
+}
+
+.prompt.caret-line .letter {
+  border-left: solid 2px transparent;
+}
+
+.prompt.caret-line .caret {
+  border-left: solid 2px var(--color-fg-ok);
+}
+
+.prompt.caret-floor .caret {
+  border-bottom: solid 2px var(--color-fg-ok);
 }
 
 .console {

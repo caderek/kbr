@@ -116,7 +116,7 @@ async function main() {
     return
   }
 
-  const chapterNum = 11
+  const chapterNum = 1
   const paragraphNum = 0
   const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
   // const paragraphs = [
