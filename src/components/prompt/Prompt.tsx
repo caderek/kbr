@@ -10,9 +10,18 @@ import { createStore } from "solid-js/store"
 // import { zip } from "../../utils/array.ts"
 // import { argv0 } from "process"
 // import { preview } from "vite"
+//
+type ParagraphStats = {
+  wpm: null | number
+  acc: null | number
+  start: null | number
+  end: null | number
+  time: null | number
+}
 
 type Typed = {
   words: (string | null)[][][]
+  stats: ParagraphStats[]
   paragraphNum: number
   wordNum: number
   charNum: number
@@ -56,11 +65,13 @@ function Prompt() {
 
   const [typed, setTyped] = createStore({
     words: [],
+    stats: [],
     paragraphNum: 0,
     wordNum: 0,
     charNum: 0,
   } as Typed)
 
+  // Load prompt content on content change
   createEffect(() => {
     const original = state.get.prompt.paragraphs.map((paragraph) =>
       paragraph
@@ -74,12 +85,30 @@ function Prompt() {
       paragraph.map((word) => word.map((_) => null)),
     )
 
+    const stats = Array.from({ length: empty.length }, (_) => ({
+      wpm: null,
+      acc: null,
+      start: null,
+      end: null,
+      time: null,
+    }))
+
     setOriginalWords(original)
     setTyped("words", empty)
+    setTyped("stats", stats)
     setTyped("paragraphNum", 0)
     setTyped("wordNum", 0)
     setTyped("charNum", 0)
   })
+
+  createEffect((prev) => {
+    if (typed.paragraphNum !== prev) {
+      console.log("Parhraph typed:", typed.paragraphNum)
+      return typed.paragraphNum
+    }
+
+    return prev
+  }, 0)
 
   const handleTyping = (e: KeyboardEvent) => {
     if (
@@ -235,108 +264,103 @@ function Prompt() {
       </div>
       <div class="paragraphs">
         <For each={originalWords()}>
-          {(paragraph, paragraphNum) => (
-            <p data-wpm="57 wpm" data-acc="98% acc">
-              <For each={paragraph}>
-                {(word, wordNum) => {
-                  const currentWord = () =>
-                    typed.words[paragraphNum()][wordNum()]
-                  const expectedWord = () =>
-                    originalWords()[paragraphNum()][wordNum()]
-                  const isInaccurate = () =>
-                    !currentWord().includes(null) &&
-                    currentWord().join("") !== expectedWord().join("")
+          {(paragraph, paragraphNum) => {
+            const wpm = () => {
+              const val = typed.stats?.[paragraphNum()]?.wpm
+              return val !== null && val !== undefined ? `${val} wpm` : ""
+            }
 
-                  const isActive = () =>
-                    paragraphNum() === typed.paragraphNum &&
-                    wordNum() === typed.wordNum
+            const acc = () => {
+              const val = typed.stats?.[paragraphNum()]?.acc
+              return val !== null && val !== undefined ? `${val}% acc` : ""
+            }
 
-                  return (
-                    <span
-                      classList={{
-                        word: true,
-                        inaccurate: isInaccurate(),
-                        active: isActive(),
-                      }}
-                    >
-                      {
-                        <For each={word}>
-                          {(letter, charNum) => {
-                            const currentChar = () =>
-                              typed.words[paragraphNum()][wordNum()][charNum()]
+            return (
+              <p data-wpm={wpm()} data-acc={acc()}>
+                <For each={paragraph}>
+                  {(word, wordNum) => {
+                    const currentWord = () =>
+                      typed.words[paragraphNum()][wordNum()]
+                    const expectedWord = () =>
+                      originalWords()[paragraphNum()][wordNum()]
+                    const isInaccurate = () =>
+                      !currentWord().includes(null) &&
+                      currentWord().join("") !== expectedWord().join("")
 
-                            const expectedChar = () =>
-                              originalWords()[paragraphNum()][wordNum()][
-                                charNum()
-                              ]
+                    const isActive = () =>
+                      paragraphNum() === typed.paragraphNum &&
+                      wordNum() === typed.wordNum
 
-                            const isCorrect = () =>
-                              currentChar() === expectedChar()
-
-                            const getTypedChar = () => {
-                              let typedChar =
+                    return (
+                      <span
+                        classList={{
+                          word: true,
+                          inaccurate: isInaccurate(),
+                          active: isActive(),
+                        }}
+                      >
+                        {
+                          <For each={word}>
+                            {(letter, charNum) => {
+                              const currentChar = () =>
                                 typed.words[paragraphNum()][wordNum()][
                                   charNum()
                                 ]
 
-                              if (typedChar === " " && letter !== " ") {
-                                typedChar = "_" // "␣"
+                              const expectedChar = () =>
+                                originalWords()[paragraphNum()][wordNum()][
+                                  charNum()
+                                ]
+
+                              const isCorrect = () =>
+                                currentChar() === expectedChar()
+
+                              const getTypedChar = () => {
+                                let typedChar =
+                                  typed.words[paragraphNum()][wordNum()][
+                                    charNum()
+                                  ]
+
+                                if (typedChar === " " && letter !== " ") {
+                                  typedChar = "_" // "␣"
+                                }
+
+                                return typedChar ?? letter
                               }
 
-                              return typedChar ?? letter
-                            }
-
-                            return (
-                              <span
-                                classList={{
-                                  letter: true,
-                                  caret:
-                                    paragraphNum() === typed.paragraphNum &&
-                                    wordNum() === typed.wordNum &&
-                                    charNum() === typed.charNum,
-                                  ok: isCorrect(),
-                                  error: currentChar() !== null && !isCorrect(),
-                                  special: letter === "⏎",
-                                }}
-                              >
-                                {state.get.options.showTypos
-                                  ? getTypedChar()
-                                  : letter}
-                              </span>
-                            )
-                          }}
-                        </For>
-                      }
-                    </span>
-                  )
-                }}
-              </For>
-            </p>
-          )}
+                              return (
+                                <span
+                                  classList={{
+                                    letter: true,
+                                    caret:
+                                      paragraphNum() === typed.paragraphNum &&
+                                      wordNum() === typed.wordNum &&
+                                      charNum() === typed.charNum,
+                                    ok: isCorrect(),
+                                    error:
+                                      currentChar() !== null && !isCorrect(),
+                                    special: letter === "⏎",
+                                  }}
+                                >
+                                  {state.get.options.showTypos
+                                    ? getTypedChar()
+                                    : letter}
+                                </span>
+                              )
+                            }}
+                          </For>
+                        }
+                      </span>
+                    )
+                  }}
+                </For>
+              </p>
+            )
+          }}
         </For>
       </div>
     </section>
   )
 }
-
-// let j = 0
-//
-// window.addEventListener("keydown", (e) => {
-//   if (e.key === " ") {
-//     e.preventDefault()
-//     const elements = document.querySelectorAll(".paragraphs .word")
-//     const element = elements[j]
-//
-// element.scrollIntoView({
-//   behavior: "smooth",
-//   block: "center",
-// })
-//     elements.forEach((el) => {
-//       el.style.background = "transparent"
-//     })
-//     element.style.background = "#24283B"
-//     j = (j + 1) % elements.length
-//   }
-// })
 
 export default Prompt

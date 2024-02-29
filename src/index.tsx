@@ -118,31 +118,8 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
-  // const paragraphs = [
-  //   "hello world ".repeat(1).trim(),
-  //   "you suck",
-  //   "not źle at all",
-  // ]
-  // const paragraphs = [
-  //   "hello",
-  //   "world",
-  //   "people",
-  //   "this",
-  //   "the",
-  //   "school",
-  //   "cat",
-  //   "dog",
-  //   "there",
-  //   "crust",
-  //   "batman",
-  //   "middle",
-  //   "man",
-  //   "women",
-  //   "cycle",
-  //   "stop",
-  //   "little",
-  // ]
+  // const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 5)
+  const paragraphs = ["hello world", "next paragraph", "last part"]
 
   state.set("charset", book.charset)
   state.set(
@@ -154,7 +131,11 @@ async function main() {
 
   console.log("PAGES:")
 
-  console.log(book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 350))
+  console.log(
+    "Pages:",
+    book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 300),
+  )
+  console.log("Words on this page:", paragraphs.join(" ").length / 5)
 }
 
 main()
