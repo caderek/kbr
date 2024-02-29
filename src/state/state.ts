@@ -31,7 +31,7 @@ const defaultState: State = {
     caret: "line",
     font: "PT Mono",
     fontSize: 20,
-    backspaceWholeWord: false,
+    backspaceWholeWord: true,
     replaceUnknownChars: false,
     showTypos: true,
   },

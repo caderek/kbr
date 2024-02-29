@@ -2,69 +2,37 @@ import "./Prompt.css"
 import state from "../../state/state.ts"
 import { createSignal, createEffect, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-// import {
-//   addStrokeToText,
-//   getLetterStyles,
-//   getStroke,
-// } from "./prompt-helpers.ts"
-// import { zip } from "../../utils/array.ts"
-// import { argv0 } from "process"
-// import { preview } from "vite"
-//
+import { EXTRA_KEYS } from "./EXTRA_KEYS.ts"
+import { Bag } from "../../utils/Bag.ts"
+
+const missedWords = new Bag()
+console.log(missedWords)
+
+function cleanWord(word: string[]) {
+  return word.join("").trim().toLowerCase()
+}
+
 type ParagraphStats = {
   wpm: null | number
   acc: null | number
+  typos: number
   start: null | number
-  end: null | number
   time: null | number
 }
 
 type Typed = {
-  words: (string | null)[][][]
+  typed: (string | null)[][][]
   stats: ParagraphStats[]
   paragraphNum: number
   wordNum: number
   charNum: number
 }
 
-const EXTRA_KEYS = new Set([
-  "Escape",
-  "F1",
-  "F2",
-  "F3",
-  "F4",
-  "F5",
-  "F6",
-  "F7",
-  "F8",
-  "F9",
-  "F10",
-  "F11",
-  "F12",
-  "Insert",
-  "Delete",
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "PageUp",
-  "PageDown",
-  "Home",
-  "End",
-  "NumLock",
-  "Control",
-  "Alt",
-  "AltGraph",
-  "Shift",
-  "CapsLock",
-  "Meta",
-])
-
 function Prompt() {
   const [originalWords, setOriginalWords] = createSignal([[]] as string[][][])
 
-  const [typed, setTyped] = createStore({
-    words: [],
+  const [local, setLocal] = createStore({
+    typed: [],
     stats: [],
     paragraphNum: 0,
     wordNum: 0,
@@ -88,23 +56,23 @@ function Prompt() {
     const stats = Array.from({ length: empty.length }, (_) => ({
       wpm: null,
       acc: null,
+      typos: 0,
       start: null,
-      end: null,
       time: null,
     }))
 
     setOriginalWords(original)
-    setTyped("words", empty)
-    setTyped("stats", stats)
-    setTyped("paragraphNum", 0)
-    setTyped("wordNum", 0)
-    setTyped("charNum", 0)
+    setLocal("typed", empty)
+    setLocal("stats", stats)
+    setLocal("paragraphNum", 0)
+    setLocal("wordNum", 0)
+    setLocal("charNum", 0)
   })
 
   createEffect((prev) => {
-    if (typed.paragraphNum !== prev) {
-      console.log("Parhraph typed:", typed.paragraphNum)
-      return typed.paragraphNum
+    if (local.paragraphNum !== prev) {
+      console.log("Paragraph typed:", local.paragraphNum)
+      return local.paragraphNum
     }
 
     return prev
@@ -121,9 +89,9 @@ function Prompt() {
     e.preventDefault()
 
     if (e.key === "Backspace") {
-      const isFirstParagraph = typed.paragraphNum === 0
-      const isFirstWord = typed.wordNum === 0
-      const isFirstChar = typed.charNum === 0
+      const isFirstParagraph = local.paragraphNum === 0
+      const isFirstWord = local.wordNum === 0
+      const isFirstChar = local.charNum === 0
 
       if (isFirstParagraph && isFirstWord && isFirstChar) {
         return
@@ -135,43 +103,43 @@ function Prompt() {
       ) {
         // Delete whole word
         if (isFirstWord && isFirstChar) {
-          setTyped("paragraphNum", typed.paragraphNum - 1)
-          setTyped("wordNum", typed.words[typed.paragraphNum].length - 1)
-          setTyped("charNum", 0)
+          setLocal("paragraphNum", local.paragraphNum - 1)
+          setLocal("wordNum", local.typed[local.paragraphNum].length - 1)
+          setLocal("charNum", 0)
         } else if (isFirstChar) {
-          setTyped("wordNum", typed.wordNum - 1)
-          setTyped("charNum", 0)
+          setLocal("wordNum", local.wordNum - 1)
+          setLocal("charNum", 0)
         } else {
-          setTyped("charNum", 0)
+          setLocal("charNum", 0)
         }
 
-        setTyped("words", typed.paragraphNum, typed.wordNum, (prev) =>
+        setLocal("typed", local.paragraphNum, local.wordNum, (prev) =>
           [...prev].fill(null),
         )
       } else {
         // Delete single character
         if (isFirstWord && isFirstChar) {
-          setTyped("paragraphNum", typed.paragraphNum - 1)
-          setTyped("wordNum", typed.words[typed.paragraphNum].length - 1)
-          setTyped(
+          setLocal("paragraphNum", local.paragraphNum - 1)
+          setLocal("wordNum", local.typed[local.paragraphNum].length - 1)
+          setLocal(
             "charNum",
-            typed.words[typed.paragraphNum][typed.wordNum].length - 1,
+            local.typed[local.paragraphNum][local.wordNum].length - 1,
           )
         } else if (isFirstChar) {
-          setTyped("wordNum", typed.wordNum - 1)
-          setTyped(
+          setLocal("wordNum", local.wordNum - 1)
+          setLocal(
             "charNum",
-            typed.words[typed.paragraphNum][typed.wordNum].length - 1,
+            local.typed[local.paragraphNum][local.wordNum].length - 1,
           )
         } else {
-          setTyped("charNum", typed.charNum - 1)
+          setLocal("charNum", local.charNum - 1)
         }
 
-        setTyped(
-          "words",
-          typed.paragraphNum,
-          typed.wordNum,
-          typed.charNum,
+        setLocal(
+          "typed",
+          local.paragraphNum,
+          local.wordNum,
+          local.charNum,
           null,
         )
       }
@@ -180,39 +148,53 @@ function Prompt() {
     }
 
     const expectedChar =
-      originalWords()[typed.paragraphNum][typed.wordNum][typed.charNum]
+      originalWords()[local.paragraphNum][local.wordNum][local.charNum]
 
     if (expectedChar === "⏎" && e.key !== "Enter") {
       // TODO indicate that the user has to press enter to end the paragraph
       return
     }
 
-    // If the expected character is not in the current charset, accept any key
-    const char = state.get.charset.has(expectedChar) ? e.key : expectedChar
+    const char =
+      e.key === "Enter"
+        ? "⏎"
+        : // If the expected character is not in the current charset, accept any key
+          state.get.charset.has(expectedChar)
+          ? e.key
+          : expectedChar
 
-    setTyped("words", typed.paragraphNum, typed.wordNum, typed.charNum, char)
+    if (char !== expectedChar) {
+      setLocal("stats", local.paragraphNum, "typos", (prev) => prev + 1)
+      const mistypedWord = cleanWord(
+        originalWords()[local.paragraphNum][local.wordNum],
+      )
+
+      console.log(local.stats[local.paragraphNum].typos, mistypedWord)
+    }
+
+    setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
 
     const isLastChar =
-      typed.charNum ===
-      originalWords()[typed.paragraphNum][typed.wordNum].length - 1
+      local.charNum ===
+      originalWords()[local.paragraphNum][local.wordNum].length - 1
 
     const isLastWord =
-      isLastChar && typed.wordNum === typed.words[typed.paragraphNum].length - 1
+      isLastChar && local.wordNum === local.typed[local.paragraphNum].length - 1
 
     const isLastParagraph =
-      isLastWord && typed.paragraphNum === typed.words.length - 1
+      isLastWord && local.paragraphNum === local.typed.length - 1
 
     if (isLastParagraph) {
       console.log("Page done!")
     } else if (isLastWord) {
-      setTyped("charNum", 0)
-      setTyped("wordNum", 0)
-      setTyped("paragraphNum", typed.paragraphNum + 1)
+      setLocal("charNum", 0)
+      setLocal("wordNum", 0)
+      setLocal("paragraphNum", local.paragraphNum + 1)
     } else if (isLastChar) {
-      setTyped("charNum", 0)
-      setTyped("wordNum", typed.wordNum + 1)
+      setLocal("charNum", 0)
+      setLocal("wordNum", local.wordNum + 1)
     } else {
-      setTyped("charNum", typed.charNum + 1)
+      setLocal("charNum", local.charNum + 1)
     }
   }
 
@@ -227,7 +209,7 @@ function Prompt() {
   // Scroll lines automatically
   createEffect((prev) => {
     // Needed only for the effect to trigger on changes to these props
-    if (typed.paragraphNum < 0 || typed.wordNum < 0) {
+    if (local.paragraphNum < 0 || local.wordNum < 0) {
       return prev
     }
 
@@ -259,19 +241,19 @@ function Prompt() {
       }}
     >
       <div class="console">
-        Paragraph: {typed.paragraphNum} | Word: {typed.wordNum} | Char:{" "}
-        {typed.charNum} | WPM: 0 | ACC: 0
+        Paragraph: {local.paragraphNum} | Word: {local.wordNum} | Char:{" "}
+        {local.charNum} | WPM: 0 | ACC: 0
       </div>
       <div class="paragraphs">
         <For each={originalWords()}>
           {(paragraph, paragraphNum) => {
             const wpm = () => {
-              const val = typed.stats?.[paragraphNum()]?.wpm
+              const val = local.stats?.[paragraphNum()]?.wpm
               return val !== null && val !== undefined ? `${val} wpm` : ""
             }
 
             const acc = () => {
-              const val = typed.stats?.[paragraphNum()]?.acc
+              const val = local.stats?.[paragraphNum()]?.acc
               return val !== null && val !== undefined ? `${val}% acc` : ""
             }
 
@@ -280,7 +262,7 @@ function Prompt() {
                 <For each={paragraph}>
                   {(word, wordNum) => {
                     const currentWord = () =>
-                      typed.words[paragraphNum()][wordNum()]
+                      local.typed[paragraphNum()][wordNum()]
                     const expectedWord = () =>
                       originalWords()[paragraphNum()][wordNum()]
                     const isInaccurate = () =>
@@ -288,8 +270,8 @@ function Prompt() {
                       currentWord().join("") !== expectedWord().join("")
 
                     const isActive = () =>
-                      paragraphNum() === typed.paragraphNum &&
-                      wordNum() === typed.wordNum
+                      paragraphNum() === local.paragraphNum &&
+                      wordNum() === local.wordNum
 
                     return (
                       <span
@@ -303,7 +285,7 @@ function Prompt() {
                           <For each={word}>
                             {(letter, charNum) => {
                               const currentChar = () =>
-                                typed.words[paragraphNum()][wordNum()][
+                                local.typed[paragraphNum()][wordNum()][
                                   charNum()
                                 ]
 
@@ -317,7 +299,7 @@ function Prompt() {
 
                               const getTypedChar = () => {
                                 let typedChar =
-                                  typed.words[paragraphNum()][wordNum()][
+                                  local.typed[paragraphNum()][wordNum()][
                                     charNum()
                                   ]
 
@@ -333,9 +315,9 @@ function Prompt() {
                                   classList={{
                                     letter: true,
                                     caret:
-                                      paragraphNum() === typed.paragraphNum &&
-                                      wordNum() === typed.wordNum &&
-                                      charNum() === typed.charNum,
+                                      paragraphNum() === local.paragraphNum &&
+                                      wordNum() === local.wordNum &&
+                                      charNum() === local.charNum,
                                     ok: isCorrect(),
                                     error:
                                       currentChar() !== null && !isCorrect(),

@@ -20,6 +20,7 @@
   --font-prompt: "Merriweather";
   --font-prompt: "OpenDyslexic3";
   --font-prompt: "PT Mono", monospace;
+  /* --font-prompt: "Roboto Serif", "Merriweather", "Times New Roman", serif; */
 
   --font-xs: 0.75rem;
   --font-s: 0.875rem;

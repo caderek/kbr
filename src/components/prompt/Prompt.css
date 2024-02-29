@@ -85,8 +85,9 @@
 }
 
 .prompt .special {
-  color: var(--color-fg-lc);
+  /* color: var(--color-fg-lc); */
   user-select: none;
+  opacity: 0.5;
 }
 
 .prompt.caret-block .caret {
