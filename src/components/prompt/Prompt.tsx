@@ -1,6 +1,6 @@
 import "./Prompt.css"
 import state from "../../state/state.ts"
-import { createSignal, createEffect, For, onMount, onCleanup } from "solid-js"
+import { createEffect, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { EXTRA_KEYS } from "./EXTRA_KEYS.ts"
 import { Bag } from "../../utils/Bag.ts"
@@ -9,31 +9,53 @@ const missedWords = new Bag()
 console.log(missedWords)
 
 function cleanWord(word: string[]) {
-  return word.join("").trim().toLowerCase()
+  return word.join("").trim().toLowerCase().replace(/⏎$/, "")
+}
+
+function calculateAccuracy(nonTypos: number, typos: number) {
+  return nonTypos / (typos + nonTypos)
+}
+
+function formatPercentage(num: number, precision: number = 0) {
+  return new Intl.NumberFormat("en-US", {
+    style: "percent",
+    maximumFractionDigits: precision,
+    minimumFractionDigits: precision,
+  }).format(num)
 }
 
 type ParagraphStats = {
+  charCount: number
+  wordCount: number
   wpm: null | number
   acc: null | number
   typos: number
+  nonTypos: number
   start: null | number
   time: null | number
 }
 
+type PageStats = {
+  wpm: null | number
+  acc: null | number
+}
+
 type Typed = {
   typed: (string | null)[][][]
+  original: string[][][]
   stats: ParagraphStats[]
+  pageStats: PageStats
   paragraphNum: number
   wordNum: number
   charNum: number
 }
 
 function Prompt() {
-  const [originalWords, setOriginalWords] = createSignal([[]] as string[][][])
-
   const [local, setLocal] = createStore({
+    original: [],
     typed: [],
     stats: [],
+    pageStats: { acc: null, wpm: null },
     paragraphNum: 0,
     wordNum: 0,
     charNum: 0,
@@ -53,15 +75,18 @@ function Prompt() {
       paragraph.map((word) => word.map((_) => null)),
     )
 
-    const stats = Array.from({ length: empty.length }, (_) => ({
+    const stats = Array.from({ length: empty.length }, (_, i) => ({
+      charCount: original[i].flat().length,
+      wordCount: original[i].length,
       wpm: null,
       acc: null,
       typos: 0,
+      nonTypos: 0,
       start: null,
       time: null,
     }))
 
-    setOriginalWords(original)
+    setLocal("original", original)
     setLocal("typed", empty)
     setLocal("stats", stats)
     setLocal("paragraphNum", 0)
@@ -69,14 +94,34 @@ function Prompt() {
     setLocal("charNum", 0)
   })
 
-  createEffect((prev) => {
-    if (local.paragraphNum !== prev) {
-      console.log("Paragraph typed:", local.paragraphNum)
-      return local.paragraphNum
+  // Update page stats when paragraph stats change
+  createEffect(() => {
+    if (local.stats.length === 0) {
+      return
     }
 
-    return prev
-  }, 0)
+    const { nonTypos, typos } = local.stats.reduce(
+      (sums, parStats) => {
+        sums.nonTypos += parStats.nonTypos
+        sums.typos += parStats.typos
+        return sums
+      },
+      { nonTypos: 0, typos: 0 },
+    )
+
+    if (nonTypos > 0 || typos > 0) {
+      setLocal("pageStats", "acc", calculateAccuracy(nonTypos, typos))
+    }
+  })
+
+  // createEffect((prev) => {
+  //   if (local.paragraphNum !== prev) {
+  //     console.log("Paragraph typed:", local.paragraphNum)
+  //     return local.paragraphNum
+  //   }
+  //
+  //   return prev
+  // }, 0)
 
   const handleTyping = (e: KeyboardEvent) => {
     if (
@@ -148,7 +193,7 @@ function Prompt() {
     }
 
     const expectedChar =
-      originalWords()[local.paragraphNum][local.wordNum][local.charNum]
+      local.original[local.paragraphNum][local.wordNum][local.charNum]
 
     if (expectedChar === "⏎" && e.key !== "Enter") {
       // TODO indicate that the user has to press enter to end the paragraph
@@ -166,17 +211,30 @@ function Prompt() {
     if (char !== expectedChar) {
       setLocal("stats", local.paragraphNum, "typos", (prev) => prev + 1)
       const mistypedWord = cleanWord(
-        originalWords()[local.paragraphNum][local.wordNum],
+        local.original[local.paragraphNum][local.wordNum],
       )
 
       console.log(local.stats[local.paragraphNum].typos, mistypedWord)
+    } else if (char !== "⏎") {
+      setLocal("stats", local.paragraphNum, "nonTypos", (prev) => prev + 1)
+    }
+
+    if (expectedChar === "⏎") {
+      console.log(`Pargraph ${local.paragraphNum} done!`)
+
+      const acc = calculateAccuracy(
+        local.stats[local.paragraphNum].nonTypos,
+        local.stats[local.paragraphNum].typos,
+      )
+
+      setLocal("stats", local.paragraphNum, "acc", acc)
     }
 
     setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
 
     const isLastChar =
       local.charNum ===
-      originalWords()[local.paragraphNum][local.wordNum].length - 1
+      local.original[local.paragraphNum][local.wordNum].length - 1
 
     const isLastWord =
       isLastChar && local.wordNum === local.typed[local.paragraphNum].length - 1
@@ -231,6 +289,11 @@ function Prompt() {
     return prev
   }, 0)
 
+  const liveAcc = () =>
+    local.pageStats.acc !== null
+      ? formatPercentage(local.pageStats.acc, 1)
+      : "-"
+
   return (
     <section
       classList={{
@@ -242,10 +305,10 @@ function Prompt() {
     >
       <div class="console">
         Paragraph: {local.paragraphNum} | Word: {local.wordNum} | Char:{" "}
-        {local.charNum} | WPM: 0 | ACC: 0
+        {local.charNum} | WPM: 0 | ACC: {liveAcc()}
       </div>
       <div class="paragraphs">
-        <For each={originalWords()}>
+        <For each={local.original}>
           {(paragraph, paragraphNum) => {
             const wpm = () => {
               const val = local.stats?.[paragraphNum()]?.wpm
@@ -254,7 +317,9 @@ function Prompt() {
 
             const acc = () => {
               const val = local.stats?.[paragraphNum()]?.acc
-              return val !== null && val !== undefined ? `${val}% acc` : ""
+              return val !== null && val !== undefined
+                ? `${formatPercentage(val)} acc`
+                : ""
             }
 
             return (
@@ -264,7 +329,7 @@ function Prompt() {
                     const currentWord = () =>
                       local.typed[paragraphNum()][wordNum()]
                     const expectedWord = () =>
-                      originalWords()[paragraphNum()][wordNum()]
+                      local.original[paragraphNum()][wordNum()]
                     const isInaccurate = () =>
                       !currentWord().includes(null) &&
                       currentWord().join("") !== expectedWord().join("")
@@ -290,7 +355,7 @@ function Prompt() {
                                 ]
 
                               const expectedChar = () =>
-                                originalWords()[paragraphNum()][wordNum()][
+                                local.original[paragraphNum()][wordNum()][
                                   charNum()
                                 ]
 
