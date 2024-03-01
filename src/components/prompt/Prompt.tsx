@@ -244,6 +244,7 @@ function Prompt() {
 
     if (isLastParagraph) {
       console.log("Page done!")
+      setLocal("charNum", local.charNum + 1)
     } else if (isLastWord) {
       setLocal("charNum", 0)
       setLocal("wordNum", 0)

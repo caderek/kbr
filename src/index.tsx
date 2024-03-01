@@ -118,7 +118,7 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(18, 20)
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(26, 28)
   // const paragraphs = ["hello world", "next paragraph", "last part"]
 
   state.set("charset", book.charset)
