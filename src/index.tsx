@@ -79,9 +79,7 @@ async function loadEpub() {
   }
 
   console.log(
-    `%c${formatNum(content.chapters.length)} chapters, ${formatNum(
-      totalChars,
-    )} characters, ${formatNum(
+    `%c${formatNum(content.chapters.length)} chapters, ${formatNum(totalChars)} characters, ${formatNum(
       totalWords,
     )} words, estimated time: ${formatMinutes(totalTime)}`,
     "color: orange",
@@ -91,9 +89,7 @@ async function loadEpub() {
     console.log(`%c${key}:`, "color: hotpink", val)
   }
 
-  let bookTxt = content.chapters
-    .map((chapter) => [chapter.title, ...chapter.paragraphs].join("\n\n"))
-    .join("\n\n\n")
+  let bookTxt = content.chapters.map((chapter) => [chapter.title, ...chapter.paragraphs].join("\n\n")).join("\n\n\n")
 
   const file = new File([bookTxt], "book.txt")
 
@@ -118,8 +114,9 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(26, 28)
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 2)
   // const paragraphs = ["hello world", "next paragraph", "last part"]
+  // const paragraphs = ["out follow again have so school get follow must very"]
 
   state.set("charset", book.charset)
   state.set(
@@ -131,10 +128,7 @@ async function main() {
 
   console.log("PAGES:")
 
-  console.log(
-    "Pages:",
-    book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 300),
-  )
+  console.log("Pages:", book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 300))
   console.log("Words on this page:", paragraphs.join(" ").length / 5)
 }
 
