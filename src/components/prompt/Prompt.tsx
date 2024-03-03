@@ -1,17 +1,11 @@
 import "./Prompt.css"
 import state from "../../state/state.ts"
-import { createEffect, For, onMount, onCleanup } from "solid-js"
+import { createEffect, createMemo, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { EXTRA_KEYS } from "./EXTRA_KEYS.ts"
-import { Bag } from "../../utils/Bag.ts"
-import { log } from "console"
 
-const missedWords = new Bag()
-console.log(missedWords)
-
-// function cleanWord(word: string[]) {
-//   return word.join("").trim().toLowerCase().replace(/⏎$/, "")
-// }
+const AFK_BOUNDRY = 5000 // ms
+const AFK_PENALTY = 1000 // ms
 
 function calculateAccuracy(nonTypos: number, typos: number) {
   return nonTypos / (typos + nonTypos)
@@ -37,6 +31,41 @@ function formatNum(num: number, precision: number = 0) {
   }).format(num)
 }
 
+function getAfkTime(times: number[]) {
+  let afkTime = 0
+
+  for (let i = 0; i < times.length - 1; i++) {
+    const timeDiff = times[i + 1] - times[i]
+
+    if (timeDiff >= AFK_BOUNDRY) {
+      afkTime += timeDiff - AFK_PENALTY
+    }
+  }
+
+  return afkTime
+}
+
+function calculateParagraphWpm(inputTimes: number[], stats: WordStats[]) {
+  const afkTime = getAfkTime(inputTimes)
+  const start = inputTimes[0]
+  const end = inputTimes[inputTimes.length - 1]
+  const time = end - start - afkTime
+
+  let charsCount = 0
+
+  for (const wordStats of stats) {
+    if (wordStats.typedLength === 0) {
+      break
+    }
+
+    if (wordStats.isCorrect) {
+      charsCount += wordStats.typedLength
+    }
+  }
+
+  return { wpm: calculateWpm(time, charsCount), start, end, time, charsCount }
+}
+
 type WordStats = {
   length: number
   typedLength: number
@@ -47,9 +76,14 @@ type WordStats = {
 
 type ParagraphStats = {
   charCount: number
+  correctCharCount: number
   wordCount: number
   wpm: null | number
   acc: null | number
+  inputTimes: number[]
+  startTime: number
+  endTime: number
+  totalTime: number
   typos: number
   nonTypos: number
   words: WordStats[]
@@ -62,6 +96,8 @@ type PageStats = {
 }
 
 type LocalState = {
+  done: boolean
+  afk: boolean
   typed: (string | null)[][][]
   original: string[][][]
   stats: ParagraphStats[]
@@ -73,6 +109,8 @@ type LocalState = {
 
 function Prompt() {
   const [local, setLocal] = createStore<LocalState>({
+    done: false,
+    afk: false,
     original: [],
     typed: [],
     stats: [],
@@ -95,9 +133,14 @@ function Prompt() {
       (_, i) =>
         ({
           charCount: original[i].flat().length,
+          correctCharCount: 0,
           wordCount: original[i].length,
           wpm: null,
           acc: null,
+          inputTimes: [],
+          startTime: 0,
+          endTime: 0,
+          totalTime: 0,
           typos: 0,
           nonTypos: 0,
           words: original[i].map(
@@ -121,7 +164,7 @@ function Prompt() {
     setLocal("charNum", 0)
   })
 
-  // Update paragraph accuracy stats when paragraph stats change
+  // Update page live accuracy
   createEffect(() => {
     if (local.stats.length === 0) {
       return
@@ -145,26 +188,43 @@ function Prompt() {
   createEffect((prev) => {
     const label = `${local.paragraphNum}${local.wordNum}`
 
-    if (label !== prev) {
-      if (local.pageStats.inputTimes.length > 1) {
-        const start = local.pageStats.inputTimes[0]
-        const end = local.pageStats.inputTimes[local.pageStats.inputTimes.length - 1]
-        const time = end - start
+    if (label !== prev || local.done) {
+      let totalTime = 0
+      let totalCorrectCharsCount = 0
+      let prevEndTime = 0
 
-        let charsCount = 0
+      for (const [paragraphNum, paragraphStats] of local.stats.entries()) {
+        if (paragraphNum === local.paragraphNum && paragraphStats.inputTimes.length > 1) {
+          const paragraphWpm = calculateParagraphWpm(paragraphStats.inputTimes, paragraphStats.words)
 
-        for (const wordStats of local.stats.map((stats) => stats.words).flat()) {
-          if (wordStats.typedLength === 0) {
-            break
-          }
+          totalTime += paragraphWpm.time
+          totalCorrectCharsCount += paragraphWpm.charsCount
 
-          if (wordStats.isCorrect) {
-            charsCount += wordStats.typedLength
+          if (paragraphNum !== 0) {
+            const timeBetweenParagraphs = paragraphWpm.start - prevEndTime
+            totalTime += timeBetweenParagraphs >= AFK_BOUNDRY ? AFK_PENALTY : timeBetweenParagraphs
           }
         }
 
-        console.log({ charsCount, time })
-        setLocal("pageStats", "wpm", calculateWpm(time, charsCount))
+        if (paragraphNum === local.paragraphNum) {
+          break
+        }
+
+        totalTime += paragraphStats.totalTime
+        totalCorrectCharsCount += paragraphStats.correctCharCount
+
+        if (paragraphNum !== 0) {
+          const timeBetweenParagraphs = paragraphStats.startTime - prevEndTime
+          totalTime += timeBetweenParagraphs >= AFK_BOUNDRY ? AFK_PENALTY : timeBetweenParagraphs
+        }
+
+        prevEndTime = paragraphStats.endTime
+      }
+
+      const wpm = calculateWpm(totalTime, totalCorrectCharsCount)
+
+      if (!Number.isNaN(wpm)) {
+        setLocal("pageStats", "wpm", wpm)
       }
 
       return label
@@ -191,6 +251,28 @@ function Prompt() {
 
     if (e.key === "Tab") {
       // Reset current paragraph
+      setLocal("typed", local.paragraphNum, (prev) => prev.map((word) => new Array(word.length).fill(null)))
+      setLocal("stats", local.paragraphNum, (prev) => {
+        return {
+          ...prev,
+          wpm: null,
+          acc: null,
+          inputTimes: [],
+          typos: 0,
+          nonTypos: 0,
+          words: local.original[local.paragraphNum].map((chars) => ({
+            length: chars.length,
+            typedLength: 0,
+            times: [[]],
+            isCorrect: false,
+            hadTypos: false,
+          })),
+        }
+      })
+      // At the end so stats are recalculated correctly
+      setLocal("wordNum", 0)
+      setLocal("charNum", 0)
+
       return
     }
 
@@ -254,7 +336,10 @@ function Prompt() {
           ? e.key
           : expectedChar
 
-    setLocal("pageStats", "inputTimes", (prev) => [...prev, performance.now()])
+    const inputTime = performance.now()
+
+    setLocal("pageStats", "inputTimes", (prev) => [...prev, inputTime])
+    setLocal("stats", local.paragraphNum, "inputTimes", (prev) => [...prev, inputTime])
     setLocal(
       "stats",
       local.paragraphNum,
@@ -262,7 +347,7 @@ function Prompt() {
       local.wordNum,
       "times",
       local.stats[local.paragraphNum].words[local.wordNum].times.length - 1,
-      (prev) => [...prev, performance.now()],
+      (prev) => [...prev, inputTime],
     )
 
     if (char !== expectedChar) {
@@ -272,16 +357,9 @@ function Prompt() {
       setLocal("stats", local.paragraphNum, "nonTypos", (prev) => prev + 1)
     }
 
-    if (expectedChar === "⏎") {
-      console.log(`Pargraph ${local.paragraphNum} done!`)
-
-      const acc = calculateAccuracy(local.stats[local.paragraphNum].nonTypos, local.stats[local.paragraphNum].typos)
-
-      setLocal("stats", local.paragraphNum, "acc", acc)
-    }
-
     setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
     setLocal("stats", local.paragraphNum, "words", local.wordNum, "typedLength", local.charNum + 1)
+    setLocal("afk", false)
 
     // Mark if partial (or full) word is correct
     setLocal(
@@ -295,12 +373,30 @@ function Prompt() {
         .startsWith(local.typed[local.paragraphNum][local.wordNum].join("")),
     )
 
+    if (expectedChar === "⏎") {
+      const acc = calculateAccuracy(local.stats[local.paragraphNum].nonTypos, local.stats[local.paragraphNum].typos)
+      const { wpm, start, end, time, charsCount } = calculateParagraphWpm(
+        local.stats[local.paragraphNum].inputTimes,
+        local.stats[local.paragraphNum].words,
+      )
+
+      setLocal("stats", local.paragraphNum, "acc", acc)
+      setLocal("stats", local.paragraphNum, "wpm", wpm)
+      setLocal("stats", local.paragraphNum, "startTime", start)
+      setLocal("stats", local.paragraphNum, "endTime", end)
+      setLocal("stats", local.paragraphNum, "totalTime", time)
+      setLocal("stats", local.paragraphNum, "correctCharCount", charsCount)
+    }
+
     const isLastChar = local.charNum === local.original[local.paragraphNum][local.wordNum].length - 1
     const isLastWord = isLastChar && local.wordNum === local.typed[local.paragraphNum].length - 1
     const isLastParagraph = isLastWord && local.paragraphNum === local.typed.length - 1
 
     if (isLastParagraph) {
       console.log("Page done!")
+      setLocal("done", true)
+
+      // Remove when there is summary page or next page mechanism
       setLocal("charNum", local.charNum + 1)
 
       console.log(local)
@@ -349,9 +445,8 @@ function Prompt() {
     return prev
   }, 0)
 
-  const liveAcc = () => (local.pageStats.acc !== null ? formatPercentage(local.pageStats.acc, 1) : "-")
-
-  const liveWpm = () => (local.pageStats.wpm !== null ? formatNum(local.pageStats.wpm, 1) : "-")
+  const liveAcc = createMemo(() => (local.pageStats.acc !== null ? formatPercentage(local.pageStats.acc, 1) : "-"))
+  const liveWpm = createMemo(() => (local.pageStats.wpm !== null ? formatNum(local.pageStats.wpm, 1) : "-"))
 
   return (
     <section
@@ -363,21 +458,21 @@ function Prompt() {
       }}
     >
       <div class="console">
-        Paragraph: {local.paragraphNum} | Word: {local.wordNum} | Char: {local.charNum} | WPM: {liveWpm()} | ACC:{" "}
-        {liveAcc()}
+        Par: {local.paragraphNum} | Word: {local.wordNum} | Char: {local.charNum} | WPM: {liveWpm()} | ACC: {liveAcc()}{" "}
+        | AFK: {String(local.afk)}
       </div>
       <div class="paragraphs">
         <For each={local.original}>
           {(paragraph, paragraphNum) => {
-            const wpm = () => {
+            const wpm = createMemo(() => {
               const val = local.stats?.[paragraphNum()]?.wpm
-              return val !== null && val !== undefined ? `${val} wpm` : ""
-            }
+              return val !== null && val !== undefined ? `${formatNum(val)} wpm` : ""
+            })
 
-            const acc = () => {
+            const acc = createMemo(() => {
               const val = local.stats?.[paragraphNum()]?.acc
               return val !== null && val !== undefined ? `${formatPercentage(val)} acc` : ""
-            }
+            })
 
             return (
               <p data-wpm={wpm()} data-acc={acc()}>
@@ -402,9 +497,7 @@ function Prompt() {
                           <For each={word}>
                             {(letter, charNum) => {
                               const currentChar = () => local.typed[paragraphNum()][wordNum()][charNum()]
-
                               const expectedChar = () => local.original[paragraphNum()][wordNum()][charNum()]
-
                               const isCorrect = () => currentChar() === expectedChar()
 
                               const getTypedChar = () => {

@@ -115,6 +115,7 @@
   border-bottom: solid 2px var(--color-fg-ok);
 }
 
-.console {
-  color: var(--color-fg);
+.prompt .console {
+  font-size: var(--font-l);
+  color: var(--color-fg-warning);
 }

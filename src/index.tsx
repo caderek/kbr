@@ -114,9 +114,18 @@ async function main() {
 
   const chapterNum = 1
   const paragraphNum = 0
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 2)
-  // const paragraphs = ["hello world", "next paragraph", "last part"]
-  // const paragraphs = ["out follow again have so school get follow must very"]
+  // const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 2)
+  // const paragraphs = ["the"]
+  // const paragraphs = ["the hello", "the little", "the again"]
+  // const paragraphs = ["out there again have so school get the must very"]
+  //
+  const paragraphs = [
+    'Please retype this text to set your initial "words per minute" speed. Press Enter to finish each paragraph.',
+    "The timer starts when you type the first letter, and it will automatically pause, if it detects that you are inactive for five seconds.",
+    "You can restart the current paragraph by pressing Tab, but it's usually better to fix your mistakes and continue typing. Words that contain unfixed typos are not counted towards your final score.",
+    "If you encounter some special characters, you can press any letter (or space) to mark them as typed. For example, try it with a word naïve or 你好.",
+    "You are now ready to begin your typing adventure!",
+  ]
 
   state.set("charset", book.charset)
   state.set(
