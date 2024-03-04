@@ -3,6 +3,8 @@ import state from "../../state/state.ts"
 import { createEffect, createMemo, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { EXTRA_KEYS } from "./EXTRA_KEYS.ts"
+import Statusbar from "../statusbar/Statusbar.tsx"
+import { formatNum, formatPercentage } from "../../utils/formatters.ts"
 
 const AFK_BOUNDRY = 5000 // ms
 const AFK_PENALTY = 1000 // ms
@@ -14,21 +16,6 @@ function calculateAccuracy(nonTypos: number, typos: number) {
 function calculateWpm(time: number, charsCount: number) {
   const cps = charsCount / (time / 1000)
   return (cps * 60) / 5
-}
-
-function formatPercentage(num: number, precision: number = 0) {
-  return new Intl.NumberFormat("en-US", {
-    style: "percent",
-    maximumFractionDigits: precision,
-    minimumFractionDigits: precision,
-  }).format(num)
-}
-
-function formatNum(num: number, precision: number = 0) {
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: precision,
-    minimumFractionDigits: precision,
-  }).format(num)
 }
 
 function getAfkTime(times: number[]) {
@@ -97,7 +84,7 @@ type PageStats = {
 
 type LocalState = {
   done: boolean
-  afk: boolean
+  paused: boolean
   typed: (string | null)[][][]
   original: string[][][]
   stats: ParagraphStats[]
@@ -110,7 +97,7 @@ type LocalState = {
 function Prompt() {
   const [local, setLocal] = createStore<LocalState>({
     done: false,
-    afk: false,
+    paused: true,
     original: [],
     typed: [],
     stats: [],
@@ -119,6 +106,8 @@ function Prompt() {
     wordNum: 0,
     charNum: 0,
   })
+
+  let afkTimeout: NodeJS.Timeout | null = null
 
   // Load prompt content on content change
   createEffect(() => {
@@ -359,7 +348,15 @@ function Prompt() {
 
     setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
     setLocal("stats", local.paragraphNum, "words", local.wordNum, "typedLength", local.charNum + 1)
-    setLocal("afk", false)
+    setLocal("paused", false)
+
+    if (afkTimeout !== null) {
+      clearTimeout(afkTimeout)
+    }
+
+    afkTimeout = setTimeout(() => {
+      setLocal("paused", true)
+    }, AFK_BOUNDRY)
 
     // Mark if partial (or full) word is correct
     setLocal(
@@ -418,6 +415,10 @@ function Prompt() {
 
   onCleanup(() => {
     window.removeEventListener("keydown", handleTyping)
+
+    if (afkTimeout !== null) {
+      clearTimeout(afkTimeout)
+    }
   })
 
   // Scroll lines automatically
@@ -445,100 +446,105 @@ function Prompt() {
     return prev
   }, 0)
 
-  const liveAcc = createMemo(() => (local.pageStats.acc !== null ? formatPercentage(local.pageStats.acc, 1) : "-"))
-  const liveWpm = createMemo(() => (local.pageStats.wpm !== null ? formatNum(local.pageStats.wpm, 1) : "-"))
-
   return (
-    <section
-      classList={{
-        prompt: true,
-        "caret-line": state.get.options.caret === "line",
-        "caret-block": state.get.options.caret === "block",
-        "caret-floor": state.get.options.caret === "floor",
-      }}
-    >
-      <div class="console">
-        Par: {local.paragraphNum} | Word: {local.wordNum} | Char: {local.charNum} | WPM: {liveWpm()} | ACC: {liveAcc()}{" "}
-        | AFK: {String(local.afk)}
-      </div>
-      <div class="paragraphs">
-        <For each={local.original}>
-          {(paragraph, paragraphNum) => {
-            const wpm = createMemo(() => {
-              const val = local.stats?.[paragraphNum()]?.wpm
-              return val !== null && val !== undefined ? `${formatNum(val)} wpm` : ""
-            })
+    <>
+      <Statusbar
+        bookId={""}
+        bookTitle={state.get.prompt.bookTitle}
+        chapterTitle={state.get.prompt.chapterTitle}
+        wpm={local.pageStats.wpm}
+        acc={local.pageStats.acc}
+        paused={local.paused}
+        page={state.get.prompt.page}
+        pages={state.get.prompt.pages}
+      />
+      <section
+        classList={{
+          prompt: true,
+          "caret-line": state.get.options.caret === "line",
+          "caret-block": state.get.options.caret === "block",
+          "caret-floor": state.get.options.caret === "floor",
+        }}
+      >
+        <div class="paragraphs">
+          <For each={local.original}>
+            {(paragraph, paragraphNum) => {
+              const wpm = createMemo(() => {
+                const val = local.stats?.[paragraphNum()]?.wpm
+                return val !== null && val !== undefined ? `${formatNum(val)} wpm` : ""
+              })
 
-            const acc = createMemo(() => {
-              const val = local.stats?.[paragraphNum()]?.acc
-              return val !== null && val !== undefined ? `${formatPercentage(val)} acc` : ""
-            })
+              const acc = createMemo(() => {
+                const val = local.stats?.[paragraphNum()]?.acc
+                return val !== null && val !== undefined ? `${formatPercentage(val)} acc` : ""
+              })
 
-            return (
-              <p data-wpm={wpm()} data-acc={acc()}>
-                <For each={paragraph}>
-                  {(word, wordNum) => {
-                    const currentWord = () => local.typed[paragraphNum()][wordNum()]
-                    const expectedWord = () => local.original[paragraphNum()][wordNum()]
-                    const isInaccurate = () =>
-                      !currentWord().includes(null) && currentWord().join("") !== expectedWord().join("")
+              return (
+                <p data-wpm={wpm()} data-acc={acc()}>
+                  <For each={paragraph}>
+                    {(word, wordNum) => {
+                      const currentWord = () => local.typed[paragraphNum()][wordNum()]
+                      const expectedWord = () => local.original[paragraphNum()][wordNum()]
+                      const isInaccurate = () =>
+                        !currentWord().includes(null) && currentWord().join("") !== expectedWord().join("")
 
-                    const isActive = () => paragraphNum() === local.paragraphNum && wordNum() === local.wordNum
+                      const isActive = () => paragraphNum() === local.paragraphNum && wordNum() === local.wordNum
 
-                    return (
-                      <span
-                        classList={{
-                          word: true,
-                          inaccurate: isInaccurate(),
-                          active: isActive(),
-                        }}
-                      >
-                        {
-                          <For each={word}>
-                            {(letter, charNum) => {
-                              const currentChar = () => local.typed[paragraphNum()][wordNum()][charNum()]
-                              const expectedChar = () => local.original[paragraphNum()][wordNum()][charNum()]
-                              const isCorrect = () => currentChar() === expectedChar()
+                      return (
+                        <span
+                          classList={{
+                            word: true,
+                            inaccurate: isInaccurate(),
+                            active: isActive(),
+                          }}
+                        >
+                          {
+                            <For each={word}>
+                              {(letter, charNum) => {
+                                const currentChar = () => local.typed[paragraphNum()][wordNum()][charNum()]
+                                const expectedChar = () => local.original[paragraphNum()][wordNum()][charNum()]
+                                const isCorrect = () => currentChar() === expectedChar()
 
-                              const getTypedChar = () => {
-                                let typedChar = local.typed[paragraphNum()][wordNum()][charNum()]
+                                const getTypedChar = () => {
+                                  let typedChar = local.typed[paragraphNum()][wordNum()][charNum()]
 
-                                if (typedChar === " " && letter !== " ") {
-                                  typedChar = "_" // "␣"
+                                  if (typedChar === " " && letter !== " ") {
+                                    typedChar = "_" // "␣"
+                                  }
+
+                                  return typedChar ?? letter
                                 }
 
-                                return typedChar ?? letter
-                              }
-
-                              return (
-                                <span
-                                  classList={{
-                                    letter: true,
-                                    caret:
-                                      paragraphNum() === local.paragraphNum &&
-                                      wordNum() === local.wordNum &&
-                                      charNum() === local.charNum,
-                                    ok: isCorrect(),
-                                    error: currentChar() !== null && !isCorrect(),
-                                    special: letter === "⏎",
-                                  }}
-                                >
-                                  {state.get.options.showTypos ? getTypedChar() : letter}
-                                </span>
-                              )
-                            }}
-                          </For>
-                        }
-                      </span>
-                    )
-                  }}
-                </For>
-              </p>
-            )
-          }}
-        </For>
-      </div>
-    </section>
+                                return (
+                                  <span
+                                    classList={{
+                                      letter: true,
+                                      caret:
+                                        paragraphNum() === local.paragraphNum &&
+                                        wordNum() === local.wordNum &&
+                                        charNum() === local.charNum,
+                                      ok: isCorrect(),
+                                      error: currentChar() !== null && !isCorrect(),
+                                      special: letter === "⏎",
+                                    }}
+                                  >
+                                    {state.get.options.showTypos ? getTypedChar() : letter}
+                                  </span>
+                                )
+                              }}
+                            </For>
+                          }
+                        </span>
+                      )
+                    }}
+                  </For>
+                </p>
+              )
+            }}
+          </For>
+        </div>
+      </section>
+    </>
   )
 }
 

@@ -1,12 +1,12 @@
 import { render } from "solid-js/web"
 import state from "./state/state.ts"
 
-import "./index.css"
-import App from "./components/App"
-import { loadWordList } from "./io/loaders.ts"
-import "./boot/registerKeybindings.ts"
-import { Epub } from "./libs/ebook/epub.ts"
 import books from "./books.ts"
+import "./boot/registerKeybindings.ts"
+import App from "./components/App"
+import "./index.css"
+import { loadWordList } from "./io/loaders.ts"
+import { Epub } from "./libs/ebook/epub.ts"
 import "./libs/fs.ts"
 // console.clear()
 
@@ -112,20 +112,19 @@ async function main() {
     return
   }
 
-  const chapterNum = 1
-  const paragraphNum = 0
-  // const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 2)
+  const chapterNum = 4
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
   // const paragraphs = ["the"]
   // const paragraphs = ["the hello", "the little", "the again"]
   // const paragraphs = ["out there again have so school get the must very"]
   //
-  const paragraphs = [
-    'Please retype this text to set your initial "words per minute" speed. Press Enter to finish each paragraph.',
-    "The timer starts when you type the first letter, and it will automatically pause, if it detects that you are inactive for five seconds.",
-    "You can restart the current paragraph by pressing Tab, but it's usually better to fix your mistakes and continue typing. Words that contain unfixed typos are not counted towards your final score.",
-    "If you encounter some special characters, you can press any letter (or space) to mark them as typed. For example, try it with a word naïve or 你好.",
-    "You are now ready to begin your typing adventure!",
-  ]
+  // const paragraphs = [
+  //   'Please retype this text to set your initial "words per minute" speed. Press Enter to finish each paragraph.',
+  //   "The timer starts when you type the first letter, and it will automatically pause, if it detects that you are inactive for five seconds.",
+  //   "You can restart the current paragraph by pressing Tab, but it's usually better to fix your mistakes and continue typing. Words that contain unfixed typos are not counted towards your final score.",
+  //   "If you encounter some special characters, you can press any letter (or space) to mark them as typed. For example, try it with a word naïve or 你好.",
+  //   "You are now ready to begin your typing adventure!",
+  // ]
 
   state.set("charset", book.charset)
   state.set(
@@ -133,7 +132,12 @@ async function main() {
     "paragraphs",
     paragraphs.map((x) => x + "⏎"),
   )
-  state.set("prompt", "currentParagraph", paragraphNum)
+
+  state.set("prompt", "bookTitle", book.info.title)
+  state.set("prompt", "chapterTitle", book.chapters[chapterNum].title)
+  // state.set("prompt", "chapterTitle", "Introduction - Initial Speed Test")
+  state.set("prompt", "page", 1)
+  state.set("prompt", "pages", 1)
 
   console.log("PAGES:")
 

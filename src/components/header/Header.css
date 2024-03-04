@@ -1,0 +1,68 @@
+header {
+  font-family: var(--font-sans);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: var(--space-m) 0;
+}
+
+header .logo {
+  margin-left: var(--space-xl);
+  margin-top: var(--space-m);
+}
+
+header .logo p {
+  color: var(--color-fg-lc);
+  font-style: italic;
+  font-size: var(--font-s);
+}
+
+header nav {
+  color: var(--color-fg);
+  display: grid;
+  align-items: center;
+}
+
+header nav ul {
+  list-style: none;
+}
+
+header .menu ul {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+header .profile ul {
+  text-align: right;
+  margin-right: var(--space-xl);
+}
+
+header nav li {
+  display: inline-block;
+  font-size: var(--font-m);
+  line-height: var(--font-m);
+  height: var(--font-xl);
+}
+header nav li + li {
+  margin-inline-start: var(--space-m);
+  padding-inline-start: var(--space-m);
+  display: inline-block;
+  border-left: solid 2px var(--color-bg-ico);
+}
+
+header nav li span {
+  position: relative;
+  top: calc(var(--font-xs) / 2 * -1);
+}
+
+header nav li i {
+  font-size: var(--font-xl);
+  line-height: var(--font-m);
+  color: var(--color-fg-lc);
+  margin-right: var(--space-xs);
+}
+
+header .profile li + li {
+  margin-inline-start: var(--space-m);
+  padding-inline-start: 0;
+  border: none;
+}

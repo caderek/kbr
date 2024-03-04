@@ -18,6 +18,11 @@ export type State = {
     historicalWPMs: number[][]
   }
   prompt: {
+    bookTitle: string | null
+    bookId: string | null
+    chapterTitle: string | null
+    page: number
+    pages: number
     currentParagraph: number
     paragraphs: string[]
     done: boolean

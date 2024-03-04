@@ -22,6 +22,11 @@ const defaultState: State = {
     historicalWPMs: [],
   },
   prompt: {
+    bookTitle: null,
+    bookId: null,
+    chapterTitle: null,
+    page: 1,
+    pages: 1,
     currentParagraph: 0,
     paragraphs: [],
     done: false,

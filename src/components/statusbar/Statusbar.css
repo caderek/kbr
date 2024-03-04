@@ -1,0 +1,77 @@
+.statusbar {
+  height: calc(var(--font-m) + 2 * var(--space-m) + var(--space-xs));
+  color: var(--color-fg-lc);
+  font-size: var(--font-m);
+  line-height: var(--font-m);
+  background: var(--color-bg-hc);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 0 3rem var(--color-bg);
+}
+
+.statusbar .slug {
+  font-family: var(--font-sans);
+  font-style: italic;
+  padding: var(--space-m) 0;
+  margin-left: var(--space-xl);
+}
+
+.statusbar .slug strong {
+  font-weight: 400;
+  color: var(--color-fg);
+}
+
+.statusbar .stats {
+  font-family: var(--font-mono);
+  padding: 0;
+  position: absolute;
+  top: var(--space-s);
+  right: 0;
+  margin-right: var(--space-xl);
+}
+
+.statusbar .stats span {
+  height: calc(var(--font-m) + 2 * var(--space-s));
+  font-size: var(--font-s);
+  color: var(--color-fg);
+  background: var(--color-bg-lc);
+  display: inline-block;
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--space-xs);
+  margin-left: var(--space-s);
+}
+.statusbar .stats strong {
+  font-size: var(--font-m);
+  font-weight: 600;
+}
+
+.statusbar .stats .ok {
+  background: var(--color-bg-ok);
+  color: var(--color-fg-ok);
+}
+
+.statusbar .stats .warning {
+  background: var(--color-bg-warning);
+  color: var(--color-fg-warning);
+}
+
+.statusbar .stats .error {
+  background: var(--color-bg-error);
+  color: var(--color-fg-error);
+}
+
+.statusbar .progressbar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: var(--space-xs);
+  background-color: var(--color-bg-ico);
+  opacity: 0.5;
+}
+
+.statusbar .progressbar > div {
+  height: var(--space-xs);
+  background-color: var(--color-bg-ok-ico);
+  transition: 0.5s;
+}

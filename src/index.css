@@ -4,13 +4,21 @@
   --color-bg: #15161e;
   --color-bg-lc: #1a1b26;
   --color-bg-hc: #101017;
-  --color-bg-inaccurate: #f7768e22;
+  --color-bg-ok: #9ece6a22;
+  --color-bg-warning: #e0af6822;
+  --color-bg-error: #f7768e22;
+  --color-bg-accent: #2ac3de22;
+
+  --color-bg-ico: #414868;
+  --color-bg-ok-ico: #678547;
+
   --color-fg: #9aa5ce;
   --color-fg-lc: #565f89;
   --color-fg-hc: #cfc9c2;
   --color-fg-ok: #9ece6a;
   --color-fg-warning: #e0af68;
   --color-fg-error: #f7768e;
+  --color-fg-accent: #2ac3de;
 
   --font-sans: "Open Sans", sans-serif;
   --font-mono: "PT Mono", monospace;
@@ -31,6 +39,12 @@
   --font-xl: 1.5rem;
   --font-2xl: 2rem;
   --font-3xl: 3rem;
+
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
 }
 
 * {
@@ -47,6 +61,13 @@ html {
 
 body {
   background-color: var(--color-bg);
-  /* display: grid; */
-  /* place-content: center; */
+}
+
+a {
+  color: var(--color-fg-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
