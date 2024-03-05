@@ -3,20 +3,22 @@ header {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   padding: var(--space-m) 0;
+  background: var(--color-bg);
+  position: relative;
+  z-index: 2;
 }
 
 header .logo {
-  margin-left: var(--space-xl);
-  margin-top: var(--space-m);
+  margin-left: var(--space-m);
+  font-size: 0;
 }
 
-header .logo p {
-  color: var(--color-fg-lc);
-  font-style: italic;
-  font-size: var(--font-s);
+header .logo img {
+  height: 2.25rem;
 }
 
 header nav {
+  font-size: 0;
   color: var(--color-fg);
   display: grid;
   align-items: center;
@@ -33,20 +35,27 @@ header .menu ul {
 
 header .profile ul {
   text-align: right;
-  margin-right: var(--space-xl);
+  margin-right: var(--space-m);
 }
 
 header nav li {
+  --color-ico: var(--color-fg-lc);
   display: inline-block;
   font-size: var(--font-m);
   line-height: var(--font-m);
   height: var(--font-xl);
+  cursor: pointer;
 }
+
+header nav li:hover {
+  --color-ico: var(--color-fg-accent);
+}
+
 header nav li + li {
   margin-inline-start: var(--space-m);
   padding-inline-start: var(--space-m);
   display: inline-block;
-  border-left: solid 2px var(--color-bg-ico);
+  border-left: solid 2px var(--color-bg-bar);
 }
 
 header nav li span {
@@ -57,7 +66,7 @@ header nav li span {
 header nav li i {
   font-size: var(--font-xl);
   line-height: var(--font-m);
-  color: var(--color-fg-lc);
+  color: var(--color-ico);
   margin-right: var(--space-xs);
 }
 
@@ -65,4 +74,13 @@ header .profile li + li {
   margin-inline-start: var(--space-m);
   padding-inline-start: 0;
   border: none;
+}
+
+header nav a {
+  color: var(--color-fg);
+}
+
+header nav a:hover {
+  text-decoration: none;
+  color: var(--color-fg-accent);
 }

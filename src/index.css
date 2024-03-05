@@ -1,36 +1,40 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=PT+Mono&display=swap");
 
 :root {
-  --color-bg: #15161e;
-  --color-bg-lc: #1a1b26;
-  --color-bg-hc: #101017;
-  --color-bg-ok: #9ece6a22;
-  --color-bg-warning: #e0af6822;
-  --color-bg-error: #f7768e22;
-  --color-bg-accent: #2ac3de22;
+  --color-bg: #d5d6db;
+  --color-bg-lc: #c8c9d0;
+  --color-bg-hc: #e9eaec;
+  --color-bg-ok: #63824233;
+  --color-bg-warning: #8f5e1533;
+  --color-bg-error: #8c435133;
+  --color-bg-accent: #00627333;
 
-  --color-bg-ico: #414868;
-  --color-bg-ok-ico: #678547;
+  --color-bg-bar: #989eb3;
+  --color-bg-ok-bar: #638242;
 
-  --color-fg: #9aa5ce;
-  --color-fg-lc: #565f89;
-  --color-fg-hc: #cfc9c2;
-  --color-fg-ok: #9ece6a;
-  --color-fg-warning: #e0af68;
-  --color-fg-error: #f7768e;
-  --color-fg-accent: #2ac3de;
+  --color-fg: #343b58;
+  --color-fg-lc: #525a7a;
+  --color-fg-hc: #1e2233;
+  --color-fg-ok: #2c7a6e;
+  --color-fg-ok: #638242;
+  --color-fg-warning: #8f5e15;
+  --color-fg-error: #940d26;
+  --color-fg-accent: #006273;
+  --color-fg-prompt: var(--color-fg-hc);
 
   --font-sans: "Open Sans", sans-serif;
   --font-mono: "PT Mono", monospace;
 
+  --font-prompt: monospace;
+  --font-prompt: sans-serif;
+  --font-prompt: serif;
   --font-prompt: "Fira Code", monospace;
+  --font-prompt: "OpenDyslexic3";
   --font-prompt: "JetBrians Mono", monospace;
-  --font-prompt: "OpenDyslexicMono";
   --font-prompt: "Recursive Mono Casual Static";
   --font-prompt: "Merriweather";
-  --font-prompt: "OpenDyslexic3";
+  --font-prompt: "OpenDyslexicMono";
   --font-prompt: "PT Mono", monospace;
-  /* --font-prompt: "Roboto Serif", "Merriweather", "Times New Roman", serif; */
 
   --font-xs: 0.75rem;
   --font-s: 0.875rem;
@@ -47,6 +51,28 @@
   --space-xl: 32px;
 }
 
+.dark {
+  --color-bg: #15161e;
+  --color-bg-lc: #1a1b26;
+  --color-bg-hc: #101017;
+  --color-bg-ok: #9ece6a22;
+  --color-bg-warning: #e0af6822;
+  --color-bg-error: #f7768e22;
+  --color-bg-accent: #2ac3de22;
+
+  --color-bg-bar: #272c3f;
+  --color-bg-ok-bar: #4e6138;
+
+  --color-fg: #9aa5ce;
+  --color-fg-lc: #565f89;
+  --color-fg-hc: #cfc9c2;
+  --color-fg-ok: #9ece6a;
+  --color-fg-warning: #e0af68;
+  --color-fg-error: #f7768e;
+  --color-fg-accent: #2ac3de;
+  --color-fg-prompt: var(--color-fg);
+}
+
 * {
   border: 0;
   padding: 0;
@@ -61,6 +87,8 @@ html {
 
 body {
   background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
 }
 
 a {
@@ -70,4 +98,20 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+@media screen and (min-width: 1024px) {
+  .mobile {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .desktop {
+    display: none;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
 }

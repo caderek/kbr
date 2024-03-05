@@ -11,6 +11,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@solidjs/router": "^0.12.5",
     "@zip.js/zip.js": "^2.7.32",
     "epubjs": "^0.3.93",
     "solid-js": "^1.7.8"

@@ -1,16 +1,12 @@
+import { ParentComponent } from "solid-js"
 import "./App.css"
-import Prompt from "./prompt/Prompt.tsx"
-import Header from "./header/Header.tsx"
-// import Results from "./results/Results.tsx"
+import Header from "./common/header/Header.tsx"
 
-function App() {
+const App: ParentComponent = (props) => {
   return (
     <>
       <Header />
-      <main>
-        <Prompt />
-        {/* <Results /> */}
-      </main>
+      <main>{props.children}</main>
     </>
   )
 }

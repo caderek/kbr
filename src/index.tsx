@@ -1,9 +1,11 @@
 import { render } from "solid-js/web"
+import { Router, Route } from "@solidjs/router"
 import state from "./state/state.ts"
 
 import books from "./books.ts"
 import "./boot/registerKeybindings.ts"
 import App from "./components/App"
+import Prompt from "./components/pages/prompt/Prompt"
 import "./index.css"
 import { loadWordList } from "./io/loaders.ts"
 import { Epub } from "./libs/ebook/epub.ts"
@@ -112,8 +114,8 @@ async function main() {
     return
   }
 
-  const chapterNum = 4
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
+  const chapterNum = 1
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 5)
   // const paragraphs = ["the"]
   // const paragraphs = ["the hello", "the little", "the again"]
   // const paragraphs = ["out there again have so school get the must very"]
@@ -133,11 +135,12 @@ async function main() {
     paragraphs.map((x) => x + "⏎"),
   )
 
+  state.set("prompt", "bookId", "the-study-in-scarlet")
   state.set("prompt", "bookTitle", book.info.title)
-  state.set("prompt", "chapterTitle", book.chapters[chapterNum].title)
+  state.set("prompt", "chapterTitle", book.chapters[chapterNum].title.repeat(2))
   // state.set("prompt", "chapterTitle", "Introduction - Initial Speed Test")
-  state.set("prompt", "page", 1)
-  state.set("prompt", "pages", 1)
+  state.set("prompt", "page", 1000)
+  state.set("prompt", "pages", 1234)
 
   console.log("PAGES:")
 
@@ -147,4 +150,18 @@ async function main() {
 
 main()
 
-render(() => <App />, root!)
+render(
+  () => (
+    <Router root={App}>
+      <Route path="/" component={() => <h2>Home</h2>} />
+      <Route path="/books" component={() => <h2>Books</h2>} />
+      <Route path="/books/:id" component={() => <h2>Book details</h2>} />
+      <Route path="/stats" component={() => <h2>Stats</h2>} />
+      <Route path="/settings" component={() => <h2>Settings</h2>} />
+      <Route path="/profile" component={() => <h2>Profle</h2>} />
+      <Route path="/prompt" component={Prompt} />
+      <Route path="*404" component={() => <h1>Not Found</h1>} />
+    </Router>
+  ),
+  root!,
+)

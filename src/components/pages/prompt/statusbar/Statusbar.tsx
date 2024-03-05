@@ -1,6 +1,6 @@
 import "./Statusbar.css"
 import { Component, createMemo, Show } from "solid-js"
-import { formatNum } from "../../../utils/formatters.ts"
+import { formatNum } from "../../../../utils/formatters.ts"
 
 type Props = {
   bookId: string | null
@@ -20,10 +20,18 @@ const Statusbar: Component<Props> = (props) => {
     <section class="statusbar">
       <p class="slug">
         <Show when={props.bookTitle}>
-          <a href={`/books/${props.bookId}`}>{props.bookTitle}</a> /{" "}
+          <a href={`/books/${props.bookId}`} class="mobile">
+            <i class="icon-back"></i>
+          </a>
+        </Show>
+        <Show when={props.bookTitle}>
+          <a href={`/books/${props.bookId}`} class="desktop">
+            {props.bookTitle}
+          </a>
+          <span class="desktop"> / </span>
         </Show>
         <Show when={props.chapterTitle}>
-          <strong>{props.chapterTitle}</strong>
+          <strong class="desktop">{props.chapterTitle}</strong>
         </Show>
       </p>
       <p class="stats">
@@ -33,7 +41,8 @@ const Statusbar: Component<Props> = (props) => {
           </span>
         </Show>
         <span>
-          PAGE <strong>{props.page}</strong>/{props.pages}
+          <span class="desktop">PAGE </span>
+          <strong>{props.page}</strong>/{props.pages}
         </span>
         <span>
           <strong>{liveWpm()}</strong> wpm

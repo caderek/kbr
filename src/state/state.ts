@@ -9,6 +9,7 @@ const storage = new Storage()
 
 const defaultState: State = {
   lang: "en",
+  darkmode: true,
   charset: new Set(),
   targetWPM: 35,
   progress: {
@@ -49,6 +50,14 @@ const state = createRoot(() => {
 
   createEffect(() => {
     storage.save(state)
+  })
+
+  createEffect(() => {
+    if (state.darkmode) {
+      document.body.classList.add("dark")
+    } else {
+      document.body.classList.remove("dark")
+    }
   })
 
   return { get: state, set: setState }

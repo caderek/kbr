@@ -4,9 +4,10 @@
   width: min(90vw, 960px);
   margin: 0 auto;
   padding-bottom: 3rem;
-  height: 100vh;
-  /* display: grid; */
-  /* place-content: center; */
+}
+
+.nocursor {
+  cursor: none;
 }
 
 .prompt div {
@@ -17,7 +18,7 @@
   resize: none;
   padding: 1rem;
   font-family: var(--font-prompt);
-  font-size: var(--font-l);
+  font-size: var(--font-xl);
   outline: none;
 }
 
@@ -30,7 +31,7 @@
 }
 
 .prompt .paragraphs {
-  color: var(--color-fg);
+  color: var(--color-fg-prompt);
   word-break: break-word;
   white-space: break-spaces;
 }

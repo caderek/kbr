@@ -14,7 +14,11 @@
   font-family: var(--font-sans);
   font-style: italic;
   padding: var(--space-m) 0;
-  margin-left: var(--space-xl);
+  margin-left: var(--space-m);
+  max-width: calc(100% - 600px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .statusbar .slug strong {
@@ -28,10 +32,10 @@
   position: absolute;
   top: var(--space-s);
   right: 0;
-  margin-right: var(--space-xl);
+  margin-right: var(--space-m);
 }
 
-.statusbar .stats span {
+.statusbar .stats > span {
   height: calc(var(--font-m) + 2 * var(--space-s));
   font-size: var(--font-s);
   color: var(--color-fg);
@@ -66,12 +70,37 @@
   bottom: 0;
   width: 100%;
   height: var(--space-xs);
-  background-color: var(--color-bg-ico);
-  opacity: 0.5;
+  background-color: var(--color-bg-bar);
 }
 
 .statusbar .progressbar > div {
   height: var(--space-xs);
-  background-color: var(--color-bg-ok-ico);
+  background-color: var(--color-bg-ok-bar);
   transition: 0.5s;
+}
+
+@media screen and (max-width: 1023px) {
+  .statusbar {
+    font-size: var(--font-s);
+  }
+
+  .statusbar .slug {
+    font-size: var(--font-l);
+    max-width: none;
+  }
+
+  .statusbar .stats {
+    margin-right: var(--space-xs);
+  }
+
+  .statusbar .stats strong {
+    font-size: var(--font-xs);
+    font-weight: 600;
+  }
+
+  .statusbar .stats > span {
+    font-size: var(--font-xs);
+    padding: var(--space-s) var(--space-s);
+    margin-left: var(--space-xs);
+  }
 }

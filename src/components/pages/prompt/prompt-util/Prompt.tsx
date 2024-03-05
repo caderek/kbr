@@ -2,8 +2,8 @@ import "./Prompt.css"
 import state from "../../state/state.ts"
 import { createEffect, createMemo, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import { EXTRA_KEYS } from "./EXTRA_KEYS.ts"
-import Statusbar from "../statusbar/Statusbar.tsx"
+import { EXTRA_KEYS } from "./prompt/EXTRA_KEYS.ts"
+import Statusbar from "./statusbar/Statusbar.tsx"
 import { formatNum, formatPercentage } from "../../utils/formatters.ts"
 
 const AFK_BOUNDRY = 5000 // ms
@@ -83,6 +83,7 @@ type PageStats = {
 }
 
 type LocalState = {
+  hideCursor: boolean
   done: boolean
   paused: boolean
   typed: (string | null)[][][]
@@ -96,6 +97,7 @@ type LocalState = {
 
 function Prompt() {
   const [local, setLocal] = createStore<LocalState>({
+    hideCursor: false,
     done: false,
     paused: true,
     original: [],
@@ -349,6 +351,7 @@ function Prompt() {
     setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
     setLocal("stats", local.paragraphNum, "words", local.wordNum, "typedLength", local.charNum + 1)
     setLocal("paused", false)
+    setLocal("hideCursor", true)
 
     if (afkTimeout !== null) {
       clearTimeout(afkTimeout)
@@ -411,6 +414,8 @@ function Prompt() {
 
   onMount(() => {
     window.addEventListener("keydown", handleTyping)
+
+    window.addEventListener("mousemove", () => setLocal("hideCursor", false))
   })
 
   onCleanup(() => {
@@ -449,7 +454,7 @@ function Prompt() {
   return (
     <>
       <Statusbar
-        bookId={""}
+        bookId={state.get.prompt.bookId}
         bookTitle={state.get.prompt.bookTitle}
         chapterTitle={state.get.prompt.chapterTitle}
         wpm={local.pageStats.wpm}
@@ -461,6 +466,7 @@ function Prompt() {
       <section
         classList={{
           prompt: true,
+          nocursor: local.hideCursor,
           "caret-line": state.get.options.caret === "line",
           "caret-block": state.get.options.caret === "block",
           "caret-floor": state.get.options.caret === "floor",

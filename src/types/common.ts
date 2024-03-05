@@ -5,6 +5,7 @@ export type WordListData = {
 
 export type State = {
   lang: "en" | "pl"
+  darkmode: boolean
   charset: Set<string>
   targetWPM: number
   progress: {
