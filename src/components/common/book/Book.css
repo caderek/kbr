@@ -8,7 +8,7 @@
   background: var(--color-bg-hc);
   border: solid 1px var(--color-input);
   border-radius: var(--space-xs);
-  margin: calc(var(--space-m) + var(--space-xs)) var(--space-l);
+  margin: var(--space-l);
   position: relative;
   box-shadow: 0 var(--space-xs) var(--space-s) var(--color-shadow);
 }
