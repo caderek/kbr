@@ -6,6 +6,7 @@ import books from "./books.ts"
 import "./boot/registerKeybindings.ts"
 import App from "./components/App"
 import Prompt from "./components/pages/prompt/Prompt"
+import Books from "./components/pages/books/Books"
 import "./index.css"
 import { loadWordList } from "./io/loaders.ts"
 import { Epub } from "./libs/ebook/epub.ts"
@@ -114,9 +115,9 @@ async function main() {
     return
   }
 
-  const chapterNum = 1
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0, 5)
-  // const paragraphs = ["the"]
+  const chapterNum = 4
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
+  // const paragraphs = new Array(20).fill("the")
   // const paragraphs = ["the hello", "the little", "the again"]
   // const paragraphs = ["out there again have so school get the must very"]
   //
@@ -137,7 +138,7 @@ async function main() {
 
   state.set("prompt", "bookId", "the-study-in-scarlet")
   state.set("prompt", "bookTitle", book.info.title)
-  state.set("prompt", "chapterTitle", book.chapters[chapterNum].title.repeat(2))
+  state.set("prompt", "chapterTitle", book.chapters[chapterNum].title)
   // state.set("prompt", "chapterTitle", "Introduction - Initial Speed Test")
   state.set("prompt", "page", 1000)
   state.set("prompt", "pages", 1234)
@@ -154,7 +155,7 @@ render(
   () => (
     <Router root={App}>
       <Route path="/" component={() => <h2>Home</h2>} />
-      <Route path="/books" component={() => <h2>Books</h2>} />
+      <Route path="/books" component={Books} />
       <Route path="/books/:id" component={() => <h2>Book details</h2>} />
       <Route path="/stats" component={() => <h2>Stats</h2>} />
       <Route path="/settings" component={() => <h2>Settings</h2>} />

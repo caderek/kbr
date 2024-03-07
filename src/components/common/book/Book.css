@@ -1,0 +1,138 @@
+.book {
+  --cover-height: 18rem;
+  --cover-width: 12rem;
+  --info-width: 20rem;
+  --pages: 300;
+  height: var(--cover-height);
+  width: calc(var(--cover-width) + var(--info-width));
+  background: var(--color-bg-hc);
+  border: solid 1px var(--color-input);
+  border-radius: var(--space-xs);
+  margin: calc(var(--space-m) + var(--space-xs)) var(--space-l);
+  position: relative;
+  box-shadow: 0 var(--space-xs) var(--space-s) var(--color-shadow);
+}
+
+.book .scroll-box {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.book .info {
+  padding: var(--space-l);
+  height: var(--cover-height);
+  overflow-y: scroll;
+  position: absolute;
+  left: var(--cover-width);
+  top: 0;
+  bottom: 0;
+  right: -20px;
+}
+
+.book h3 {
+  font-size: var(--font-l);
+  font-weight: 400;
+  margin-bottom: var(--space-xs);
+  max-width: calc(var(--info-width) - 2 * var(--space-l) - var(--space-m));
+}
+
+.book p {
+  font-size: var(--font-m);
+  margin-bottom: var(--space-s);
+}
+
+.book p.description {
+  font-style: italic;
+  color: var(--color-fg-lc);
+  line-height: var(--font-xl);
+  height: calc(var(--font-xl) * 3);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin-bottom: var(--space-m);
+}
+
+.book ul {
+  list-style: none;
+  font-size: var(--font-s);
+  display: flex;
+  flex-wrap: wrap;
+  text-transform: uppercase;
+}
+
+.book ul.stats {
+  margin-bottom: var(--space-s);
+  font-size: var(--font-m);
+  text-transform: none;
+}
+
+.book ul li {
+  display: inline;
+  font-style: italic;
+  margin-top: var(--space-s);
+}
+
+.book ul li span,
+.book ul li a {
+  padding: var(--space-2xs) var(--space-xs);
+  margin-right: var(--space-xs);
+  border-radius: var(--space-xs);
+}
+
+.book ul.stats li span,
+.book ul.stats li a {
+  padding: var(--space-2xs) var(--space-s);
+}
+
+.book ul li span {
+  color: var(--color-fg);
+  background: var(--color-bg-secondary);
+}
+
+.book ul li a {
+  background: var(--color-bg-accent);
+}
+
+.book ul li.new a {
+  color: var(--color-fg-error);
+  background: var(--color-bg-error);
+}
+
+.book ul li.in-progress a {
+  color: var(--color-fg-warning);
+  background: var(--color-bg-warning);
+}
+
+.book ul li.done a {
+  color: var(--color-fg-ok);
+  background: var(--color-bg-ok);
+}
+
+.book button.favorite {
+  width: var(--font-2xl);
+  height: var(--font-2xl);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+
+  font-size: 0;
+}
+
+.book button.favorite i {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: var(--font-2xl);
+}
+
+.book button.favorite i::before {
+  position: absolute;
+  top: var(--space-s);
+  right: var(--space-s);
+  font-size: var(--font-2xl);
+  color: var(--color-fg-lc);
+}

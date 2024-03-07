@@ -3,23 +3,12 @@
   position: relative;
   width: min(90vw, 960px);
   margin: 0 auto;
-  padding-bottom: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
 }
 
 .nocursor {
   cursor: none;
-}
-
-.prompt div {
-  width: 100%;
-  top: 0;
-  left: 0;
-  background: transparent;
-  resize: none;
-  padding: 1rem;
-  font-family: var(--font-prompt);
-  font-size: var(--font-xl);
-  outline: none;
 }
 
 .prompt .task {
@@ -31,13 +20,22 @@
 }
 
 .prompt .paragraphs {
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: transparent;
+  resize: none;
+  padding: 1rem;
+  font-family: var(--font-prompt);
+  font-size: var(--font-l);
+  outline: none;
   color: var(--color-fg-prompt);
   word-break: break-word;
   white-space: break-spaces;
 }
 
 .prompt .paragraphs > p {
-  padding-top: 2rem;
+  padding-bottom: 2rem;
   line-height: 1.8;
   position: relative;
 }
@@ -57,12 +55,12 @@
 
 .prompt .paragraphs > p::before {
   content: attr(data-wpm);
-  bottom: 1.75rem;
+  bottom: 3.5rem;
 }
 
 .prompt .paragraphs > p::after {
   content: attr(data-acc);
-  bottom: 0.25rem;
+  bottom: 2.25rem;
 }
 
 .prompt .ok,
@@ -89,7 +87,6 @@
 }
 
 .prompt .special {
-  /* color: var(--color-fg-lc); */
   user-select: none;
   opacity: 0.5;
 }
@@ -114,4 +111,18 @@
 
 .prompt.caret-floor .caret {
   border-bottom: solid 2px var(--color-fg-ok);
+}
+
+input[type="text"] {
+  font-size: 16px;
+  position: absolute;
+  color: black;
+  left: -100vw;
+}
+
+@media screen and (max-width: 63.99rem) {
+  .prompt {
+    width: 100%;
+    padding-top: 0.5rem;
+  }
 }

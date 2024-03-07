@@ -8,7 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 public/books
-books
+books/
+!src/components/pages/books
 node_modules
 dist
 dist-ssr

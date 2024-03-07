@@ -1,4 +1,5 @@
 import "./Prompt.css"
+import config from "../../../config.ts"
 import state from "../../../state/state.ts"
 import { createEffect, createMemo, For, onMount, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
@@ -51,6 +52,25 @@ function calculateParagraphWpm(inputTimes: number[], stats: WordStats[]) {
   }
 
   return { wpm: calculateWpm(time, charsCount), start, end, time, charsCount }
+}
+
+function scrollToWord(prev: number = -1) {
+  const node = document.querySelector(".word.active") as HTMLSpanElement
+
+  if (node) {
+    const offset = window.scrollY + node.getBoundingClientRect().top
+
+    if (offset !== prev) {
+      node.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
+
+      return offset
+    }
+  }
+
+  return prev
 }
 
 type WordStats = {
@@ -427,29 +447,16 @@ function Prompt() {
   })
 
   // Scroll lines automatically
-  createEffect((prev) => {
+  createEffect((prev: number) => {
     // Needed only for the effect to trigger on changes to these props
     if (local.paragraphNum < 0 || local.wordNum < 0) {
       return prev
     }
 
-    const node = document.querySelector(".word.active") as HTMLSpanElement
-
-    if (node) {
-      const offset = window.scrollY + node.getBoundingClientRect().top
-
-      if (offset !== prev) {
-        node.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        })
-
-        return offset
-      }
-    }
-
-    return prev
+    return scrollToWord(prev)
   }, 0)
+
+  let screenKeyboardPrompt: HTMLInputElement | undefined
 
   return (
     <>
@@ -463,6 +470,7 @@ function Prompt() {
         page={state.get.prompt.page}
         pages={state.get.prompt.pages}
       />
+      <input type="text" ref={screenKeyboardPrompt!} />
       <section
         classList={{
           prompt: true,
@@ -470,6 +478,22 @@ function Prompt() {
           "caret-line": state.get.options.caret === "line",
           "caret-block": state.get.options.caret === "block",
           "caret-floor": state.get.options.caret === "floor",
+        }}
+        onClick={() => {
+          if (screenKeyboardPrompt) {
+            screenKeyboardPrompt.focus()
+            if (config.isMobile && window.visualViewport) {
+              window.visualViewport?.addEventListener(
+                "resize",
+                () => {
+                  scrollToWord()
+                },
+                { once: true },
+              )
+            } else {
+              scrollToWord()
+            }
+          }
         }}
       >
         <div class="paragraphs">

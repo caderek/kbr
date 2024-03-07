@@ -17,6 +17,8 @@ export type IconsId =
   | "info"
   | "light-mode"
   | "loading"
+  | "logo"
+  | "menu"
   | "more"
   | "profile"
   | "reload"
@@ -47,6 +49,8 @@ export type IconsKey =
   | "Info"
   | "LightMode"
   | "Loading"
+  | "Logo"
+  | "Menu"
   | "More"
   | "Profile"
   | "Reload"
@@ -77,6 +81,8 @@ export enum Icons {
   Info = "info",
   LightMode = "light-mode",
   Loading = "loading",
+  Logo = "logo",
+  Menu = "menu",
   More = "more",
   Profile = "profile",
   Reload = "reload",
@@ -108,14 +114,16 @@ export const ICONS_CODEPOINTS: { [key in Icons]: string } = {
   [Icons.Info]: "61712",
   [Icons.LightMode]: "61713",
   [Icons.Loading]: "61714",
-  [Icons.More]: "61715",
-  [Icons.Profile]: "61716",
-  [Icons.Reload]: "61717",
-  [Icons.Repeat]: "61718",
-  [Icons.Settings]: "61719",
-  [Icons.Stats]: "61720",
-  [Icons.ToggleOff]: "61721",
-  [Icons.ToggleOn]: "61722",
-  [Icons.Warning]: "61723",
-  [Icons.Watch]: "61724",
+  [Icons.Logo]: "61715",
+  [Icons.Menu]: "61716",
+  [Icons.More]: "61717",
+  [Icons.Profile]: "61718",
+  [Icons.Reload]: "61719",
+  [Icons.Repeat]: "61720",
+  [Icons.Settings]: "61721",
+  [Icons.Stats]: "61722",
+  [Icons.ToggleOff]: "61723",
+  [Icons.ToggleOn]: "61724",
+  [Icons.Warning]: "61725",
+  [Icons.Watch]: "61726",
 };

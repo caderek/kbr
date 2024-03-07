@@ -79,7 +79,7 @@
   transition: 0.5s;
 }
 
-@media screen and (max-width: 1023px) {
+@media screen and (max-width: 63.99rem) {
   .statusbar {
     font-size: var(--font-s);
   }
@@ -87,6 +87,7 @@
   .statusbar .slug {
     font-size: var(--font-l);
     max-width: none;
+    margin-left: var(--space-s);
   }
 
   .statusbar .stats {

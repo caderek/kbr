@@ -1,7 +1,7 @@
 header {
   font-family: var(--font-sans);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr;
   padding: var(--space-m) 0;
   background: var(--color-bg);
   position: relative;
@@ -83,4 +83,77 @@ header nav a {
 header nav a:hover {
   text-decoration: none;
   color: var(--color-fg-accent);
+}
+
+header > button {
+  background: transparent;
+  font-size: 0;
+  width: fit-content;
+  padding: var(--space-s);
+  position: absolute;
+  right: var(--space-xs);
+  top: var(--space-xs);
+  cursor: pointer;
+}
+
+header > button i {
+  font-size: 0;
+}
+
+header > button i:before {
+  font-size: var(--font-xl);
+  line-height: var(--font-xl);
+  color: var(--color-fg-lc);
+}
+
+@media screen and (max-width: 63.99rem) {
+  header {
+    padding: var(--space-s) 0;
+    display: block;
+  }
+
+  header .logo {
+    margin-left: var(--space-s);
+  }
+
+  header .logo img {
+    height: var(--font-2xl);
+  }
+
+  header .mobile-menu {
+    background: var(--color-bg);
+    position: absolute;
+    width: 100%;
+    top: calc(var(--font-2xl) + var(--font-m));
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: "profile" "menu";
+    border-bottom: solid 2px var(--color-bg-bar);
+    box-shadow: 0rem 0.5rem 1rem var(--color-shadow);
+  }
+
+  header .mobile-menu .menu {
+    grid-area: menu;
+    border-top: solid 1px var(--color-bg-bar);
+    padding-top: var(--space-s);
+  }
+
+  header .mobile-menu .menu li {
+    all: unset;
+    font-size: var(--font-m);
+    color: var(--color-fg);
+    display: block;
+    text-align: right;
+    padding: var(--space-s) var(--space-m);
+  }
+
+  header .mobile-menu .profile {
+    grid-area: profile;
+    padding: var(--space-m);
+    border-top: solid 1px var(--color-bg-bar);
+  }
+
+  header .mobile-menu .profile ul {
+    margin-right: 0;
+  }
 }

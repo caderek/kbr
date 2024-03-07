@@ -1,0 +1,12 @@
+.books {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.filters {
+  background: var(--color-bg-hc);
+  height: 1rem;
+  margin-bottom: var(--space-xl);
+}
