@@ -1,0 +1,19 @@
+adventure
+autobiography
+biography
+children’s
+comedy
+drama
+fantasy
+fiction
+horror
+memoir
+mystery
+nonfiction
+philosophy
+poetry
+satire
+science fiction
+shorts
+spirituality
+travel

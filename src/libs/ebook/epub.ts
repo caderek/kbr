@@ -1,23 +1,9 @@
-import {
-  BlobReader,
-  BlobWriter,
-  ZipReader,
-  TextWriter,
-  Entry,
-} from "@zip.js/zip.js"
+import { BlobReader, BlobWriter, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
 import { getCharset, replacements } from "../charsets"
 import { prepareCover } from "./prepareCover"
-import type {
-  ManifestEntry,
-  FlatElement,
-  Part,
-  TocElement,
-  Chapter,
-  Info,
-  Book,
-} from "./types"
+import type { ManifestEntry, FlatElement, Part, TocElement, Chapter, Info, Book } from "./types"
 import { extractGenres } from "./extractGenres"
 import { sanitizeDescription } from "./sanitizeDescription"
 import { toUrlIfPossible } from "./toUrlIfPossible"
@@ -45,13 +31,7 @@ const SKIP_TITLES_BY_LANG = {
       "imprint",
       "colophon",
     ],
-    pl: [
-      "spis treści",
-      "strona redakcyjna",
-      "o tej publikacji",
-      "o autorze",
-      "bibliografia",
-    ],
+    pl: ["spis treści", "strona redakcyjna", "o tej publikacji", "o autorze", "bibliografia"],
   },
   patterns: {
     en: [],
@@ -123,19 +103,14 @@ export class Epub {
 
   async #readFile(filePath: string, entries: Entry[]) {
     const ext = filePath.split(".").at(-1)
-    const file = entries.find(
-      (entry) =>
-        entry.filename === filePath || entry.filename.endsWith(filePath),
-    )
+    const file = entries.find((entry) => entry.filename === filePath || entry.filename.endsWith(filePath))
 
     if (file === undefined || file.getData == undefined) {
       throw new Error("Incorrect epub file")
     }
 
     const textWriter = new TextWriter()
-    const text = (await file.getData(textWriter))
-      .replace(/<script.*\/script>/gs, "")
-      .replace(/<script.*>/g, "")
+    const text = (await file.getData(textWriter)).replace(/<script.*\/script>/gs, "").replace(/<script.*>/g, "")
 
     const parser = new DOMParser()
 
@@ -159,16 +134,10 @@ export class Epub {
   }
 
   #readToc(element: Element, prefix: string, parentLabel?: string) {
-    const toc: TocElement[][] = [
-      ...element.querySelectorAll(":scope > navPoint"),
-    ].map((navPoint) => {
-      const currentLabel = this.#cleanText(
-        navPoint.querySelector("navLabel")?.textContent ?? "",
-      )
+    const toc: TocElement[][] = [...element.querySelectorAll(":scope > navPoint")].map((navPoint) => {
+      const currentLabel = this.#cleanText(navPoint.querySelector("navLabel")?.textContent ?? "")
 
-      const label = parentLabel
-        ? `${parentLabel} - ${currentLabel}`
-        : currentLabel
+      const label = parentLabel ? `${parentLabel} - ${currentLabel}` : currentLabel
 
       let nextLabel: string | undefined = label
 
@@ -216,8 +185,7 @@ export class Epub {
 
         if (entry.type === "paragraph") {
           if (prevType === null) {
-            const fragment =
-              entry.text.slice(0, 50) + (entry.text.length > 50 ? "..." : "")
+            const fragment = entry.text.slice(0, 50) + (entry.text.length > 50 ? "..." : "")
 
             title.push(fragment)
           }
@@ -240,10 +208,7 @@ export class Epub {
   }
 
   #findChapterStart(chapter: TocElement, sequence: FlatElement[]) {
-    return sequence.findIndex(
-      (entry) =>
-        entry.path === chapter.path && (!chapter.id || entry.id === chapter.id),
-    )
+    return sequence.findIndex((entry) => entry.path === chapter.path && (!chapter.id || entry.id === chapter.id))
   }
 
   #prepareBookWithToc(parts: Part[], toc: TocElement[]) {
@@ -260,9 +225,7 @@ export class Epub {
         continue
       }
 
-      const to = nextChapter
-        ? this.#findChapterStart(nextChapter, sequence)
-        : sequence.length
+      const to = nextChapter ? this.#findChapterStart(nextChapter, sequence) : sequence.length
 
       let title: string[] = []
       let paragraphs: string[] = []
@@ -280,9 +243,7 @@ export class Epub {
           if (
             title.length === 0 &&
             paragraphs.length === 0 &&
-            currentChapter.label
-              .toLowerCase()
-              .includes(entry.text.toLowerCase())
+            currentChapter.label.toLowerCase().includes(entry.text.toLowerCase())
           ) {
             continue // skip chapter title as normal paragraph
           }
@@ -299,19 +260,13 @@ export class Epub {
         }
       }
 
-      if (
-        paragraphs.length > 0 &&
-        !SKIP_TITLES.phrases.has(paragraphs[0].toLowerCase())
-      ) {
+      if (paragraphs.length > 0 && !SKIP_TITLES.phrases.has(paragraphs[0].toLowerCase())) {
         const missingTitleParts = title.filter(
-          (chunk) =>
-            !stripSymbols(currentChapter.label).includes(stripSymbols(chunk)),
+          (chunk) => !stripSymbols(currentChapter.label).includes(stripSymbols(chunk)),
         )
 
         const tempTitle = this.#cleanText(
-          [currentChapter.label, ...missingTitleParts]
-            .map((chunk) => chunk.trim())
-            .join(" - "),
+          [currentChapter.label, ...missingTitleParts].map((chunk) => chunk.trim()).join(" - "),
         )
 
         const withoutPageNumber = tempTitle.replace(/\.+\s*\d+/, "").trim()
@@ -332,15 +287,9 @@ export class Epub {
     return chapters
   }
 
-  async #getCover(
-    manifestEntries: ManifestEntry[],
-    entries: Entry[],
-    info: Info,
-  ) {
+  async #getCover(manifestEntries: ManifestEntry[], entries: Entry[], info: Info) {
     const coverEntry = (manifestEntries.find(
-      ([key, entry]) =>
-        entry.type === "image" &&
-        (entry.path.includes("cover") || key.includes("cover")),
+      ([key, entry]) => entry.type === "image" && (entry.path.includes("cover") || key.includes("cover")),
     ) ?? [])[1]
 
     if (!coverEntry) {
@@ -351,9 +300,7 @@ export class Epub {
     }
 
     const entry = entries.find(
-      (entry) =>
-        entry.filename === coverEntry.path ||
-        entry.filename.endsWith(coverEntry.path),
+      (entry) => entry.filename === coverEntry.path || entry.filename.endsWith(coverEntry.path),
     )
 
     if (entry === undefined || entry.getData == undefined) {
@@ -374,10 +321,7 @@ export class Epub {
     const metadata = content.querySelector("metadata")
     const children = [...(metadata?.children ?? [])]
 
-    const language = getLanguage(
-      children.find((node) => node.tagName === "dc:language")?.textContent ??
-        undefined,
-    )
+    const language = getLanguage(children.find((node) => node.tagName === "dc:language")?.textContent ?? undefined)
 
     this.#charset = getCharset(language ?? "?")
     this.#cleanText = cleanText(this.#charset)
@@ -387,31 +331,20 @@ export class Epub {
       .map((node) => node.textContent)
       .filter((item) => item !== null && item.trim() !== "") as string[]
 
-    const title =
-      children.find((node) => node.tagName === "dc:title")?.textContent ?? null
+    const title = children.find((node) => node.tagName === "dc:title")?.textContent ?? null
 
-    const author =
-      children.find((node) => node.tagName === "dc:creator")?.textContent ??
-      null
+    const author = children.find((node) => node.tagName === "dc:creator")?.textContent ?? null
 
-    const rights =
-      children.find((node) => node.tagName === "dc:rights")?.textContent ?? null
+    const rights = children.find((node) => node.tagName === "dc:rights")?.textContent ?? null
 
-    const publisher =
-      children.find((node) => node.tagName === "dc:publisher")?.textContent ??
-      null
+    const publisher = children.find((node) => node.tagName === "dc:publisher")?.textContent ?? null
 
     const uid = children.find((node) => node.id === "uid")?.textContent ?? null
 
-    const seSource =
-      uid && uid.startsWith("url:https://standardebooks.org")
-        ? uid.slice(4)
-        : null
+    const seSource = uid && uid.startsWith("url:https://standardebooks.org") ? uid.slice(4) : null
 
     const source = toUrlIfPossible(
-      seSource ??
-        children.find((node) => node.tagName === "dc:source")?.textContent ??
-        null,
+      seSource ?? children.find((node) => node.tagName === "dc:source")?.textContent ?? null,
     )
 
     const subjectSE = children
@@ -427,15 +360,12 @@ export class Epub {
     const year = years.length > 0 ? Math.min(...years.map(Number)) : null
 
     let longDescription = sanitizeDescription(
-      children.find(
-        (node) => node.getAttribute("property") === "se:long-description",
-      )?.textContent ?? null,
+      children.find((node) => node.getAttribute("property") === "se:long-description")?.textContent ?? null,
       this.#cleanText,
     )
 
     let rawDescription = sanitizeDescription(
-      children.find((node) => node.tagName === "dc:description")?.textContent ??
-        null,
+      children.find((node) => node.tagName === "dc:description")?.textContent ?? null,
       this.#cleanText,
     )
 
@@ -451,11 +381,7 @@ export class Epub {
       description = rawDescription[0]
     }
 
-    const genres = extractGenres(
-      subject,
-      subjectSE,
-      rawDescription ?? longDescription ?? undefined,
-    )
+    const genres = extractGenres(subject, subjectSE, rawDescription ?? longDescription ?? undefined)
 
     const info = {
       title,
@@ -478,9 +404,7 @@ export class Epub {
     const prefix = structureFilePath.startsWith("OEBPS/") ? "OEBPS/" : ""
     const info = this.#getInfo(content)
 
-    const manifestEntries: ManifestEntry[] = [
-      ...(content.querySelectorAll("manifest > item") ?? []),
-    ].map((item) => {
+    const manifestEntries: ManifestEntry[] = [...(content.querySelectorAll("manifest > item") ?? [])].map((item) => {
       const mime = item.getAttribute("media-type") ?? ""
       const file = item.getAttribute("href") ?? ""
       const path = `${prefix}${file}`
@@ -505,8 +429,7 @@ export class Epub {
     }
     // document.body.appendChild(cover.standard)
 
-    const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
-      [])[1]
+    const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ?? [])[1]
 
     let toc: TocElement[] | null = null
 
@@ -519,20 +442,18 @@ export class Epub {
       }
     }
 
-    const spine = [...(content.querySelectorAll("spine > itemref") ?? [])].map(
-      (item) => {
-        const id = item.getAttribute("idref")
-        if (!id) {
-          return null
-        }
+    const spine = [...(content.querySelectorAll("spine > itemref") ?? [])].map((item) => {
+      const id = item.getAttribute("idref")
+      if (!id) {
+        return null
+      }
 
-        return {
-          id,
-          ...(manifest[id] ?? {}),
-          linear: item.getAttribute("linear") === "yes",
-        }
-      },
-    )
+      return {
+        id,
+        ...(manifest[id] ?? {}),
+        linear: item.getAttribute("linear") === "yes",
+      }
+    })
 
     const parts = []
 
@@ -642,10 +563,7 @@ export class Epub {
       }
     }
 
-    const rawChapters =
-      toc === null
-        ? this.#prepareBookWithoutToc(parts)
-        : this.#prepareBookWithToc(parts, toc)
+    const rawChapters = toc === null ? this.#prepareBookWithoutToc(parts) : this.#prepareBookWithToc(parts, toc)
 
     const chapters = rawChapters.filter(({ title }) => !shouldSkip(title))
 
@@ -654,13 +572,7 @@ export class Epub {
       .flat()
       .join(" ")
 
-    const special = [
-      ...new Set(
-        [...all].filter(
-          (char) => !this.#charset.has(char) && !replacements.letters[char],
-        ),
-      ),
-    ]
+    const special = [...new Set([...all].filter((char) => !this.#charset.has(char) && !replacements.letters[char]))]
 
     console.log("--- SPECIAL -----------------")
     console.log(special.join())

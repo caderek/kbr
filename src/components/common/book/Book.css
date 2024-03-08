@@ -1,7 +1,7 @@
 .book {
-  --cover-height: 18rem;
-  --cover-width: 12rem;
-  --info-width: 20rem;
+  --cover-height: 15rem;
+  --cover-width: 10rem;
+  --info-width: 18rem;
   --pages: 300;
   height: var(--cover-height);
   width: calc(var(--cover-width) + var(--info-width));
@@ -32,22 +32,22 @@
 }
 
 .book h3 {
-  font-size: var(--font-l);
-  font-weight: 400;
+  font-size: var(--font-m);
+  font-weight: 600;
   margin-bottom: var(--space-xs);
   max-width: calc(var(--info-width) - 2 * var(--space-l) - var(--space-m));
 }
 
 .book p {
-  font-size: var(--font-m);
+  font-size: var(--font-s);
   margin-bottom: var(--space-s);
 }
 
 .book p.description {
   font-style: italic;
   color: var(--color-fg-lc);
-  line-height: var(--font-xl);
-  height: calc(var(--font-xl) * 3);
+  line-height: var(--font-l);
+  height: calc(var(--font-l) * 3);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -57,7 +57,7 @@
 
 .book ul {
   list-style: none;
-  font-size: var(--font-s);
+  font-size: var(--font-xs);
   display: flex;
   flex-wrap: wrap;
   text-transform: uppercase;
@@ -65,7 +65,8 @@
 
 .book ul.stats {
   margin-bottom: var(--space-s);
-  font-size: var(--font-m);
+  font-size: var(--font-s);
+  font-weight: 600;
   text-transform: none;
 }
 
@@ -99,6 +100,7 @@
 .book ul li.new a {
   color: var(--color-fg-error);
   background: var(--color-bg-error);
+  font-weight: 600;
 }
 
 .book ul li.in-progress a {
@@ -116,10 +118,14 @@
   height: var(--font-2xl);
   position: absolute;
   top: 0;
-  right: 0;
+  left: calc(var(--info-width) - var(--space-l) - var(--space-s));
   background: transparent;
-
+  color: var(--color-fg-lc);
   font-size: 0;
+  cursor: pointer;
+}
+.book button.favorite.active {
+  color: var(--color-fg-ok);
 }
 
 .book button.favorite i {
@@ -134,5 +140,35 @@
   top: var(--space-s);
   right: var(--space-s);
   font-size: var(--font-2xl);
-  color: var(--color-fg-lc);
+}
+
+@media screen and (max-width: 31.99rem) {
+  .book {
+    margin: var(--space-xs) var(--space-xs);
+  }
+
+  .book .info {
+    padding: var(--space-m);
+    top: 0;
+    right: 0;
+    left: var(--cover-width);
+    overflow-y: auto;
+  }
+
+  .book button.favorite {
+    left: auto;
+    top: 0;
+    right: 0;
+  }
+  .book .tags {
+    display: none;
+  }
+
+  .book p.description {
+    height: calc(var(--font-l) * 4);
+    -webkit-line-clamp: 4;
+  }
+  .book h3 {
+    max-width: calc(100% - var(--space-m) - var(--space-xs));
+  }
 }

@@ -7,7 +7,7 @@ const repeated = new Array(22).fill(null).map((_) => ({
   title: "Dracula",
   author: "Bram Stoker",
   description: "An ancient undead monster terrorizes Victorian London.",
-  pages: Math.ceil(Math.random() * 800),
+  pages: Math.ceil(Math.random() * 1000),
   progress: 0,
   favorite: false,
   dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
@@ -21,7 +21,7 @@ const books = [
     author: "H.Beam Piper",
     description:
       "On a planet being exploited for its resources, the discovery of a possibly-sentient native species creates consternation and conflict.",
-    pages: 260,
+    pages: 230,
     progress: 0.12,
     favorite: false,
     dateAdded: Date.now(),

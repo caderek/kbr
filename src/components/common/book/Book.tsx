@@ -42,7 +42,7 @@ const Book: Component<Props> = (props) => {
             </Show>
             <Show when={props.progress > 0 && props.progress < 1}>
               <li class="in-progress" title="Show all in progress">
-                <a href="#">Progress: {formatProgress(props.progress)}%</a>
+                <a href="#">{formatProgress(props.progress)}% done</a>
               </li>
             </Show>
           </ul>
@@ -60,7 +60,7 @@ const Book: Component<Props> = (props) => {
               )}
             </For>
           </ul>
-          <button class="favorite">
+          <button classList={{ favorite: true, active: props.favorite }}>
             <i class={props.favorite ? "icon-bookmark-on" : "icon-bookmark-off"} />
           </button>
         </div>

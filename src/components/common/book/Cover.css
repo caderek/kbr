@@ -43,3 +43,21 @@
   left: var(--width);
   transform: skew(0, -45deg);
 }
+
+@media screen and (max-width: 31.99rem) {
+  .cover {
+    box-shadow: none;
+  }
+
+  .cover > div {
+    top: 0;
+    left: 0;
+    border: solid 1px var(--color-input);
+    border-right: none;
+  }
+
+  .cover > div:after,
+  .cover div:before {
+    all: unset;
+  }
+}
