@@ -5,10 +5,10 @@ import App from "./components/App"
 import Prompt from "./components/pages/prompt/Prompt"
 import Books from "./components/pages/books/Books"
 import "./index.css"
-// import loadOne from "./loadOne.ts"
+import loadOne from "./loadOne.ts"
 import prepareBooks from "./prepareBooks.ts"
 
-// loadOne()
+loadOne()
 // @ts-ignore
 window.prepareBooks = prepareBooks
 

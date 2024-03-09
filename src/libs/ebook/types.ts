@@ -33,7 +33,7 @@ export type Info = {
   author: string | null
   language: string | null
   description: string | null
-  longDescription: string[] | null
+  longDescription: string[]
   year: number | null
   genres: Set<string>
   rights: string | null
@@ -41,8 +41,14 @@ export type Info = {
   source: string | URL | null
 }
 
+export type Cover = Blob | null
+
 export type Book = {
   info: Info
   chapters: Chapter[]
   charset: Set<string>
+  cover: {
+    original: Cover
+    standard: Cover
+  }
 }

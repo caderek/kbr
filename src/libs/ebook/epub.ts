@@ -1,7 +1,7 @@
 import { BlobReader, BlobWriter, ZipReader, TextWriter, Entry } from "@zip.js/zip.js"
 import { getFileType } from "../getFileType"
 import { cleanText } from "../cleanText"
-import { getCharset, replacements } from "../charsets"
+import { getCharset } from "../charsets"
 import { prepareCover } from "./prepareCover"
 import type { ManifestEntry, FlatElement, Part, TocElement, Chapter, Info, Book } from "./types"
 import { extractGenres } from "./extractGenres"
@@ -310,7 +310,6 @@ export class Epub {
     const blob = await entry.getData(new BlobWriter())
     const file = new File([blob], "cover", { type: coverEntry.mime })
 
-    // return prepareCover(file, info)
     return {
       original: await prepareCover(file, info),
       standard: await prepareCover(null, info),
@@ -388,7 +387,7 @@ export class Epub {
       author,
       language,
       description,
-      longDescription,
+      longDescription: longDescription ?? [],
       year,
       genres,
       rights,
@@ -423,11 +422,6 @@ export class Epub {
     const manifest = Object.fromEntries(manifestEntries)
 
     const cover = await this.#getCover(manifestEntries, entries, info)
-
-    if (cover.original) {
-      // document.body.appendChild(cover.original)
-    }
-    // document.body.appendChild(cover.standard)
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ?? [])[1]
 
@@ -567,17 +561,17 @@ export class Epub {
 
     const chapters = rawChapters.filter(({ title }) => !shouldSkip(title))
 
-    const all = chapters
-      .map((chapter) => chapter.paragraphs)
-      .flat()
-      .join(" ")
+    // const all = chapters
+    //   .map((chapter) => chapter.paragraphs)
+    //   .flat()
+    //   .join(" ")
+    //
+    // const special = [...new Set([...all].filter((char) => !this.#charset.has(char) && !replacements.letters[char]))]
+    //
+    // console.log("--- SPECIAL -----------------")
+    // console.log(special.join())
+    // console.log(special.map((char) => char.charCodeAt(0)))
 
-    const special = [...new Set([...all].filter((char) => !this.#charset.has(char) && !replacements.letters[char]))]
-
-    console.log("--- SPECIAL -----------------")
-    console.log(special.join())
-    console.log(special.map((char) => char.charCodeAt(0)))
-
-    return { info, chapters, charset: this.#charset }
+    return { info, chapters, charset: this.#charset, cover }
   }
 }

@@ -30,7 +30,9 @@ const Book: Component<Props> = (props) => {
           <p class="author">
             by <a href="#">{props.author}</a>
           </p>
-          <p class="description">{props.description}</p>
+          <p class="description" title={props.description}>
+            {props.description}
+          </p>
           <ul class="stats">
             <li>
               <span>{props.pages} pages</span>

@@ -1,7 +1,8 @@
-import books from "./books.ts"
 import { Epub } from "./libs/ebook/epub.ts"
 
 export async function loadEpub() {
+  const books = await fetch("raw-books/book-paths.json").then((res) => res.json())
+
   const res = await fetch(books[Math.floor(Math.random() * books.length)])
 
   if (!res.ok) {
