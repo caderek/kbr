@@ -48,7 +48,7 @@ export type Book = {
   chapters: Chapter[]
   charset: Set<string>
   cover: {
-    original: Cover
-    standard: Cover
+    medium: Cover
+    small: Cover
   }
 }

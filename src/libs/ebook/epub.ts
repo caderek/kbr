@@ -287,16 +287,13 @@ export class Epub {
     return chapters
   }
 
-  async #getCover(manifestEntries: ManifestEntry[], entries: Entry[], info: Info) {
+  async #getCover(manifestEntries: ManifestEntry[], entries: Entry[], info: Info, size: number) {
     const coverEntry = (manifestEntries.find(
       ([key, entry]) => entry.type === "image" && (entry.path.includes("cover") || key.includes("cover")),
     ) ?? [])[1]
 
     if (!coverEntry) {
-      return {
-        original: null,
-        standard: await prepareCover(null, info),
-      }
+      return prepareCover(null, info, size)
     }
 
     const entry = entries.find(
@@ -309,11 +306,14 @@ export class Epub {
 
     const blob = await entry.getData(new BlobWriter())
     const file = new File([blob], "cover", { type: coverEntry.mime })
+    const cover = await prepareCover(file, info, size)
 
-    return {
-      original: await prepareCover(file, info),
-      standard: await prepareCover(null, info),
-    }
+    // const url = URL.createObjectURL(cover as Blob)
+    // const img = document.createElement("img")
+    // img.src = url
+    // document.body.appendChild(img)
+
+    return cover
   }
 
   #getInfo(content: Document): Info {
@@ -421,7 +421,10 @@ export class Epub {
 
     const manifest = Object.fromEntries(manifestEntries)
 
-    const cover = await this.#getCover(manifestEntries, entries, info)
+    const cover = {
+      medium: await this.#getCover(manifestEntries, entries, info, 320),
+      small: await this.#getCover(manifestEntries, entries, info, 160),
+    }
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ?? [])[1]
 

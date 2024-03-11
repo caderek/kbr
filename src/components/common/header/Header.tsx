@@ -58,7 +58,7 @@ const Header = () => {
       <div class="logo">
         <h1 hidden>Storytype</h1>
         <a href="/">
-          <img src={`images/logo-${state.get.darkmode ? "dark" : "light"}.svg`} />
+          <img src={`/images/logo-${state.get.darkmode ? "dark" : "light"}.svg`} />
         </a>
       </div>
       <Navigation desktop={true} />

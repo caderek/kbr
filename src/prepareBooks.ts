@@ -1,5 +1,4 @@
 import { Epub } from "./libs/ebook/epub.ts"
-import "./libs/fs.ts"
 import { cleanText } from "./libs/cleanText.ts"
 import { getCharset } from "./libs/charsets.ts"
 const charset = getCharset("en")
@@ -33,7 +32,7 @@ async function prepareBooks() {
           clean(text, { ignoreUnknownChars: true, replaceLetters: true })
             .toLowerCase()
             .replace(/\s+/g, "-")
-            .replace(/[.,'"`]/g, ""),
+            .replace(/[^a-z-]/g, ""),
         )
         .join("--")
 
@@ -64,10 +63,10 @@ async function prepareBooks() {
         }
       }
 
-      if (content.cover.original) {
-        const res = await fetch(`http://localhost:1234/cover/original/${dirName}`, {
+      if (content.cover.medium) {
+        const res = await fetch(`http://localhost:1234/cover/medium/${dirName}`, {
           method: "POST",
-          body: content.cover.original,
+          body: content.cover.medium,
         })
 
         if (res.ok) {
@@ -75,10 +74,10 @@ async function prepareBooks() {
         }
       }
 
-      if (content.cover.standard) {
-        const res = await fetch(`http://localhost:1234/cover/standard/${dirName}`, {
+      if (content.cover.small) {
+        const res = await fetch(`http://localhost:1234/cover/small/${dirName}`, {
           method: "POST",
-          body: content.cover.standard,
+          body: content.cover.small,
         })
 
         if (res.ok) {

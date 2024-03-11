@@ -1,0 +1,214 @@
+.book-details {
+  border-top: solid var(--space-m) var(--color-bg-hc);
+  width: 100%;
+}
+
+.book-details .info,
+.book-details .chapters {
+  max-width: min(100%, 75rem);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--space-m);
+}
+
+.book-details .info {
+  --cover-width: 20rem;
+  --cover-height: 30rem;
+  position: relative;
+  padding-left: 24rem;
+  min-height: calc(var(--cover-height) + var(--space-3xl) * 2);
+  padding-bottom: var(--space-3xl);
+}
+
+.book-details .cover {
+  top: var(--space-3xl);
+  left: var(--space-m);
+}
+
+.book-details .info img {
+  position: absolute;
+  top: var(--space-3xl);
+  left: var(--space-m);
+  width: 20rem;
+}
+
+.book-details .info h2 {
+  font-size: var(--font-xl);
+  font-weight: 400;
+  color: var(--color-fg-hc);
+  margin-bottom: var(--space-s);
+}
+
+.book-details .info .author {
+  color: var(--color-fg-hc);
+  margin-bottom: var(--space-m);
+}
+
+.book-details .info .source {
+  color: var(--color-fg-hc);
+  font-size: var(--font-s);
+  font-style: italic;
+  margin-bottom: var(--space-m);
+}
+
+.book-details .info .description {
+  color: var(--color-fg);
+  font-size: var(--font-m);
+  line-height: 1.6;
+}
+
+.book-details .info .description p {
+  margin-bottom: var(--space-m);
+}
+
+.book-details .info .rights {
+  color: var(--color-fg-lc);
+  font-size: var(--font-s);
+  font-style: italic;
+}
+
+.book-details nav {
+  position: absolute;
+  top: var(--space-3xl);
+  right: var(--space-m);
+}
+
+.book-details nav > * + * {
+  margin-inline-start: var(--space-s);
+}
+
+.book-details .tags {
+  list-style: none;
+  font-size: var(--font-s);
+  display: flex;
+  flex-wrap: wrap;
+  text-transform: uppercase;
+  margin-bottom: var(--space-m);
+}
+
+.book-details .tags li {
+  display: inline;
+  font-style: italic;
+}
+.book-details .tags li a {
+  padding: var(--space-xs) var(--space-s);
+  margin-right: var(--space-xs);
+  border-radius: var(--space-xs);
+  background: var(--color-bg-accent);
+}
+
+.book-details .stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--color-bg-hc);
+  border-radius: var(--space-s);
+  margin: var(--space-l) auto;
+  padding: var(--space-l) 0;
+}
+
+.book-details .stats li {
+  text-align: center;
+}
+
+.book-details .stats figcaption {
+  font-size: var(--font-m);
+  font-style: italic;
+  color: var(--color-fg);
+  margin-bottom: var(--space-s);
+}
+
+.book-details .stats p {
+  font-size: var(--font-m);
+  font-style: italic;
+  color: var(--color-fg-hc);
+}
+
+.book-details .stats p strong {
+  font-weight: 400;
+  font-size: var(--font-2xl);
+  font-style: italic;
+}
+
+.book-details hr {
+  border-bottom: solid 2px var(--color-input);
+  max-width: calc(min(100%, 75rem) - 2 * var(--space-m));
+  margin: auto;
+}
+
+.book-details .chapters {
+  padding-top: var(--space-xl);
+}
+
+.book-details .chapters h2 {
+  font-size: var(--font-l);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--color-fg-hc);
+  letter-spacing: 4px;
+  margin-bottom: var(--space-m);
+}
+
+.book-details .chapters ul {
+  list-style: none;
+}
+
+.book-details .chapters li {
+  background: var(--color-bg-hc);
+  margin-bottom: var(--space-s);
+  border-radius: var(--space-xs);
+  position: relative;
+}
+
+.book-details .chapters li.skipped,
+.book-details .chapters li.skipped a {
+  color: var(--color-fg-lc);
+}
+
+.book-details .chapters .chapter-title {
+  padding: var(--space-m);
+}
+
+.book-details .chapters .chapter-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+}
+.book-details .chapter-skip {
+  display: inline-block;
+  height: 100%;
+  padding: var(--space-m);
+}
+
+.book-details .chapter-skip input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+}
+
+.book-details .chapter-skip label {
+  font-size: var(--font-xl);
+  line-height: var(--font-m);
+}
+
+.book-details .chapter-status {
+  padding: var(--space-m);
+  width: 5rem;
+  text-align: right;
+  position: relative;
+  bottom: calc(var(--font-xl) - var(--font-m));
+  margin-left: var(--space-m);
+}
+
+.book-details .chapter-pages {
+  padding: var(--space-s);
+  display: inline-block;
+  background-color: var(--color-bg);
+  position: relative;
+  bottom: calc(var(--font-xl) - var(--font-m));
+  border-radius: var(--space-xs);
+  width: 6rem;
+  text-align: center;
+  font-style: italic;
+}

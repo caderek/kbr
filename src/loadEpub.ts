@@ -1,9 +1,11 @@
 import { Epub } from "./libs/ebook/epub.ts"
 
 export async function loadEpub() {
-  const books = await fetch("raw-books/book-paths.json").then((res) => res.json())
+  const books = await fetch("/raw-books/book-paths.json").then((res) => res.json())
 
-  const res = await fetch(books[Math.floor(Math.random() * books.length)])
+  const bookUrl = books[Math.floor(Math.random() * books.length)]
+  console.log({ bookUrl })
+  const res = await fetch("/" + bookUrl)
 
   if (!res.ok) {
     throw new Error("File cannot be fetched")

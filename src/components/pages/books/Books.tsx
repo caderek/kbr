@@ -63,7 +63,7 @@ async function fetchData() {
     pages: Math.ceil(entry.length / (5 * 300)),
     description: entry.description,
     genres: entry.genres,
-    coverUrl: `/books/${entry.dir}/cover-${entry.hasCover ? "original" : "standard"}.png`,
+    coverUrl: `/books/${entry.dir}/cover-${devicePixelRatio > 1 ? "medium" : "small"}.png`,
     progress: Math.random() > 0.2 ? 0 : Math.random() > 0.5 ? 1 : Math.random(),
     favorite: Math.random() > 0.9,
     dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
@@ -71,7 +71,7 @@ async function fetchData() {
 
   const randomBooks: typeof books = []
 
-  while (randomBooks.length < 12 * 5) {
+  while (randomBooks.length < 12 * 4) {
     const book = randomElement(books)
     if (!randomBooks.find((b) => b.dir === book.dir)) {
       randomBooks.push(book)
@@ -104,6 +104,7 @@ const Books: Component = () => {
               favorite={book.favorite}
               dateAdded={book.dateAdded}
               genres={book.genres}
+              dir={book.dir}
             />
           )}
         </For>

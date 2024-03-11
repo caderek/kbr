@@ -3,7 +3,7 @@
 :root {
   --color-bg: #d5d6db;
   --color-bg-lc: #c8c9d0;
-  --color-bg-hc: #e9eaec;
+  --color-bg-hc: #e3e4e8;
   --color-bg-ok: #63824233;
   --color-bg-warning: #8f5e1533;
   --color-bg-error: #8c435133;
@@ -58,6 +58,7 @@
   --space-l: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --space-3xl: 64px;
 }
 
 .dark {
@@ -114,6 +115,33 @@ a:hover {
   text-decoration: underline;
 }
 
+button,
+a.button {
+  display: inline-block;
+  text-decoration: none;
+  font-size: var(--font-m);
+  line-height: var(--font-m);
+  color: var(--color-fg);
+  color: var(--color-fg);
+  background: var(--color-input);
+  padding: var(--space-m);
+  border-radius: var(--space-xs);
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+button.primary,
+a.button.primary {
+  color: var(--color-bg-hc);
+  background: var(--color-fg-accent);
+  font-weight: 600;
+}
+
+button:hover,
+a.button:hover {
+  opacity: 1;
+}
+
 @media screen and (min-width: 64rem) {
   .mobile {
     display: none;
@@ -127,5 +155,10 @@ a:hover {
 
   a:hover {
     text-decoration: none;
+  }
+
+  button,
+  a.button {
+    opacity: 1;
   }
 }

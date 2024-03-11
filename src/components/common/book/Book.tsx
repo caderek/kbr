@@ -6,6 +6,7 @@ const WEEK_MS = 1000 * 60 * 60 * 24 * 7
 
 type Props = {
   coverUrl: string
+  dir: string
   title: string
   author: string
   description: string
@@ -26,7 +27,9 @@ const Book: Component<Props> = (props) => {
       <Cover url={props.coverUrl} />
       <div class="scroll-box">
         <div class="info">
-          <h3>{props.title}</h3>
+          <h3>
+            <a href={"/books/" + props.dir}>{props.title}</a>
+          </h3>
           <p class="author">
             by <a href="#">{props.author}</a>
           </p>
