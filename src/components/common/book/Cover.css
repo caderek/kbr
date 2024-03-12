@@ -3,7 +3,10 @@
   --height: var(--cover-height);
   --max-thickness: calc(var(--cover-width) * 0.1875);
   --min-thickness: calc(var(--cover-width) * 0.0125);
-  --thickness: max(min(calc(var(--pages) * var(--max-thickness) / 1000), var(--max-thickness)), var(--min-thickness));
+  --thickness: max(
+    min(calc(var(--pages) * var(--max-thickness) / 1000), var(--max-thickness)),
+    var(--min-thickness)
+  );
   width: var(--width);
   height: var(--height);
   background: transparent;
@@ -16,7 +19,6 @@
   content: "";
   width: var(--width);
   height: var(--thickness);
-  background: red;
   position: absolute;
   top: var(--height);
   left: calc(-1 * var(--thickness) / 2);
@@ -38,7 +40,11 @@
   width: var(--width);
   height: var(--thickness);
   background: linear-gradient(90deg, var(--color-paper-shadow), transparent),
-    repeating-linear-gradient(0deg, var(--color-paper), var(--color-paper-hc) 3px);
+    repeating-linear-gradient(
+      0deg,
+      var(--color-paper),
+      var(--color-paper-hc) 3px
+    );
   position: absolute;
   top: calc(-1 * var(--thickness));
   left: calc(var(--thickness) / 2);
@@ -49,8 +55,16 @@
   content: "";
   width: var(--thickness);
   height: var(--height);
-  background: linear-gradient(0deg, var(--color-paper-shadow), var(--color-paper-shadow)),
-    repeating-linear-gradient(90deg, var(--color-paper), var(--color-paper-hc) 3px);
+  background: linear-gradient(
+      0deg,
+      var(--color-paper-shadow),
+      var(--color-paper-shadow)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--color-paper),
+      var(--color-paper-hc) 3px
+    );
   position: absolute;
   top: calc(-1 * var(--thickness) / 2);
   left: var(--width);

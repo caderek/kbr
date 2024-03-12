@@ -35,7 +35,7 @@ const BookDetails: Component<Params> = () => {
       <Show when={data()}>
         <section class="info" style={`--pages: ${data()?.pages}`}>
           <h2>{data()?.title}</h2>
-          <Cover url={`/books/${params.id}/cover-medium.png`} />
+          <Cover url={`/books/${params.id}/cover-medium.min.png`} />
           <nav>
             <button>EDIT</button>
             <button class="primary">CONTINUE</button>

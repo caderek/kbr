@@ -44,8 +44,10 @@ async function saveCover(req) {
   const data = await readBlob(req)
 
   const BOOK_DIR = path.join(OUT_DIR, dirName)
+  const coverPath = path.join(BOOK_DIR, `cover-${type}.png`)
+
   await fs.mkdir(BOOK_DIR, { recursive: true })
-  await fs.writeFile(path.join(BOOK_DIR, `cover-${type}.png`), data)
+  await fs.writeFile(coverPath, data)
 }
 
 http

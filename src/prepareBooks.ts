@@ -7,7 +7,7 @@ async function getRawEpubPaths() {
 }
 
 async function prepareBooks() {
-  const bookPaths = (await getRawEpubPaths()).slice(0, 10)
+  const bookPaths = (await getRawEpubPaths()).slice(0)
 
   for (const bookPath of bookPaths) {
     try {
@@ -26,6 +26,11 @@ async function prepareBooks() {
 
       const { cover, chapters, info } = serializeBook(content)
 
+      if (info.genres.includes("poetry") || info.genres.includes("drama")) {
+        console.log("Skipping drama and poetry")
+        continue
+      }
+
       {
         const res = await fetch("http://localhost:1234", {
           method: "POST",
@@ -37,12 +42,17 @@ async function prepareBooks() {
         }
       }
 
-      if (content.cover.medium) {
+      if (cover.medium) {
+        const headers = new Headers()
+        headers.append("Content-Type", "image/png")
+        headers.append("Content-Length", cover.medium.size.toString())
+
         const res = await fetch(
           `http://localhost:1234/cover/medium/${info.id}`,
           {
             method: "POST",
             body: cover.medium,
+            headers,
           },
         )
 
@@ -51,12 +61,17 @@ async function prepareBooks() {
         }
       }
 
-      if (content.cover.small) {
+      if (cover.small) {
+        const headers = new Headers()
+        headers.append("Content-Type", "image/png")
+        headers.append("Content-Length", cover.small.size.toString())
+
         const res = await fetch(
           `http://localhost:1234/cover/small/${info.id}`,
           {
             method: "POST",
             body: content.cover.small,
+            headers,
           },
         )
 

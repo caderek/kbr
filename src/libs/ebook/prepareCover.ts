@@ -184,7 +184,7 @@ function drawCover(ctx: CanvasRenderingContext2D, info: Info) {
 
 function getBlob(canvas: HTMLCanvasElement) {
   return new Promise((resolve) =>
-    canvas.toBlob((blob) => resolve(blob)),
+    canvas.toBlob((blob) => resolve(blob), "image/png"),
   ) as Promise<Blob | null>
 }
 

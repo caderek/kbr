@@ -17,7 +17,7 @@ async function fetchData() {
     genres: entry.genres,
     coverUrl: `/books/${entry.id}/cover-${
       devicePixelRatio > 1 ? "medium" : "small"
-    }.png`,
+    }.min.png`,
     progress: Math.random() > 0.2 ? 0 : Math.random() > 0.5 ? 1 : Math.random(),
     favorite: Math.random() > 0.9,
     dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
