@@ -4,20 +4,8 @@ import { loadEpub } from "./loadEpub.ts"
 async function loadOne() {
   const book = await loadEpub()
 
-  const chapterNum = 2
-
-  const paragraphs = []
-  let size = 0
-  const wordsPerPage = 300
-  const charsPerPage = wordsPerPage * 5
-  for (const p of book.chapters[chapterNum].paragraphs) {
-    if (size < charsPerPage && size + p.length < charsPerPage + 100) {
-      paragraphs.push(p)
-      size += p.length
-    }
-  }
-
-  console.log({ size })
+  const chapterNum = 13
+  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
   // const paragraphs = new Array(20).fill("the")
   // const paragraphs = ["the hello", "the little", "the again"]
   // const paragraphs = ["out there again have so school get the must very"]

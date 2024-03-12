@@ -25,44 +25,16 @@ async function readJSON(req) {
   return JSON.parse(buff.toString("utf8"))
 }
 
-function prepeareBookData(book) {
-  const chapters = book.chapters.map((chapter, id) => {
-    return {
-      id: String(id).padStart(3, "0"),
-      title: chapter.title,
-      length: chapter.paragraphs.reduce((charsCount, paragraph) => charsCount + paragraph.length + 1, 0),
-      skip: "no", // 'always' | 'yes'
-      text: chapter.paragraphs.join("\n"),
-    }
-  })
-
-  const fullInfo = {
-    ...book.info,
-    chapters: chapters.map((chapter) => ({
-      id: chapter.id,
-      title: chapter.title,
-      length: chapter.length,
-      skip: chapter.skip,
-    })),
-    charset: book.charset,
-  }
-
-  return { chapters, fullInfo }
-}
-
 async function saveBook(book) {
-  if (!book.info) {
-    return
-  }
-
-  const { chapters, fullInfo } = prepeareBookData(book)
-
-  const BOOK_DIR = path.join(OUT_DIR, book.dirName)
+  const BOOK_DIR = path.join(OUT_DIR, book.info.id)
 
   await fs.mkdir(BOOK_DIR, { recursive: true })
-  await fs.writeFile(path.join(BOOK_DIR, "info.json"), JSON.stringify(fullInfo))
+  await fs.writeFile(
+    path.join(BOOK_DIR, "info.json"),
+    JSON.stringify(book.info),
+  )
 
-  for (const chapter of chapters) {
+  for (const chapter of book.chapters) {
     await fs.writeFile(path.join(BOOK_DIR, `${chapter.id}.txt`), chapter.text)
   }
 }

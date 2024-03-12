@@ -29,26 +29,31 @@ export type Chapter = {
 }
 
 export type Info = {
+  id: string
   title: string | null
   author: string | null
   language: string | null
   description: string | null
   longDescription: string[]
   year: number | null
-  genres: Set<string>
+  genres: string[]
   rights: string | null
   publisher: string | null
-  source: string | URL | null
+  source: {
+    isUrl: boolean
+    value: string
+  } | null
 }
 
-export type Cover = Blob | null
+export type CoverEntry = Blob | null
+
+export type Cover = {
+  medium: CoverEntry
+  small: CoverEntry
+}
 
 export type Book = {
   info: Info
   chapters: Chapter[]
-  charset: Set<string>
-  cover: {
-    medium: Cover
-    small: Cover
-  }
+  cover: Cover
 }

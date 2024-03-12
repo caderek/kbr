@@ -15,6 +15,7 @@
     "@zip.js/zip.js": "^2.7.32",
     "epubjs": "^0.3.93",
     "is-mobile": "^4.0.0",
+    "localforage": "^1.10.0",
     "solid-js": "^1.7.8"
   },
   "devDependencies": {

@@ -3,6 +3,47 @@ export type WordListData = {
   words: string[]
 }
 
+export type StaticChapterInfo = {
+  id: string
+  title: string
+  length: number
+  skip: "no" | "yes" | "always"
+}
+
+export type StaticBookInfo = {
+  id: string
+  title: string | null
+  author: string | null
+  language: string | null
+  description: string | null
+  longDescription: string[]
+  year: number | null
+  genres: string[]
+  rights: string | null
+  publisher: string | null
+  source: {
+    isUrl: boolean
+    value: string
+  } | null
+  chapters: StaticChapterInfo[]
+}
+
+export type StaticChapterContent = {
+  id: string
+  text: string
+}
+
+export type QuickBookInfo = {
+  id: string
+  title: string
+  author: string
+  description: string | null
+  genres: string[]
+  length: number
+}
+
+export type DynamicBookInfo = {}
+
 export type State = {
   lang: "en" | "pl"
   darkmode: boolean

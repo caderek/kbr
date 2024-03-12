@@ -43,11 +43,17 @@ const hasKeywords = (text: string) => (keywords: (string | RegExp)[]) => {
   const words = text.split(" ").map((word) => word.replace(/[^a-z]+$/, ""))
 
   return keywords.some((keyword) =>
-    keyword instanceof RegExp ? words.some((word) => keyword.test(word)) : text.includes(keyword),
+    keyword instanceof RegExp
+      ? words.some((word) => keyword.test(word))
+      : text.includes(keyword),
   )
 }
 
-export function extractGenres(subject: string[], subjectSE: string[], description?: string[]): Set<string> {
+export function extractGenres(
+  subject: string[],
+  subjectSE: string[],
+  description?: string[],
+): string[] {
   const genres: Set<string> = new Set()
 
   let text = ""
@@ -59,7 +65,7 @@ export function extractGenres(subject: string[], subjectSE: string[], descriptio
   }
 
   if (!text) {
-    return genres
+    return [...genres]
   }
 
   const hasKeywordsInText = hasKeywords(text)
@@ -70,5 +76,5 @@ export function extractGenres(subject: string[], subjectSE: string[], descriptio
     }
   }
 
-  return genres
+  return [...genres]
 }

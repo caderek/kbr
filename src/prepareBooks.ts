@@ -1,21 +1,18 @@
 import { Epub } from "./libs/ebook/epub.ts"
-import { cleanText } from "./libs/cleanText.ts"
-import { getCharset } from "./libs/charsets.ts"
-const charset = getCharset("en")
-const clean = cleanText(charset)
+import { serializeBook } from "./libs/ebook/serialize.ts"
 
 async function getRawEpubPaths() {
-  const res = await fetch("raw-books/book-paths.json")
+  const res = await fetch("/raw-books/book-paths.json")
   return res.json()
 }
 
 async function prepareBooks() {
-  const bookPaths = (await getRawEpubPaths()).slice(0)
+  const bookPaths = (await getRawEpubPaths()).slice(0, 10)
 
   for (const bookPath of bookPaths) {
     try {
       console.log(bookPath)
-      const res = await fetch(bookPath)
+      const res = await fetch("/" + bookPath)
 
       if (!res.ok) {
         console.error("Cannot fetch")
@@ -27,61 +24,44 @@ async function prepareBooks() {
       const book = new Epub(data)
       const content = await book.load()
 
-      const dirName = [content.info.author ?? "Unknown", content.info.title ?? "No Title"]
-        .map((text) =>
-          clean(text, { ignoreUnknownChars: true, replaceLetters: true })
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z-]/g, ""),
-        )
-        .join("--")
-
-      console.log(dirName)
-
-      const serialized = {
-        dirName,
-        ...content,
-        charset: [...content.charset],
-        info: {
-          ...content.info,
-          genres: [...content.info.genres],
-          source:
-            content.info.source instanceof URL
-              ? { isUrl: true, value: content.info.source.toString() }
-              : { isUrl: false, value: content.info.source },
-        },
-      }
+      const { cover, chapters, info } = serializeBook(content)
 
       {
         const res = await fetch("http://localhost:1234", {
           method: "POST",
-          body: JSON.stringify(serialized),
+          body: JSON.stringify({ info, chapters }),
         })
 
         if (res.ok) {
-          console.log("Done:", bookPath)
+          console.log("Done info:", info.id)
         }
       }
 
       if (content.cover.medium) {
-        const res = await fetch(`http://localhost:1234/cover/medium/${dirName}`, {
-          method: "POST",
-          body: content.cover.medium,
-        })
+        const res = await fetch(
+          `http://localhost:1234/cover/medium/${info.id}`,
+          {
+            method: "POST",
+            body: cover.medium,
+          },
+        )
 
         if (res.ok) {
-          console.log("Done original cover:", bookPath)
+          console.log("Done medium cover:", info.id)
         }
       }
 
       if (content.cover.small) {
-        const res = await fetch(`http://localhost:1234/cover/small/${dirName}`, {
-          method: "POST",
-          body: content.cover.small,
-        })
+        const res = await fetch(
+          `http://localhost:1234/cover/small/${info.id}`,
+          {
+            method: "POST",
+            body: content.cover.small,
+          },
+        )
 
         if (res.ok) {
-          console.log("Done standard cover:", bookPath)
+          console.log("Done small cover:", info.id)
         }
       }
     } catch (e) {

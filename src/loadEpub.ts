@@ -3,7 +3,8 @@ import { Epub } from "./libs/ebook/epub.ts"
 export async function loadEpub() {
   const books = await fetch("/raw-books/book-paths.json").then((res) => res.json())
 
-  const bookUrl = books[Math.floor(Math.random() * books.length)]
+  // const bookUrl = books[Math.floor(Math.random() * books.length)]
+  const bookUrl = books.find((name) => name.includes("ackroyd"))
   console.log({ bookUrl })
   const res = await fetch("/" + bookUrl)
 
