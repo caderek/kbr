@@ -6,7 +6,7 @@ const WEEK_MS = 1000 * 60 * 60 * 24 * 7
 
 type Props = {
   coverUrl: string
-  dir: string
+  id: string
   title: string
   author: string
   description: string
@@ -28,7 +28,7 @@ const Book: Component<Props> = (props) => {
       <div class="scroll-box">
         <div class="info">
           <h3>
-            <a href={"/books/" + props.dir}>{props.title}</a>
+            <a href={"/books/" + props.id}>{props.title}</a>
           </h3>
           <p class="author">
             by <a href="#">{props.author}</a>
@@ -66,7 +66,9 @@ const Book: Component<Props> = (props) => {
             </For>
           </ul>
           <button classList={{ favorite: true, active: props.favorite }}>
-            <i class={props.favorite ? "icon-bookmark-on" : "icon-bookmark-off"} />
+            <i
+              class={props.favorite ? "icon-bookmark-on" : "icon-bookmark-off"}
+            />
           </button>
         </div>
       </div>

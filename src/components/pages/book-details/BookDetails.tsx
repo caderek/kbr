@@ -2,21 +2,24 @@ import "./BookDetails.css"
 import { useParams } from "@solidjs/router"
 import { Component, createResource, createEffect, Show, For } from "solid-js"
 import Cover from "../../common/book/Cover"
+import { StaticBookInfo } from "../../../types/common"
 
 type Params = {}
 
 async function fetchBookDetails(id: string) {
   const res = await fetch(`/books/${id}/info.json`)
-  const data = await res.json()
-  data.pages = Math.ceil(
-    data.chapters
-      .filter((chapter) => chapter.skip === "no")
-      .map((chapter) => chapter.length)
-      .reduce((sum, x) => sum + x, 0) /
-      (5 * 300),
-  )
+  const data = (await res.json()) as StaticBookInfo
 
-  return data
+  return {
+    ...data,
+    pages: Math.ceil(
+      data.chapters
+        .filter((chapter) => chapter.skip === "no")
+        .map((chapter) => chapter.length)
+        .reduce((sum, x) => sum + x, 0) /
+        (5 * 300),
+    ),
+  }
 }
 
 const BookDetails: Component<Params> = () => {
@@ -30,18 +33,18 @@ const BookDetails: Component<Params> = () => {
   return (
     <div class="book-details">
       <Show when={data()}>
-        <section class="info" style={`--pages: ${data().pages}`}>
-          <h2>{data().title}</h2>
+        <section class="info" style={`--pages: ${data()?.pages}`}>
+          <h2>{data()?.title}</h2>
           <Cover url={`/books/${params.id}/cover-medium.png`} />
           <nav>
             <button>EDIT</button>
             <button class="primary">CONTINUE</button>
           </nav>
           <p class="author">
-            by <a href="#">{data().author}</a>
+            by <a href="#">{data()?.author}</a>
           </p>
           <ul class="tags">
-            <For each={data().genres}>
+            <For each={data()?.genres}>
               {(tag) => (
                 <li>
                   <a href="#">{tag}</a>
@@ -51,9 +54,12 @@ const BookDetails: Component<Params> = () => {
           </ul>
           <p class="source">
             Source:{" "}
-            <Show when={data().source.isUrl} fallback={data().source.value ?? "unknown"}>
-              <a href={data().source.value} target="_blank">
-                {data().source.value}
+            <Show
+              when={data()?.source?.isUrl}
+              fallback={data()?.source?.value ?? "unknown"}
+            >
+              <a href={data()?.source?.value} target="_blank">
+                {data()?.source?.value}
               </a>
             </Show>
           </p>
@@ -62,7 +68,7 @@ const BookDetails: Component<Params> = () => {
               <figure>
                 <figcaption>Pages</figcaption>
                 <p>
-                  <strong>36</strong>/{data().pages}
+                  <strong>36</strong>/{data()?.pages}
                 </p>
               </figure>
             </li>
@@ -92,29 +98,37 @@ const BookDetails: Component<Params> = () => {
             </li>
           </ul>
           <article class="description">
-            <For each={data().longDescription ?? []}>{(par) => <p>{par}</p>}</For>
+            <For each={data()?.longDescription ?? []}>
+              {(par) => <p>{par}</p>}
+            </For>
           </article>
           <p class="rights">
             <strong>Rights: </strong>
-            {data().rights ?? "no info"}
+            {data()?.rights ?? "no info"}
           </p>
         </section>
         <hr />
         <section class="chapters">
           <h2>Chapters</h2>
           <ul>
-            <For each={data().chapters}>
+            <For each={data()?.chapters}>
               {(chapter) => (
                 <li classList={{ skipped: chapter.skip === "yes" }}>
                   <a href="/prompt">
                     <p class="chapter-title">{chapter.title}</p>
                   </a>
                   <div class="chapter-right">
-                    <span class="chapter-pages">{Math.ceil(chapter.length / (5 * 300))} pages</span>{" "}
+                    <span class="chapter-pages">
+                      {Math.ceil(chapter.length / (5 * 300))} pages
+                    </span>{" "}
                     <span class="chapter-status">STATUS</span>
                     <span class="chapter-skip">
                       <label>
-                        <i class={`icon-toggle-${chapter.skip === "no" ? "on" : "off"}`} />
+                        <i
+                          class={`icon-toggle-${
+                            chapter.skip === "no" ? "on" : "off"
+                          }`}
+                        />
                         <input type="checkbox" />
                       </label>
                     </span>
