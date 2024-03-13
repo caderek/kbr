@@ -27,7 +27,7 @@ async function prepareBooks() {
       const { cover, chapters, info } = serializeBook(content)
 
       if (info.genres.includes("poetry") || info.genres.includes("drama")) {
-        console.log("Skipping drama and poetry")
+        console.warn("Skipping drama and poetry")
         continue
       }
 

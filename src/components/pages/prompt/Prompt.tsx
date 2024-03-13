@@ -6,6 +6,7 @@ import { createStore } from "solid-js/store"
 import { EXTRA_KEYS } from "./prompt-util/EXTRA_KEYS.ts"
 import Statusbar from "./statusbar/Statusbar.tsx"
 import { formatNum, formatPercentage } from "../../../utils/formatters.ts"
+import { getCharset } from "../../../libs/charsets.ts"
 
 const AFK_BOUNDRY = 5000 // ms
 const AFK_PENALTY = 1000 // ms
@@ -130,14 +131,23 @@ function Prompt() {
   })
 
   let afkTimeout: NodeJS.Timeout | null = null
+  let charset = getCharset("en")
 
   // Load prompt content on content change
   createEffect(() => {
+    charset = getCharset(state.get.prompt.lang ?? "en")
+
     const original = state.get.prompt.paragraphs.map((paragraph) =>
-      paragraph.split(" ").map((word, i, words) => [...(word + (i === words.length - 1 ? "" : " "))]),
+      paragraph
+        .split(" ")
+        .map((word, i, words) => [
+          ...(word + (i === words.length - 1 ? "" : " ")),
+        ]),
     )
 
-    const empty = original.map((paragraph) => paragraph.map((word) => word.map((_) => null)))
+    const empty = original.map((paragraph) =>
+      paragraph.map((word) => word.map((_) => null)),
+    )
 
     const stats = Array.from(
       { length: empty.length },
@@ -205,15 +215,24 @@ function Prompt() {
       let prevEndTime = 0
 
       for (const [paragraphNum, paragraphStats] of local.stats.entries()) {
-        if (paragraphNum === local.paragraphNum && paragraphStats.inputTimes.length > 1) {
-          const paragraphWpm = calculateParagraphWpm(paragraphStats.inputTimes, paragraphStats.words)
+        if (
+          paragraphNum === local.paragraphNum &&
+          paragraphStats.inputTimes.length > 1
+        ) {
+          const paragraphWpm = calculateParagraphWpm(
+            paragraphStats.inputTimes,
+            paragraphStats.words,
+          )
 
           totalTime += paragraphWpm.time
           totalCorrectCharsCount += paragraphWpm.charsCount
 
           if (paragraphNum !== 0) {
             const timeBetweenParagraphs = paragraphWpm.start - prevEndTime
-            totalTime += timeBetweenParagraphs >= AFK_BOUNDRY ? AFK_PENALTY : timeBetweenParagraphs
+            totalTime +=
+              timeBetweenParagraphs >= AFK_BOUNDRY
+                ? AFK_PENALTY
+                : timeBetweenParagraphs
           }
         }
 
@@ -226,7 +245,10 @@ function Prompt() {
 
         if (paragraphNum !== 0) {
           const timeBetweenParagraphs = paragraphStats.startTime - prevEndTime
-          totalTime += timeBetweenParagraphs >= AFK_BOUNDRY ? AFK_PENALTY : timeBetweenParagraphs
+          totalTime +=
+            timeBetweenParagraphs >= AFK_BOUNDRY
+              ? AFK_PENALTY
+              : timeBetweenParagraphs
         }
 
         prevEndTime = paragraphStats.endTime
@@ -249,12 +271,22 @@ function Prompt() {
       // Add times chunk when the cursor enters or reenters word,
       // this way times of initial typin and later reentries (if user backspace from next word) are separate
       // and total time spent on a word can be calculated
-      setLocal("stats", local.paragraphNum, "words", local.wordNum, "times", (prev) => [...prev, []])
+      setLocal(
+        "stats",
+        local.paragraphNum,
+        "words",
+        local.wordNum,
+        "times",
+        (prev) => [...prev, []],
+      )
     }
   })
 
   const handleTyping = (e: KeyboardEvent) => {
-    if (e.key !== "Backspace" && (EXTRA_KEYS.has(e.key) || e.metaKey || e.ctrlKey)) {
+    if (
+      e.key !== "Backspace" &&
+      (EXTRA_KEYS.has(e.key) || e.metaKey || e.ctrlKey)
+    ) {
       return
     }
 
@@ -262,7 +294,9 @@ function Prompt() {
 
     if (e.key === "Tab") {
       // Reset current paragraph
-      setLocal("typed", local.paragraphNum, (prev) => prev.map((word) => new Array(word.length).fill(null)))
+      setLocal("typed", local.paragraphNum, (prev) =>
+        prev.map((word) => new Array(word.length).fill(null)),
+      )
       setLocal("stats", local.paragraphNum, (prev) => {
         return {
           ...prev,
@@ -297,8 +331,8 @@ function Prompt() {
       }
 
       if (
-        (e.ctrlKey && !state.get.options.backspaceWholeWord) ||
-        (!e.ctrlKey && state.get.options.backspaceWholeWord)
+        (e.ctrlKey && !state.get.settings.backspaceWholeWord) ||
+        (!e.ctrlKey && state.get.settings.backspaceWholeWord)
       ) {
         // Delete whole word
         if (isFirstWord && isFirstChar) {
@@ -312,27 +346,42 @@ function Prompt() {
           setLocal("charNum", 0)
         }
 
-        setLocal("typed", local.paragraphNum, local.wordNum, (prev) => [...prev].fill(null))
+        setLocal("typed", local.paragraphNum, local.wordNum, (prev) =>
+          [...prev].fill(null),
+        )
       } else {
         // Delete single character
         if (isFirstWord && isFirstChar) {
           setLocal("paragraphNum", local.paragraphNum - 1)
           setLocal("wordNum", local.typed[local.paragraphNum].length - 1)
-          setLocal("charNum", local.typed[local.paragraphNum][local.wordNum].length - 1)
+          setLocal(
+            "charNum",
+            local.typed[local.paragraphNum][local.wordNum].length - 1,
+          )
         } else if (isFirstChar) {
           setLocal("wordNum", local.wordNum - 1)
-          setLocal("charNum", local.typed[local.paragraphNum][local.wordNum].length - 1)
+          setLocal(
+            "charNum",
+            local.typed[local.paragraphNum][local.wordNum].length - 1,
+          )
         } else {
           setLocal("charNum", local.charNum - 1)
         }
 
-        setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, null)
+        setLocal(
+          "typed",
+          local.paragraphNum,
+          local.wordNum,
+          local.charNum,
+          null,
+        )
       }
 
       return
     }
 
-    const expectedChar = local.original[local.paragraphNum][local.wordNum][local.charNum]
+    const expectedChar =
+      local.original[local.paragraphNum][local.wordNum][local.charNum]
 
     if (expectedChar === "⏎" && e.key !== "Enter") {
       // TODO indicate that the user has to press enter to end the paragraph
@@ -343,14 +392,17 @@ function Prompt() {
       e.key === "Enter"
         ? "⏎"
         : // If the expected character is not in the current charset, accept any key
-          state.get.charset.has(expectedChar)
+          charset.has(expectedChar)
           ? e.key
           : expectedChar
 
     const inputTime = performance.now()
 
     setLocal("pageStats", "inputTimes", (prev) => [...prev, inputTime])
-    setLocal("stats", local.paragraphNum, "inputTimes", (prev) => [...prev, inputTime])
+    setLocal("stats", local.paragraphNum, "inputTimes", (prev) => [
+      ...prev,
+      inputTime,
+    ])
     setLocal(
       "stats",
       local.paragraphNum,
@@ -363,13 +415,27 @@ function Prompt() {
 
     if (char !== expectedChar) {
       setLocal("stats", local.paragraphNum, "typos", (prev) => prev + 1)
-      setLocal("stats", local.paragraphNum, "words", local.wordNum, "hadTypos", true)
+      setLocal(
+        "stats",
+        local.paragraphNum,
+        "words",
+        local.wordNum,
+        "hadTypos",
+        true,
+      )
     } else if (char !== "⏎") {
       setLocal("stats", local.paragraphNum, "nonTypos", (prev) => prev + 1)
     }
 
     setLocal("typed", local.paragraphNum, local.wordNum, local.charNum, char)
-    setLocal("stats", local.paragraphNum, "words", local.wordNum, "typedLength", local.charNum + 1)
+    setLocal(
+      "stats",
+      local.paragraphNum,
+      "words",
+      local.wordNum,
+      "typedLength",
+      local.charNum + 1,
+    )
     setLocal("paused", false)
     setLocal("hideCursor", true)
 
@@ -394,7 +460,10 @@ function Prompt() {
     )
 
     if (expectedChar === "⏎") {
-      const acc = calculateAccuracy(local.stats[local.paragraphNum].nonTypos, local.stats[local.paragraphNum].typos)
+      const acc = calculateAccuracy(
+        local.stats[local.paragraphNum].nonTypos,
+        local.stats[local.paragraphNum].typos,
+      )
       const { wpm, start, end, time, charsCount } = calculateParagraphWpm(
         local.stats[local.paragraphNum].inputTimes,
         local.stats[local.paragraphNum].words,
@@ -408,9 +477,13 @@ function Prompt() {
       setLocal("stats", local.paragraphNum, "correctCharCount", charsCount)
     }
 
-    const isLastChar = local.charNum === local.original[local.paragraphNum][local.wordNum].length - 1
-    const isLastWord = isLastChar && local.wordNum === local.typed[local.paragraphNum].length - 1
-    const isLastParagraph = isLastWord && local.paragraphNum === local.typed.length - 1
+    const isLastChar =
+      local.charNum ===
+      local.original[local.paragraphNum][local.wordNum].length - 1
+    const isLastWord =
+      isLastChar && local.wordNum === local.typed[local.paragraphNum].length - 1
+    const isLastParagraph =
+      isLastWord && local.paragraphNum === local.typed.length - 1
 
     if (isLastParagraph) {
       console.log("Page done!")
@@ -475,9 +548,9 @@ function Prompt() {
         classList={{
           prompt: true,
           nocursor: local.hideCursor,
-          "caret-line": state.get.options.caret === "line",
-          "caret-block": state.get.options.caret === "block",
-          "caret-floor": state.get.options.caret === "floor",
+          "caret-line": state.get.settings.caret === "line",
+          "caret-block": state.get.settings.caret === "block",
+          "caret-floor": state.get.settings.caret === "floor",
         }}
         onClick={() => {
           if (screenKeyboardPrompt) {
@@ -501,24 +574,33 @@ function Prompt() {
             {(paragraph, paragraphNum) => {
               const wpm = createMemo(() => {
                 const val = local.stats?.[paragraphNum()]?.wpm
-                return val !== null && val !== undefined ? `${formatNum(val)} wpm` : ""
+                return val !== null && val !== undefined
+                  ? `${formatNum(val)} wpm`
+                  : ""
               })
 
               const acc = createMemo(() => {
                 const val = local.stats?.[paragraphNum()]?.acc
-                return val !== null && val !== undefined ? `${formatPercentage(val)} acc` : ""
+                return val !== null && val !== undefined
+                  ? `${formatPercentage(val)} acc`
+                  : ""
               })
 
               return (
                 <p data-wpm={wpm()} data-acc={acc()}>
                   <For each={paragraph}>
                     {(word, wordNum) => {
-                      const currentWord = () => local.typed[paragraphNum()][wordNum()]
-                      const expectedWord = () => local.original[paragraphNum()][wordNum()]
+                      const currentWord = () =>
+                        local.typed[paragraphNum()][wordNum()]
+                      const expectedWord = () =>
+                        local.original[paragraphNum()][wordNum()]
                       const isInaccurate = () =>
-                        !currentWord().includes(null) && currentWord().join("") !== expectedWord().join("")
+                        !currentWord().includes(null) &&
+                        currentWord().join("") !== expectedWord().join("")
 
-                      const isActive = () => paragraphNum() === local.paragraphNum && wordNum() === local.wordNum
+                      const isActive = () =>
+                        paragraphNum() === local.paragraphNum &&
+                        wordNum() === local.wordNum
 
                       return (
                         <span
@@ -531,12 +613,22 @@ function Prompt() {
                           {
                             <For each={word}>
                               {(letter, charNum) => {
-                                const currentChar = () => local.typed[paragraphNum()][wordNum()][charNum()]
-                                const expectedChar = () => local.original[paragraphNum()][wordNum()][charNum()]
-                                const isCorrect = () => currentChar() === expectedChar()
+                                const currentChar = () =>
+                                  local.typed[paragraphNum()][wordNum()][
+                                    charNum()
+                                  ]
+                                const expectedChar = () =>
+                                  local.original[paragraphNum()][wordNum()][
+                                    charNum()
+                                  ]
+                                const isCorrect = () =>
+                                  currentChar() === expectedChar()
 
                                 const getTypedChar = () => {
-                                  let typedChar = local.typed[paragraphNum()][wordNum()][charNum()]
+                                  let typedChar =
+                                    local.typed[paragraphNum()][wordNum()][
+                                      charNum()
+                                    ]
 
                                   if (typedChar === " " && letter !== " ") {
                                     typedChar = "_" // "␣"
@@ -554,11 +646,14 @@ function Prompt() {
                                         wordNum() === local.wordNum &&
                                         charNum() === local.charNum,
                                       ok: isCorrect(),
-                                      error: currentChar() !== null && !isCorrect(),
+                                      error:
+                                        currentChar() !== null && !isCorrect(),
                                       special: letter === "⏎",
                                     }}
                                   >
-                                    {state.get.options.showTypos ? getTypedChar() : letter}
+                                    {state.get.settings.showTypos
+                                      ? getTypedChar()
+                                      : letter}
                                   </span>
                                 )
                               }}

@@ -42,24 +42,32 @@ export type QuickBookInfo = {
   length: number
 }
 
+export type BooksIndex = {
+  lastUpdate: number
+  books: QuickBookInfo[]
+}
+
 export type DynamicBookInfo = {}
 
-export type State = {
-  lang: "en" | "pl"
+export type Settings = {
+  uiLang: "en" | "pl"
   darkmode: boolean
-  charset: Set<string>
-  targetWPM: number
-  progress: {
-    currentLetter: null | number
-    unlockedChars: number
-    currentWPM: number
-    currentLettersWPMs: number[]
-  }
-  stats: {
-    historicalWPM: number[]
-    historicalWPMs: number[][]
-  }
+  promptFont: string
+  promptFontSize: number
+  caret: "line" | "block" | "floor"
+  targetWpm: number
+  targetAcc: number
+  showTypos: boolean
+  backspaceWholeWord: boolean
+  replaceUnknownChars: boolean
+  booksPerPage: number
+}
+
+export type State = {
+  loaded: boolean
+  stats: {}
   prompt: {
+    lang: string | null
     bookTitle: string | null
     bookId: string | null
     chapterTitle: string | null
@@ -70,12 +78,8 @@ export type State = {
     done: boolean
     wpm: number
   }
-  options: {
-    caret: "line" | "block" | "floor"
-    font: string
-    fontSize: number
-    backspaceWholeWord: boolean
-    replaceUnknownChars: boolean
-    showTypos: boolean
-  }
+  settings: Settings
+  booksIndex: BooksIndex
 }
+
+export type BookStats = {}

@@ -7,14 +7,17 @@ const bookFolders = fs
   .readdirSync(SOURCE_DIR)
   .filter((name) => name !== "index.json")
 
-const indexData = []
+const indexData = {
+  lastUpdate: Date.now(),
+  books: [],
+}
 
 for (const dir of bookFolders) {
   const info = JSON.parse(
     fs.readFileSync(path.join(SOURCE_DIR, dir, "info.json"), "utf8"),
   )
 
-  indexData.push({
+  indexData.books.push({
     id: info.id,
     title: info.title,
     author: info.author,
@@ -27,4 +30,13 @@ for (const dir of bookFolders) {
   })
 }
 
-fs.writeFileSync(path.join(SOURCE_DIR, "index.json"), JSON.stringify(indexData))
+const metaDir = path.join(SOURCE_DIR, "_meta_")
+
+fs.mkdirSync(metaDir, { recursive: true })
+
+fs.writeFileSync(path.join(metaDir, "index.json"), JSON.stringify(indexData))
+
+fs.writeFileSync(
+  path.join(metaDir, "lastUpdate.json"),
+  JSON.stringify(indexData.lastUpdate),
+)

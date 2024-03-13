@@ -8,9 +8,6 @@ import Books from "./components/pages/books/Books"
 import BookDetails from "./components/pages/book-details/BookDetails.tsx"
 import loadOne from "./loadOne.ts"
 import prepareBooks from "./prepareBooks.ts"
-import storage from "./storage/Storage.ts"
-
-console.log(storage)
 
 loadOne()
 // @ts-ignore
