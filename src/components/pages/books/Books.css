@@ -3,7 +3,7 @@
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  margin: var(--space-m) auto;
+  margin: 0 auto;
 }
 
 .filters {

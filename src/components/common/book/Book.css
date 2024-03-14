@@ -1,7 +1,7 @@
 .book {
   --cover-height: 15rem;
   --cover-width: 10rem;
-  --info-width: 18rem;
+  --info-width: 16rem;
   --pages: 300;
   height: var(--cover-height);
   width: calc(var(--cover-width) + var(--info-width));
@@ -140,6 +140,30 @@
   top: var(--space-s);
   right: var(--space-s);
   font-size: var(--font-2xl);
+}
+
+@media screen and (max-width: 89.99rem) {
+  .book {
+    --info-width: 22rem;
+  }
+}
+
+@media screen and (min-width: 96rem) {
+  .book {
+    --info-width: 17.5rem;
+  }
+}
+
+@media screen and (min-width: 100rem) {
+  .book {
+    --info-width: 19rem;
+  }
+}
+
+@media screen and (min-width: 120rem) {
+  .book {
+    --info-width: 22rem;
+  }
 }
 
 @media screen and (max-width: 31.99rem) {
