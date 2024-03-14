@@ -102,8 +102,8 @@ const state = createRoot(() => {
   return { get: state, set: setState }
 })
 
-setTimeout(() => {
-  state.set("settings", "caret", "block")
-}, 1000)
+// setTimeout(() => {
+//   state.set("settings", "booksPerPage", 12 * 5)
+// }, 1000)
 
 export default state

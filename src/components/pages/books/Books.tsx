@@ -1,10 +1,11 @@
 import "./Books.css"
-import { Component, For, createMemo, createSignal } from "solid-js"
+import { Component, For, Show, createMemo, createSignal } from "solid-js"
 import Book from "../../common/book/Book"
 import state from "../../../state/state"
+import Pagination from "../../common/pagination/Pagination"
 
 const Books: Component = () => {
-  const [page, setPage] = createSignal(0)
+  const [page, setPage] = createSignal(1)
 
   const books = createMemo(() => {
     return state.get.booksIndex.books.map((entry) => ({
@@ -24,11 +25,32 @@ const Books: Component = () => {
     }))
   })
 
+  const booksOnPage = createMemo(() => {
+    const limit = state.get.settings.booksPerPage
+    const start = (page() - 1) * limit
+    const end = start + limit
+    console.log({ start, end })
+    return books().slice(start, end)
+  })
+
+  const totalPages = createMemo(() => {
+    return Math.ceil(
+      state.get.booksIndex.books.length / state.get.settings.booksPerPage,
+    )
+  })
+
   return (
     <>
       <section class="filters"></section>
+      <Pagination
+        page={page()}
+        of={totalPages()}
+        change={(page: number) => {
+          setPage(page)
+        }}
+      />
       <section class="books">
-        <For each={books().slice(0, state.get.settings.booksPerPage)}>
+        <For each={booksOnPage()}>
           {(book) => (
             <Book
               id={book.id}
@@ -45,6 +67,14 @@ const Books: Component = () => {
           )}
         </For>
       </section>
+      <Pagination
+        page={page()}
+        of={totalPages()}
+        change={(page: number) => {
+          setPage(page)
+          window.scrollTo(0, 0)
+        }}
+      />
     </>
   )
 }

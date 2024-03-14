@@ -2,7 +2,9 @@ import { Component, createSignal, Show } from "solid-js"
 import "./Header.css"
 import state from "../../../state/state"
 
-const Navigation: Component<{ desktop: boolean; linkAction?: () => void }> = (props) => {
+const Navigation: Component<{ desktop: boolean; linkAction?: () => void }> = (
+  props,
+) => {
   return (
     <>
       <nav classList={{ menu: true, desktop: props.desktop }}>
@@ -29,10 +31,16 @@ const Navigation: Component<{ desktop: boolean; linkAction?: () => void }> = (pr
           <li
             title="Toggle dark mode"
             onClick={() => {
-              state.set("darkmode", !state.get.darkmode)
+              state.set("settings", "darkmode", !state.get.settings.darkmode)
             }}
           >
-            <i class={state.get.darkmode ? "icon-dark-mode" : "icon-light-mode"} />
+            <i
+              class={
+                state.get.settings.darkmode
+                  ? "icon-dark-mode"
+                  : "icon-light-mode"
+              }
+            />
           </li>
           <li title="Settings">
             <a href="/settings" onClick={props.linkAction}>
@@ -58,7 +66,11 @@ const Header = () => {
       <div class="logo">
         <h1 hidden>Storytype</h1>
         <a href="/">
-          <img src={`/images/logo-${state.get.darkmode ? "dark" : "light"}.svg`} />
+          <img
+            src={`/images/logo-${
+              state.get.settings.darkmode ? "dark" : "light"
+            }.svg`}
+          />
         </a>
       </div>
       <Navigation desktop={true} />

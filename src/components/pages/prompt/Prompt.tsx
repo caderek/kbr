@@ -135,7 +135,7 @@ function Prompt() {
 
   // Load prompt content on content change
   createEffect(() => {
-    charset = getCharset(state.get.prompt.lang ?? "en")
+    charset = getCharset(state.get.prompt.lang ?? "??")
 
     const original = state.get.prompt.paragraphs.map((paragraph) =>
       paragraph
@@ -388,13 +388,16 @@ function Prompt() {
       return
     }
 
-    const char =
-      e.key === "Enter"
-        ? "⏎"
-        : // If the expected character is not in the current charset, accept any key
-          charset.has(expectedChar)
-          ? e.key
-          : expectedChar
+    let char
+
+    if (e.key === "Enter") {
+      // Treat enter as line end if at the end of a paragraph,space otherwise
+      // (to prevent annoying typo when the paragraph wraps and user don't realize space is required).
+      char = expectedChar === "⏎" ? "⏎" : " "
+    } else {
+      // If the expected character is not in the current charset, accept any key
+      char = charset.has(expectedChar) ? e.key : expectedChar
+    }
 
     const inputTime = performance.now()
 

@@ -4,7 +4,7 @@ import { loadEpub } from "./loadEpub.ts"
 async function loadOne() {
   const book = await loadEpub()
 
-  const chapterNum = 13
+  const chapterNum = 20
   const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
   // const paragraphs = new Array(20).fill("the")
   // const paragraphs = ["the hello", "the little", "the again"]
@@ -18,7 +18,6 @@ async function loadOne() {
   //   "You are now ready to begin your typing adventure!",
   // ]
 
-  state.set("charset", book.charset)
   state.set(
     "prompt",
     "paragraphs",
@@ -34,7 +33,10 @@ async function loadOne() {
 
   console.log("PAGES:")
 
-  console.log("Pages:", book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 300))
+  console.log(
+    "Pages:",
+    book.chapters[chapterNum].paragraphs.join(" ").length / (5 * 300),
+  )
   console.log("Words on this page:", paragraphs.join(" ").length / 5)
 }
 

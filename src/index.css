@@ -142,6 +142,12 @@ a.button:hover {
   opacity: 1;
 }
 
+button:disabled,
+button:disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
 @media screen and (min-width: 64rem) {
   .mobile {
     display: none;
