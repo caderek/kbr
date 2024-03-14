@@ -63,6 +63,10 @@ export type Settings = {
   booksPerPage: number
 }
 
+export type Session = {
+  booksPage: number
+}
+
 export type State = {
   loaded: boolean
   stats: {}
@@ -80,6 +84,7 @@ export type State = {
   }
   settings: Settings
   booksIndex: BooksIndex
+  session: Session
 }
 
 export type BookStats = {}

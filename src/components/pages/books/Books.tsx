@@ -5,8 +5,6 @@ import state from "../../../state/state"
 import Pagination from "../../common/pagination/Pagination"
 
 const Books: Component = () => {
-  const [page, setPage] = createSignal(1)
-
   const books = createMemo(() => {
     return state.get.booksIndex.books.map((entry) => ({
       id: entry.id,
@@ -27,7 +25,7 @@ const Books: Component = () => {
 
   const booksOnPage = createMemo(() => {
     const limit = state.get.settings.booksPerPage
-    const start = (page() - 1) * limit
+    const start = (state.get.session.booksPage - 1) * limit
     const end = start + limit
     console.log({ start, end })
     return books().slice(start, end)
@@ -39,15 +37,18 @@ const Books: Component = () => {
     )
   })
 
+  const setPage = (page: number) => {
+    state.set("session", "booksPage", page)
+    window.scrollTo(0, 0)
+  }
+
   return (
     <>
       <section class="filters"></section>
       <Pagination
-        page={page()}
+        page={state.get.session.booksPage}
         of={totalPages()}
-        change={(page: number) => {
-          setPage(page)
-        }}
+        change={setPage}
       />
       <section class="books">
         <For each={booksOnPage()}>
@@ -68,12 +69,9 @@ const Books: Component = () => {
         </For>
       </section>
       <Pagination
-        page={page()}
+        page={state.get.session.booksPage}
         of={totalPages()}
-        change={(page: number) => {
-          setPage(page)
-          window.scrollTo(0, 0)
-        }}
+        change={setPage}
       />
     </>
   )

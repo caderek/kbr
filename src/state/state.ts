@@ -44,6 +44,9 @@ const defaultState: State = {
     lastUpdate: 0,
     books: [],
   },
+  session: {
+    booksPage: 1,
+  },
 }
 
 async function loadSavedData(state: State, setState: SetStoreFunction<State>) {
