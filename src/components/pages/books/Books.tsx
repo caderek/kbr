@@ -1,5 +1,5 @@
 import "./Books.css"
-import { Component, For, Show, createMemo, createSignal } from "solid-js"
+import { Component, For, createMemo, createSignal } from "solid-js"
 import Book from "../../common/book/Book"
 import state from "../../../state/state"
 import Pagination from "../../common/pagination/Pagination"
