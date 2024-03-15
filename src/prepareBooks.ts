@@ -42,41 +42,19 @@ async function prepareBooks() {
         }
       }
 
-      if (cover.medium) {
+      if (cover) {
         const headers = new Headers()
         headers.append("Content-Type", "image/png")
-        headers.append("Content-Length", cover.medium.size.toString())
+        headers.append("Content-Length", cover.size.toString())
 
-        const res = await fetch(
-          `http://localhost:1234/cover/medium/${info.id}`,
-          {
-            method: "POST",
-            body: cover.medium,
-            headers,
-          },
-        )
+        const res = await fetch(`http://localhost:1234/cover/${info.id}`, {
+          method: "POST",
+          body: cover,
+          headers,
+        })
 
         if (res.ok) {
-          console.log("Done medium cover:", info.id)
-        }
-      }
-
-      if (cover.small) {
-        const headers = new Headers()
-        headers.append("Content-Type", "image/png")
-        headers.append("Content-Length", cover.small.size.toString())
-
-        const res = await fetch(
-          `http://localhost:1234/cover/small/${info.id}`,
-          {
-            method: "POST",
-            body: content.cover.small,
-            headers,
-          },
-        )
-
-        if (res.ok) {
-          console.log("Done small cover:", info.id)
+          console.log("Done cover:", info.id)
         }
       }
     } catch (e) {

@@ -46,6 +46,7 @@ const defaultState: State = {
   },
   session: {
     booksPage: 1,
+    search: "",
   },
 }
 

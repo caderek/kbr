@@ -29,6 +29,7 @@
 .cover > div {
   width: var(--width);
   height: var(--height);
+  background-color: var(--color-fg-lc);
   background-size: cover;
   position: absolute;
   left: calc(-1 * var(--thickness));
@@ -84,7 +85,8 @@
   }
 
   .cover > div:after,
-  .cover div:before {
+  .cover div:before,
+  .cover:before {
     all: unset;
   }
 }

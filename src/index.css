@@ -115,6 +115,12 @@ a:hover {
   text-decoration: underline;
 }
 
+input,
+button,
+textarea {
+  outline: none;
+}
+
 button,
 a.button {
   display: inline-block;

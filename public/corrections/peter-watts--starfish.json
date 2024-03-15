@@ -1,0 +1,264 @@
+{
+  "id": "peter-watts--starfish",
+  "title": "Rifters I - Starfish",
+  "titleAlpha": "rifters i - starfish",
+  "author": "Peter Watts",
+  "language": "en",
+  "description": "An international corporation establishes a geothermal power facility in the depths of the Pacific Ocean, deploying a bio-engineered crew to work undersea.",
+  "longDescription": [
+    "A huge international corporation has developed a facility along the Juan de Fuca Ridge at the bottom of the Pacific Ocean to exploit geothermal power. They send a bio-engineered crew--people who have been altered to withstand the pressure and breathe the seawater--down to live and work in this weird, fertile undersea darkness.",
+    "Unfortunately the only people suitable for long-term employment in these experimental power stations are crazy, some of them in unpleasant ways. How many of them can survive, or will be allowed to survive, while worldwide disaster approaches from below?",
+    "This is the first novel in the Rifters trilogy."
+  ],
+  "year": 1999,
+  "genres": ["fiction", "science-fiction"],
+  "rights": "CC BY-NC-SA 2.5",
+  "publisher": "Tor Publishing Group",
+  "source": {
+    "isUrl": true,
+    "value": "https://unglue.it/work/5486/"
+  },
+  "chapters": [
+    {
+      "id": "000",
+      "title": "Prelude: Ceratius",
+      "length": 15591,
+      "skip": "no"
+    },
+    {
+      "id": "001",
+      "title": "Benthos - Duet - Constrictor",
+      "length": 26161,
+      "skip": "no"
+    },
+    {
+      "id": "002",
+      "title": "Benthos - Duet - A Niche",
+      "length": 34824,
+      "skip": "no"
+    },
+    {
+      "id": "003",
+      "title": "Benthos - Duet - Housecleaning",
+      "length": 8573,
+      "skip": "no"
+    },
+    {
+      "id": "004",
+      "title": "Benthos - Rome - Neotenous",
+      "length": 16231,
+      "skip": "no"
+    },
+    {
+      "id": "005",
+      "title": "Benthos - Rome - Elevator Boy",
+      "length": 9487,
+      "skip": "no"
+    },
+    {
+      "id": "006",
+      "title": "Benthos - Rome - Crush",
+      "length": 12078,
+      "skip": "no"
+    },
+    {
+      "id": "007",
+      "title": "Benthos - Rome - Autoclave",
+      "length": 6192,
+      "skip": "no"
+    },
+    {
+      "id": "008",
+      "title": "Benthos - Rome - Waterbed",
+      "length": 9751,
+      "skip": "no"
+    },
+    {
+      "id": "009",
+      "title": "Benthos - Rome - Doppelgänger",
+      "length": 6551,
+      "skip": "no"
+    },
+    {
+      "id": "010",
+      "title": "Benthos - Rome - Angel",
+      "length": 18797,
+      "skip": "no"
+    },
+    {
+      "id": "011",
+      "title": "Benthos - Rome - Feral",
+      "length": 2829,
+      "skip": "no"
+    },
+    {
+      "id": "012",
+      "title": "Benthos - Rome - Shadow",
+      "length": 6250,
+      "skip": "no"
+    },
+    {
+      "id": "013",
+      "title": "Benthos - Ballet - Dancer",
+      "length": 39932,
+      "skip": "no"
+    },
+    {
+      "id": "014",
+      "title": "Benthos - Ballet - Short Circuit",
+      "length": 23711,
+      "skip": "no"
+    },
+    {
+      "id": "015",
+      "title": "Benthos - Ballet - Critical Mass",
+      "length": 20467,
+      "skip": "no"
+    },
+    {
+      "id": "016",
+      "title": "Nekton - Dryback - Jumpstart",
+      "length": 7555,
+      "skip": "no"
+    },
+    {
+      "id": "017",
+      "title": "Nekton - Dryback - Muckraker",
+      "length": 22448,
+      "skip": "no"
+    },
+    {
+      "id": "018",
+      "title": "Nekton - Dryback - Scream",
+      "length": 39383,
+      "skip": "no"
+    },
+    {
+      "id": "019",
+      "title": "Nekton - Dryback - Bulrushes",
+      "length": 12031,
+      "skip": "no"
+    },
+    {
+      "id": "020",
+      "title": "Nekton - Dryback - Ghosts",
+      "length": 28001,
+      "skip": "no"
+    },
+    {
+      "id": "021",
+      "title": "Nekton - Seine - Entropy",
+      "length": 9083,
+      "skip": "no"
+    },
+    {
+      "id": "022",
+      "title": "Nekton - Seine - Carousel",
+      "length": 9684,
+      "skip": "no"
+    },
+    {
+      "id": "023",
+      "title": "Nekton - Seine - Ecdysis",
+      "length": 12299,
+      "skip": "no"
+    },
+    {
+      "id": "024",
+      "title": "Nekton - Seine - Alibis",
+      "length": 11730,
+      "skip": "no"
+    },
+    {
+      "id": "025",
+      "title": "Nekton - Quarantine - Bubble",
+      "length": 7802,
+      "skip": "no"
+    },
+    {
+      "id": "026",
+      "title": "Nekton - Quarantine - Enema",
+      "length": 15470,
+      "skip": "no"
+    },
+    {
+      "id": "027",
+      "title": "Nekton - Quarantine - Turncoat",
+      "length": 3574,
+      "skip": "no"
+    },
+    {
+      "id": "028",
+      "title": "Nekton - Head Cheese - Theme and Variation",
+      "length": 9261,
+      "skip": "no"
+    },
+    {
+      "id": "029",
+      "title": "Nekton - Head Cheese - Ground Zero",
+      "length": 8253,
+      "skip": "no"
+    },
+    {
+      "id": "030",
+      "title": "Nekton - Head Cheese - Software",
+      "length": 17496,
+      "skip": "no"
+    },
+    {
+      "id": "031",
+      "title": "Nekton - Head Cheese - Racter",
+      "length": 18360,
+      "skip": "no"
+    },
+    {
+      "id": "032",
+      "title": "Nekton - End Game - Night Shift",
+      "length": 4000,
+      "skip": "no"
+    },
+    {
+      "id": "033",
+      "title": "Nekton - End Game - Scatter",
+      "length": 17275,
+      "skip": "no"
+    },
+    {
+      "id": "034",
+      "title": "Nekton - End Game - Reptile",
+      "length": 8423,
+      "skip": "no"
+    },
+    {
+      "id": "035",
+      "title": "Nekton - End Game - Skyhop",
+      "length": 3682,
+      "skip": "no"
+    },
+    {
+      "id": "036",
+      "title": "Nekton - End Game - Floodlight",
+      "length": 4137,
+      "skip": "no"
+    },
+    {
+      "id": "037",
+      "title": "Nekton - End Game - Sunrise",
+      "length": 5303,
+      "skip": "no"
+    },
+    {
+      "id": "038",
+      "title": "Nekton - End Game - Jericho",
+      "length": 11138,
+      "skip": "no"
+    },
+    {
+      "id": "039",
+      "title": "Nekton - End Game - Detritus",
+      "length": 15864,
+      "skip": "no"
+    },
+    { "id": "040", "title": "References", "length": 5633, "skip": "yes" }
+  ]
+}

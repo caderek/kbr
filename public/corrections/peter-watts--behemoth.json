@@ -1,0 +1,304 @@
+{
+  "id": "peter-watts--behemoth",
+  "title": "Rifters III - Behemoth",
+  "titleAlpha": "rifters iii - behemoth",
+  "author": "Peter Watts",
+  "language": "en",
+  "description": "Lenie Clarke, a rifter, emerges from the ocean floor after a nuclear blast, seeking vengeance.",
+  "longDescription": [
+    "Lenie Clarke-rifter, avenger, amphibious deep-sea cyborg-has destroyed the world. Once exploited for her psychological addiction to dangerous environments, she emerged in the wake of a nuclear blast to serve up vendetta from the ocean floor. The horror she unleashed-an ancient, apocalyptic microbe called ßehemoth- has been free in the world for half a decade now, devouring the biosphere from the bottom up. North America lies in ruins beneath the thumb of an omnipotent psychopath. Digital monsters have taken Clarke's name, wreaking havoc throughout the decimated remnants of something that was once called Internet. Governments have fallen across the globe; warlords and suicide cults rise from the ashes, pledging fealty to the Meltdown Madonna. All because five years ago, Lenie Clarke had a score to settle.",
+    "But she has learned something in the meantime: she destroyed the world for a fallacy.",
+    "Now, cowering at the bottom of the Atlantic Ocean, rifters and the technoindustrial \"corpses\" who created them hide from a world in its death throes. But they cannot hide forever: something is tracking them, down amongst the lightless cliffs and trenches of the Midatlantic Ridge. The consequences of past acts reach inexorably towards the very bottom of the world, and Lenie Clarke must finally confront the mess she made.",
+    "Redemption doesn't come easy with the blood of a world on your hands. But even after five years in purgatory, Lenie Clarke is still Lenie Clarke. There will be consequences for anyone who gets in her way-and worse ones, perhaps, if she succeeds...",
+    "This is the final novel in the Rifters trilogy."
+  ],
+  "year": 2004,
+  "genres": ["fiction", "science-fiction"],
+  "rights": "CC BY-NC-SA 2.5",
+  "publisher": "Tor Publishing Group",
+  "source": {
+    "isUrl": true,
+    "value": "https://unglue.it/work/145864/"
+  },
+  "chapters": [
+    { "id": "000", "title": "ßehemoth", "length": 2090, "skip": "always" },
+    {
+      "id": "001",
+      "title": "Prelude: 'lawbreaker",
+      "length": 8361,
+      "skip": "no"
+    },
+    {
+      "id": "002",
+      "title": "ß-Max - Counterstrike",
+      "length": 21908,
+      "skip": "no"
+    },
+    {
+      "id": "003",
+      "title": "ß-Max - The Shiva Iterations",
+      "length": 4331,
+      "skip": "no"
+    },
+    { "id": "004", "title": "ß-Max - Outgroup", "length": 22222, "skip": "no" },
+    { "id": "005", "title": "ß-Max - Huddle", "length": 12578, "skip": "no" },
+    { "id": "006", "title": "ß-Max - Zombie", "length": 16145, "skip": "no" },
+    {
+      "id": "007",
+      "title": "ß-Max - Portrait of the Sadist as a Young Boy",
+      "length": 5843,
+      "skip": "no"
+    },
+    {
+      "id": "008",
+      "title": "ß-Max - Confidence Limits",
+      "length": 14352,
+      "skip": "no"
+    },
+    { "id": "009", "title": "ß-Max - Cavalry", "length": 13254, "skip": "no" },
+    { "id": "010", "title": "ß-Max - Nemesis", "length": 7539, "skip": "no" },
+    {
+      "id": "011",
+      "title": "ß-Max - Portrait of the Sadist as an Adolescent",
+      "length": 9954,
+      "skip": "no"
+    },
+    {
+      "id": "012",
+      "title": "ß-Max - Bedside Manor",
+      "length": 10164,
+      "skip": "no"
+    },
+    {
+      "id": "013",
+      "title": "ß-Max - Boilerplate",
+      "length": 12777,
+      "skip": "no"
+    },
+    {
+      "id": "014",
+      "title": "ß-Max - Portrait of the Sadist as a Young Man",
+      "length": 11027,
+      "skip": "no"
+    },
+    {
+      "id": "015",
+      "title": "ß-Max - Fire Drill",
+      "length": 6507,
+      "skip": "no"
+    },
+    {
+      "id": "016",
+      "title": "ß-Max - Family Values",
+      "length": 15162,
+      "skip": "no"
+    },
+    {
+      "id": "017",
+      "title": "ß-Max - Portrait of the Sadist as a Free Man",
+      "length": 13378,
+      "skip": "no"
+    },
+    {
+      "id": "018",
+      "title": "ß-Max - Confessional",
+      "length": 24992,
+      "skip": "no"
+    },
+    {
+      "id": "019",
+      "title": "ß-Max - Conscript",
+      "length": 14818,
+      "skip": "no"
+    },
+    {
+      "id": "020",
+      "title": "ß-Max - Portrait of the Sadist as a Team Player",
+      "length": 21406,
+      "skip": "no"
+    },
+    {
+      "id": "021",
+      "title": "ß-Max - Automechanica",
+      "length": 16294,
+      "skip": "no"
+    },
+    {
+      "id": "022",
+      "title": "ß-Max - Gravediggers",
+      "length": 10208,
+      "skip": "no"
+    },
+    {
+      "id": "023",
+      "title": "ß-Max - Striptease",
+      "length": 11931,
+      "skip": "no"
+    },
+    { "id": "024", "title": "ß-Max - Frontier", "length": 4565, "skip": "no" },
+    {
+      "id": "025",
+      "title": "ß-Max - Groundwork",
+      "length": 9560,
+      "skip": "no"
+    },
+    { "id": "026", "title": "ß-Max - Harpodon", "length": 20919, "skip": "no" },
+    {
+      "id": "027",
+      "title": "ß-Max - The Bloodhound Iterations",
+      "length": 9965,
+      "skip": "no"
+    },
+    {
+      "id": "028",
+      "title": "ß-Max - Without Sin",
+      "length": 35836,
+      "skip": "no"
+    },
+    { "id": "029", "title": "ß-Max - Baptism", "length": 12487, "skip": "no" },
+    { "id": "030", "title": "ß-Max - Tag", "length": 25140, "skip": "no" },
+    { "id": "031", "title": "ß-Max - Fulcrum", "length": 9330, "skip": "no" },
+    { "id": "032", "title": "ß-Max - Incoming", "length": 6601, "skip": "no" },
+    { "id": "033", "title": "Seppuku - Dune", "length": 22297, "skip": "no" },
+    {
+      "id": "034",
+      "title": "Seppuku - Nightingale",
+      "length": 21757,
+      "skip": "no"
+    },
+    { "id": "035", "title": "Seppuku - Condom", "length": 8079, "skip": "no" },
+    {
+      "id": "036",
+      "title": "Seppuku - Gehenna",
+      "length": 21678,
+      "skip": "no"
+    },
+    {
+      "id": "037",
+      "title": "Seppuku - The Trigonometry of Salvation",
+      "length": 17865,
+      "skip": "no"
+    },
+    {
+      "id": "038",
+      "title": "Seppuku - Migration",
+      "length": 14070,
+      "skip": "no"
+    },
+    { "id": "039", "title": "Seppuku - Karma", "length": 16290, "skip": "no" },
+    {
+      "id": "040",
+      "title": "Seppuku - DisArmor",
+      "length": 22669,
+      "skip": "no"
+    },
+    {
+      "id": "041",
+      "title": "Seppuku - Stargazer",
+      "length": 14807,
+      "skip": "no"
+    },
+    {
+      "id": "042",
+      "title": "Seppuku - Sleeper",
+      "length": 21134,
+      "skip": "no"
+    },
+    {
+      "id": "043",
+      "title": "Seppuku - Parsimony",
+      "length": 8291,
+      "skip": "no"
+    },
+    { "id": "044", "title": "Seppuku - Corral", "length": 8087, "skip": "no" },
+    {
+      "id": "045",
+      "title": "Seppuku - Turncoat",
+      "length": 14410,
+      "skip": "no"
+    },
+    { "id": "046", "title": "Seppuku - Crash", "length": 9717, "skip": "no" },
+    {
+      "id": "047",
+      "title": "Seppuku - The Skill of the Chase",
+      "length": 8434,
+      "skip": "no"
+    },
+    {
+      "id": "048",
+      "title": "Seppuku - Remedial Ed",
+      "length": 5092,
+      "skip": "no"
+    },
+    {
+      "id": "049",
+      "title": "Seppuku - Decirculate",
+      "length": 14915,
+      "skip": "no"
+    },
+    {
+      "id": "050",
+      "title": "Seppuku - Paranoid",
+      "length": 11978,
+      "skip": "no"
+    },
+    {
+      "id": "051",
+      "title": "Seppuku - Matryoska",
+      "length": 14217,
+      "skip": "no"
+    },
+    {
+      "id": "052",
+      "title": "Seppuku - Basement Wiring",
+      "length": 10247,
+      "skip": "no"
+    },
+    { "id": "053", "title": "Seppuku - Splice", "length": 15338, "skip": "no" },
+    {
+      "id": "054",
+      "title": "Seppuku - The Hamilton Iterations",
+      "length": 6043,
+      "skip": "no"
+    },
+    { "id": "055", "title": "Seppuku - Toggle", "length": 14442, "skip": "no" },
+    { "id": "056", "title": "Seppuku - Fleas", "length": 8427, "skip": "no" },
+    {
+      "id": "057",
+      "title": "Seppuku - Firebreathers",
+      "length": 18253,
+      "skip": "no"
+    },
+    {
+      "id": "058",
+      "title": "Seppuku - In Kind",
+      "length": 22962,
+      "skip": "no"
+    },
+    {
+      "id": "059",
+      "title": "Seppuku - Expiration Date",
+      "length": 10541,
+      "skip": "no"
+    },
+    {
+      "id": "060",
+      "title": "Seppuku - Bastille",
+      "length": 38317,
+      "skip": "no"
+    },
+    { "id": "061", "title": "Seppuku - Empath", "length": 32131, "skip": "no" },
+    {
+      "id": "062",
+      "title": "Epilog: Singular Hessian",
+      "length": 80,
+      "skip": "no"
+    },
+    {
+      "id": "063",
+      "title": "Notes and references",
+      "length": 14821,
+      "skip": "yes"
+    }
+  ]
+}

@@ -162,7 +162,7 @@
 
 @media screen and (min-width: 120rem) {
   .book {
-    --info-width: 22rem;
+    --info-width: 20rem;
   }
 }
 

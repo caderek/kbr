@@ -31,6 +31,7 @@ export type Chapter = {
 export type Info = {
   id: string
   title: string | null
+  titleAlpha: string | null
   author: string | null
   language: string | null
   description: string | null
@@ -45,15 +46,8 @@ export type Info = {
   } | null
 }
 
-export type CoverEntry = Blob | null
-
-export type Cover = {
-  medium: CoverEntry
-  small: CoverEntry
-}
-
 export type Book = {
   info: Info
   chapters: Chapter[]
-  cover: Cover
+  cover: Blob | null
 }

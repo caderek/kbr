@@ -13,6 +13,7 @@ export type StaticChapterInfo = {
 export type StaticBookInfo = {
   id: string
   title: string | null
+  titleAlpha: string | null
   author: string | null
   language: string | null
   description: string | null
@@ -65,6 +66,7 @@ export type Settings = {
 
 export type Session = {
   booksPage: number
+  search: string
 }
 
 export type State = {

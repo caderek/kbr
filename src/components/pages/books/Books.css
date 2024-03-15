@@ -10,3 +10,10 @@
   background: var(--color-bg-hc);
   height: 1rem;
 }
+
+.results {
+  text-align: center;
+  font-size: var(--font-s);
+  color: var(--color-fg-lc);
+  margin-top: var(--space-m);
+}

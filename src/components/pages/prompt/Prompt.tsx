@@ -546,7 +546,6 @@ function Prompt() {
         page={state.get.prompt.page}
         pages={state.get.prompt.pages}
       />
-      <input type="text" ref={screenKeyboardPrompt!} />
       <section
         classList={{
           prompt: true,
@@ -572,6 +571,7 @@ function Prompt() {
           }
         }}
       >
+        <input type="text" ref={screenKeyboardPrompt!} />
         <div class="paragraphs">
           <For each={local.original}>
             {(paragraph, paragraphNum) => {

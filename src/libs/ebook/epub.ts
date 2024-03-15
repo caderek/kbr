@@ -387,9 +387,16 @@ export class Epub {
     const title =
       children.find((node) => node.tagName === "dc:title")?.textContent ?? null
 
+    const titleAlpha = title
+      ? title.replace(/^(the|a|an)\s/i, "").toLowerCase()
+      : null
+
     const author =
-      children.find((node) => node.tagName === "dc:creator")?.textContent ??
-      null
+      children
+        .find((node) => node.tagName === "dc:creator")
+        ?.textContent?.split(", ")
+        .reverse()
+        .join(" ") ?? null
 
     const rights =
       children.find((node) => node.tagName === "dc:rights")?.textContent ?? null
@@ -459,6 +466,7 @@ export class Epub {
     const info = {
       id,
       title,
+      titleAlpha,
       author,
       language,
       description,
@@ -498,10 +506,7 @@ export class Epub {
 
     const manifest = Object.fromEntries(manifestEntries)
 
-    const cover = {
-      medium: await this.#getCover(manifestEntries, entries, info, 320),
-      small: await this.#getCover(manifestEntries, entries, info, 160),
-    }
+    const cover = await this.#getCover(manifestEntries, entries, info, 320)
 
     const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
       [])[1]

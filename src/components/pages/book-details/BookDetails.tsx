@@ -10,6 +10,8 @@ async function fetchBookDetails(id: string) {
   const res = await fetch(`/books/${id}/info.json`)
   const data = (await res.json()) as StaticBookInfo
 
+  console.log({ data })
+
   return {
     ...data,
     pages: Math.ceil(
@@ -35,7 +37,7 @@ const BookDetails: Component<Params> = () => {
       <Show when={data()}>
         <section class="info" style={`--pages: ${data()?.pages}`}>
           <h2>{data()?.title}</h2>
-          <Cover url={`/books/${params.id}/cover-medium.min.png`} />
+          <Cover url={`/books/${params.id}/cover.min.png`} />
           <nav>
             <button>EDIT</button>
             <button class="primary">CONTINUE</button>
@@ -111,7 +113,11 @@ const BookDetails: Component<Params> = () => {
         <section class="chapters">
           <h2>Chapters</h2>
           <ul>
-            <For each={data()?.chapters}>
+            <For
+              each={data()?.chapters.filter(
+                (chapter) => chapter.skip !== "always",
+              )}
+            >
               {(chapter) => (
                 <li classList={{ skipped: chapter.skip === "yes" }}>
                   <a href="/prompt">

@@ -1,0 +1,19 @@
+{
+  "id": "",
+  "title": "",
+  "titleAlpha": "",
+  "author": "",
+  "language": "",
+  "description": "",
+  "longDescription": [],
+  "year": null,
+  "genres": [],
+  "rights": [],
+  "publisher": null,
+  "source": {
+    "isUrl": true,
+    "value": ""
+  },
+  "ignoreChapters": [],
+  "disableChapters": []
+}

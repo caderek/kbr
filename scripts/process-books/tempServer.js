@@ -40,14 +40,31 @@ async function saveBook(book) {
 }
 
 async function saveCover(req) {
-  const [_, type, dirName] = req.url.slice(1).split("/")
+  const [_, dirName] = req.url.slice(1).split("/")
   const data = await readBlob(req)
 
   const BOOK_DIR = path.join(OUT_DIR, dirName)
-  const coverPath = path.join(BOOK_DIR, `cover-${type}.png`)
+  const coverPath = path.join(BOOK_DIR, `cover.png`)
 
   await fs.mkdir(BOOK_DIR, { recursive: true })
   await fs.writeFile(coverPath, data)
+}
+
+async function addCorrections(book) {
+  const correctionPath = path.join(
+    "public",
+    "corrections",
+    `${book.info.id}.json`,
+  )
+
+  try {
+    const correction = JSON.parse(
+      await fs.readFile(correctionPath, { encoding: "utf8" }),
+    )
+    book.info = { ...book.info, ...correction }
+  } catch {}
+
+  return book
 }
 
 http
@@ -55,12 +72,11 @@ http
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST")
     res.setHeader("Access-Control-Allow-Headers", "content-type")
-    console.log(req.method, req.url)
 
     if (req.url === "/") {
       const body = await readJSON(req)
-      await saveBook(body)
-      console.log(body.info.author, "-", body.info.title)
+      await saveBook(await addCorrections(body))
+      console.log(body.info.id)
       res.end()
     } else if (req.url.startsWith("/cover")) {
       await saveCover(req)

@@ -1,6 +1,7 @@
 .pagination {
   text-align: center;
-  padding: var(--space-m);
+  padding: 0 var(--space-m);
+  margin: var(--space-m) 0;
 }
 
 .pagination * + * {

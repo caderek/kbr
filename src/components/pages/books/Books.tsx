@@ -3,24 +3,38 @@ import { Component, For, createMemo } from "solid-js"
 import Book from "../../common/book/Book"
 import state from "../../../state/state"
 import Pagination from "../../common/pagination/Pagination"
+import Filters from "./Filters"
 
 const Books: Component = () => {
   const books = createMemo(() => {
-    return state.get.booksIndex.books.map((entry) => ({
-      id: entry.id,
-      title: entry.title ?? "No Title",
-      author: entry.author ?? "Unknown",
-      pages: Math.ceil(entry.length / (5 * 300)),
-      description: entry.description ?? "No description",
-      genres: entry.genres,
-      coverUrl: `/books/${entry.id}/cover-${
-        devicePixelRatio > 1 ? "medium" : "small"
-      }.min.png`,
-      progress:
-        Math.random() > 0.2 ? 0 : Math.random() > 0.5 ? 1 : Math.random(),
-      favorite: Math.random() > 0.9,
-      dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
-    }))
+    return state.get.booksIndex.books
+      .map((entry) => ({
+        id: entry.id,
+        title: entry.title ?? "No Title",
+        author: entry.author ?? "Unknown",
+        pages: Math.ceil(entry.length / (5 * 300)),
+        description: entry.description ?? "No description",
+        genres: entry.genres,
+        coverUrl: `/books/${entry.id}/cover${
+          devicePixelRatio > 1 ? "" : "-small"
+        }.min.png`,
+        progress:
+          Math.random() > 0.2 ? 0 : Math.random() > 0.5 ? 1 : Math.random(),
+        favorite: Math.random() > 0.9,
+        dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
+      }))
+      .filter((book) => {
+        const phrase = state.get.session.search
+        if (phrase) {
+          return (
+            book.author.toLowerCase().includes(phrase) ||
+            book.title.toLowerCase().includes(phrase) ||
+            book.genres.some((genre) => genre.includes(phrase))
+          )
+        }
+
+        return true
+      })
   })
 
   const booksOnPage = createMemo(() => {
@@ -32,9 +46,7 @@ const Books: Component = () => {
   })
 
   const totalPages = createMemo(() => {
-    return Math.ceil(
-      state.get.booksIndex.books.length / state.get.settings.booksPerPage,
-    )
+    return Math.ceil(books().length / state.get.settings.booksPerPage)
   })
 
   const setPage = (page: number) => {
@@ -44,12 +56,15 @@ const Books: Component = () => {
 
   return (
     <>
-      <section class="filters"></section>
+      <Filters />
       <Pagination
         page={state.get.session.booksPage}
         of={totalPages()}
         change={setPage}
       />
+      <p class="results">
+        Found <strong>{books().length}</strong> books
+      </p>
       <section class="books">
         <For each={booksOnPage()}>
           {(book) => (

@@ -1,0 +1,67 @@
+{
+  "id": "cory-doctorow--little-brother",
+  "title": "Little Brother",
+  "titleAlpha": "little brother",
+  "author": "Cory Doctorow",
+  "language": "en",
+  "description": "A rousing tale of techno-geek rebelion.",
+  "longDescription": [
+    "Marcus, a.k.a \"w1n5t0n,\" is only seventeen years old, but he figures he already knows how the system works–and how to work the system. Smart, fast, and wise to the ways of the networked world, he has no trouble outwitting his high school's intrusive but clumsy surveillance systems.",
+    "But his whole world changes when he and his friends find themselves caught in the aftermath of a major terrorist attack on San Francisco. In the wrong place at the wrong time, Marcus and his crew are apprehended by the Department of Homeland Security and whisked away to a secret prison where they're mercilessly interrogated for days.",
+    "When the DHS finally releases them, Marcus discovers that his city has become a police state where every citizen is treated like a potential terrorist. He knows that no one will believe his story, which leaves him only one option: to take down the DHS himself."
+  ],
+  "year": 2008,
+  "genres": ["fiction", "science-fiction", "dystopia"],
+  "rights": "CC BY-NC-SA 3.0",
+  "publisher": "FeedBooks",
+  "source": {
+    "isUrl": true,
+    "value": "https://craphound.com/littlebrother/download/"
+  },
+  "chapters": [
+    { "id": "000", "title": "About", "length": 418, "skip": "always" },
+    { "id": "001", "title": "Introduction", "length": 21690, "skip": "yes" },
+    { "id": "002", "title": "Dedication", "length": 29, "skip": "yes" },
+    { "id": "003", "title": "Quotes", "length": 3409, "skip": "yes" },
+    {
+      "id": "004",
+      "title": "About the bookstore dedications",
+      "length": 488,
+      "skip": "yes"
+    },
+    { "id": "005", "title": "Chapter 1", "length": 23785, "skip": "no" },
+    { "id": "006", "title": "Chapter 2", "length": 19340, "skip": "no" },
+    { "id": "007", "title": "Chapter 3", "length": 26364, "skip": "no" },
+    { "id": "008", "title": "Chapter 4", "length": 29394, "skip": "no" },
+    { "id": "009", "title": "Chapter 5", "length": 37064, "skip": "no" },
+    { "id": "010", "title": "Chapter 6", "length": 25510, "skip": "no" },
+    { "id": "011", "title": "Chapter 7", "length": 27193, "skip": "no" },
+    { "id": "012", "title": "Chapter 8", "length": 20046, "skip": "no" },
+    { "id": "013", "title": "Chapter 9", "length": 26351, "skip": "no" },
+    { "id": "014", "title": "Chapter 10", "length": 24363, "skip": "no" },
+    { "id": "015", "title": "Chapter 11", "length": 27278, "skip": "no" },
+    { "id": "016", "title": "Chapter 12", "length": 28444, "skip": "no" },
+    { "id": "017", "title": "Chapter 13", "length": 23152, "skip": "no" },
+    { "id": "018", "title": "Chapter 14", "length": 28186, "skip": "no" },
+    { "id": "019", "title": "Chapter 15", "length": 32090, "skip": "no" },
+    { "id": "020", "title": "Chapter 16", "length": 24035, "skip": "no" },
+    { "id": "021", "title": "Chapter 17", "length": 28224, "skip": "no" },
+    { "id": "022", "title": "Chapter 18", "length": 27654, "skip": "no" },
+    { "id": "023", "title": "Chapter 19", "length": 32990, "skip": "no" },
+    { "id": "024", "title": "Chapter 20", "length": 41779, "skip": "no" },
+    { "id": "025", "title": "Chapter 21", "length": 16088, "skip": "no" },
+    { "id": "026", "title": "Epilogue", "length": 13148, "skip": "no" },
+    {
+      "id": "027",
+      "title": "Afterword by Bruce Schneier",
+      "length": 5386,
+      "skip": "yes"
+    },
+    {
+      "id": "028",
+      "title": "Afterword by Andrew \"bunnie\" Huang, Xbox Hacker",
+      "length": 4844,
+      "skip": "yes"
+    }
+  ]
+}

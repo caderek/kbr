@@ -5,7 +5,7 @@ const SOURCE_DIR = path.join("public", "books")
 
 const bookFolders = fs
   .readdirSync(SOURCE_DIR)
-  .filter((name) => name !== "index.json")
+  .filter((name) => name !== "_meta_")
 
 const indexData = {
   lastUpdate: Date.now(),
@@ -20,6 +20,7 @@ for (const dir of bookFolders) {
   indexData.books.push({
     id: info.id,
     title: info.title,
+    titleAlpha: info.titleAlpha,
     author: info.author,
     description: info.description,
     genres: info.genres,
@@ -29,6 +30,12 @@ for (const dir of bookFolders) {
       .reduce((sum, len) => sum + len, 0),
   })
 }
+
+indexData.books.sort((a, b) => {
+  return (
+    a.author.localeCompare(b.author) || a.titleAlpha.localeCompare(b.titleAlpha)
+  )
+})
 
 const metaDir = path.join(SOURCE_DIR, "_meta_")
 

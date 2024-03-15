@@ -1,0 +1,26 @@
+.filters {
+  background: var(--color-bg-hc);
+  height: auto;
+  padding: var(--space-l);
+  text-align: center;
+}
+
+.filters input[type="text"] {
+  background: var(--color-bg);
+  color: var(--color-fg-hc);
+  font-size: var(--font-m);
+  font-family: var(--font-sans);
+  padding: var(--space-s);
+  border: solid 1px var(--color-input);
+  position: relative;
+  border-radius: var(--space-xs);
+}
+
+.filters input[type="text"]:active,
+.filters input[type="text"]:focus {
+  border-color: var(--color-fg-lc);
+}
+
+.filters input::placeholder {
+  color: var(--color-fg-lc);
+}

@@ -1,0 +1,101 @@
+{
+  "id": "mcm--typhoonv",
+  "title": "Typhoon",
+  "titleAlpha": "typhoon",
+  "author": "MCM",
+  "language": "en",
+  "description": "A ruthless space pirate has vanished, and an odrinary teenager has no choice, but to assume her identity.",
+  "longDescription": [
+    "Kani isn’t Tundra. Tundra is a dustrunner: a ruthless space pirate, flying dangerous missions in low Earth orbit, risking the lives of millions of people below. Kani is just a regular teenager, and she wants absolutely nothing to do with that. Unfortunately, she has no choice.",
+    "Now, thrown into a world of deception and betrayal, Kani must fight to keep herself alive as she’s hunted by law enforcement, spies, mobsters, and even her so-called teammates, none of whom want to see her survive another day. All she needs to do is make one fatal mistake: tell them who she really is."
+  ],
+  "year": 2009,
+  "genres": ["fiction", "science-fiction", "thriller"],
+  "rights": "CC0 1.0 Universal",
+  "publisher": "Gardners Books",
+  "source": {
+    "isUrl": true,
+    "value": "https://unglue.it/work/140098/"
+  },
+  "chapters": [
+    { "id": "000", "title": "The Future", "length": 5193, "skip": "no" },
+    { "id": "001", "title": "Have to Run", "length": 7734, "skip": "no" },
+    { "id": "002", "title": "Prey", "length": 7491, "skip": "no" },
+    { "id": "003", "title": "Decisions", "length": 5745, "skip": "no" },
+    { "id": "004", "title": "The Ride", "length": 9210, "skip": "no" },
+    { "id": "005", "title": "One Small Step", "length": 7554, "skip": "no" },
+    { "id": "006", "title": "Ten Minute Mark", "length": 9098, "skip": "no" },
+    { "id": "007", "title": "Foolish Heroics", "length": 5685, "skip": "no" },
+    { "id": "008", "title": "Downfall", "length": 5678, "skip": "no" },
+    { "id": "009", "title": "Home Life", "length": 5959, "skip": "no" },
+    { "id": "010", "title": "SIX YEARS EARLIER", "length": 6700, "skip": "no" },
+    { "id": "011", "title": "Rush", "length": 5884, "skip": "no" },
+    { "id": "012", "title": "Departures", "length": 5853, "skip": "no" },
+    { "id": "013", "title": "Monitor", "length": 5215, "skip": "no" },
+    { "id": "014", "title": "Last Friend", "length": 4718, "skip": "no" },
+    {
+      "id": "015",
+      "title": "FIVE YEARS EARLIER",
+      "length": 6278,
+      "skip": "no"
+    },
+    { "id": "016", "title": "Bear Trap", "length": 6754, "skip": "no" },
+    { "id": "017", "title": "Missing Chip", "length": 8355, "skip": "no" },
+    { "id": "018", "title": "Betrayal", "length": 4220, "skip": "no" },
+    {
+      "id": "019",
+      "title": "Plan for the Worst",
+      "length": 7149,
+      "skip": "no"
+    },
+    { "id": "020", "title": "Come Back", "length": 4359, "skip": "no" },
+    { "id": "021", "title": "Tiny Hands", "length": 6361, "skip": "no" },
+    { "id": "022", "title": "Friendly Face", "length": 6735, "skip": "no" },
+    {
+      "id": "023",
+      "title": "FOUR YEARS EARLIER",
+      "length": 8343,
+      "skip": "no"
+    },
+    { "id": "024", "title": "On Your Knees", "length": 5960, "skip": "no" },
+    { "id": "025", "title": "Panic Button", "length": 4428, "skip": "no" },
+    {
+      "id": "026",
+      "title": "FOUR YEARS EARLIER",
+      "length": 4859,
+      "skip": "no"
+    },
+    { "id": "027", "title": "Assassination", "length": 4481, "skip": "no" },
+    { "id": "028", "title": "Hospital Food", "length": 6142, "skip": "no" },
+    { "id": "029", "title": "Mr Andrews", "length": 6574, "skip": "no" },
+    {
+      "id": "030",
+      "title": "THREE YEARS EARLIER",
+      "length": 4993,
+      "skip": "no"
+    },
+    {
+      "id": "031",
+      "title": "The End of the Road",
+      "length": 5005,
+      "skip": "no"
+    },
+    { "id": "032", "title": "Escape", "length": 6581, "skip": "no" },
+    { "id": "033", "title": "City Lights", "length": 6385, "skip": "no" },
+    { "id": "034", "title": "The Trap", "length": 4241, "skip": "no" },
+    { "id": "035", "title": "Death Sentence", "length": 1738, "skip": "no" },
+    { "id": "036", "title": "Last Chance", "length": 5100, "skip": "no" },
+    { "id": "037", "title": "Resolution", "length": 3050, "skip": "no" },
+    { "id": "038", "title": "Lost Friends", "length": 5824, "skip": "no" },
+    { "id": "039", "title": "Last Hurrah", "length": 5313, "skip": "no" },
+    { "id": "040", "title": "Desperation", "length": 7927, "skip": "no" },
+    { "id": "041", "title": "Finders Keepers", "length": 4001, "skip": "no" },
+    { "id": "042", "title": "Crash and Burn", "length": 4524, "skip": "no" },
+    { "id": "043", "title": "Narrowing Field", "length": 4999, "skip": "no" },
+    { "id": "044", "title": "Early Demise", "length": 2896, "skip": "no" },
+    { "id": "045", "title": "Quiet Lie", "length": 1378, "skip": "no" },
+    { "id": "046", "title": "Notice of Death", "length": 2191, "skip": "no" },
+    { "id": "047", "title": "Interrogation", "length": 5761, "skip": "no" },
+    { "id": "048", "title": "Flip", "length": 2326, "skip": "no" }
+  ]
+}
