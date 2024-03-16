@@ -6,8 +6,8 @@ async function getRawEpubPaths() {
   return res.json()
 }
 
-async function prepareBooks() {
-  const bookPaths = (await getRawEpubPaths()).slice(0)
+async function prepareBooks(limit: number = Infinity) {
+  const bookPaths = (await getRawEpubPaths()).slice(0, limit)
 
   for (const bookPath of bookPaths) {
     try {

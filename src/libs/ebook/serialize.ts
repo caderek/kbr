@@ -1,4 +1,4 @@
-import type { Book, Chapter, Cover } from "./types.ts"
+import type { Book, Chapter } from "./types.ts"
 import type {
   StaticBookInfo,
   StaticChapterInfo,
@@ -27,11 +27,12 @@ function serializeChapterContent(
 export function serializeBook(book: Book): {
   info: StaticBookInfo
   chapters: StaticChapterContent[]
-  cover: Cover
+  cover: Blob | null
 } {
   const info = {
     ...book.info,
     chapters: book.chapters.map(serializeChapterInfo),
+    createdAt: Date.now(),
   }
 
   const chapters = book.chapters.map(serializeChapterContent)

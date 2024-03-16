@@ -19,6 +19,7 @@ const defaultSettings: Settings = {
   backspaceWholeWord: false,
   replaceUnknownChars: false,
   booksPerPage: 60,
+  sortBy: "author",
 }
 
 const defaultState: State = {

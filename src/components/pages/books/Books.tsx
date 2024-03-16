@@ -4,15 +4,23 @@ import Book from "../../common/book/Book"
 import state from "../../../state/state"
 import Pagination from "../../common/pagination/Pagination"
 import Filters from "./Filters"
+import config from "../../../config"
+
+function getUtcDays(timestamp: number) {
+  return Math.floor(timestamp / (1000 * 60 * 60 * 24))
+}
 
 const Books: Component = () => {
   const books = createMemo(() => {
-    return state.get.booksIndex.books
+    const data = state.get.booksIndex.books
       .map((entry) => ({
         id: entry.id,
         title: entry.title ?? "No Title",
+        titleAlpha: entry.titleAlpha,
         author: entry.author ?? "Unknown",
-        pages: Math.ceil(entry.length / (5 * 300)),
+        year: entry.year,
+        createdAt: entry.createdAt,
+        pages: Math.ceil(entry.length / config.charactersPerPage),
         description: entry.description ?? "No description",
         genres: entry.genres,
         coverUrl: `/books/${entry.id}/cover${
@@ -35,6 +43,48 @@ const Books: Component = () => {
 
         return true
       })
+
+    data.sort((a, b) => {
+      const sortBy = state.get.settings.sortBy
+
+      if (sortBy === "length") {
+        return (
+          a.pages - b.pages ||
+          a.author.localeCompare(b.author) ||
+          a.titleAlpha.localeCompare(b.titleAlpha)
+        )
+      }
+
+      if (sortBy === "title") {
+        return (
+          a.titleAlpha.localeCompare(b.titleAlpha) ||
+          a.author.localeCompare(b.author)
+        )
+      }
+
+      if (sortBy === "year") {
+        return (
+          b.year - a.year ||
+          a.author.localeCompare(b.author) ||
+          a.titleAlpha.localeCompare(b.titleAlpha)
+        )
+      }
+
+      if (sortBy === "added") {
+        return (
+          getUtcDays(b.createdAt) - getUtcDays(a.createdAt) ||
+          a.author.localeCompare(b.author) ||
+          a.titleAlpha.localeCompare(b.titleAlpha)
+        )
+      }
+
+      return (
+        a.author.localeCompare(b.author) ||
+        a.titleAlpha.localeCompare(b.titleAlpha)
+      )
+    })
+
+    return data
   })
 
   const booksOnPage = createMemo(() => {
@@ -63,7 +113,8 @@ const Books: Component = () => {
         change={setPage}
       />
       <p class="results">
-        Found <strong>{books().length}</strong> books
+        Found <strong>{books().length}</strong> book
+        {books().length !== 1 ? "s" : ""}
       </p>
       <section class="books">
         <For each={booksOnPage()}>

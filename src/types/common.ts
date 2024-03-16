@@ -27,6 +27,7 @@ export type StaticBookInfo = {
     value: string
   } | null
   chapters: StaticChapterInfo[]
+  createdAt: number
 }
 
 export type StaticChapterContent = {
@@ -37,10 +38,13 @@ export type StaticChapterContent = {
 export type QuickBookInfo = {
   id: string
   title: string
+  titleAlpha: string
   author: string
   description: string | null
   genres: string[]
   length: number
+  year: number
+  createdAt: number
 }
 
 export type BooksIndex = {
@@ -48,7 +52,30 @@ export type BooksIndex = {
   books: QuickBookInfo[]
 }
 
-export type DynamicBookInfo = {}
+export type FinishedParagraphStats = {
+  accuracy: number
+  wpm: number
+  consistency: number
+  time: number
+}
+
+export type ChapterStats = {
+  progress: number
+  accuracy: number
+  wpm: number
+  consistency: number
+  paragraphs: FinishedParagraphStats[]
+}
+
+export type BookStats = {
+  progress: number
+  accuracy: number
+  wpm: number
+  consistency: number
+  chapters: ChapterStats[]
+}
+
+export type SortBy = "author" | "title" | "length" | "year" | "added"
 
 export type Settings = {
   uiLang: "en" | "pl"
@@ -62,6 +89,7 @@ export type Settings = {
   backspaceWholeWord: boolean
   replaceUnknownChars: boolean
   booksPerPage: number
+  sortBy: SortBy
 }
 
 export type Session = {
@@ -88,5 +116,3 @@ export type State = {
   booksIndex: BooksIndex
   session: Session
 }
-
-export type BookStats = {}

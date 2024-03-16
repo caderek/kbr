@@ -3,6 +3,7 @@ import { useParams } from "@solidjs/router"
 import { Component, createResource, createEffect, Show, For } from "solid-js"
 import Cover from "../../common/book/Cover"
 import { StaticBookInfo } from "../../../types/common"
+import config from "../../../config"
 
 type Params = {}
 
@@ -18,8 +19,7 @@ async function fetchBookDetails(id: string) {
       data.chapters
         .filter((chapter) => chapter.skip === "no")
         .map((chapter) => chapter.length)
-        .reduce((sum, x) => sum + x, 0) /
-        (5 * 300),
+        .reduce((sum, x) => sum + x, 0) / config.charactersPerPage,
     ),
   }
 }

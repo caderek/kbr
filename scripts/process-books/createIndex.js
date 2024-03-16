@@ -24,18 +24,14 @@ for (const dir of bookFolders) {
     author: info.author,
     description: info.description,
     genres: info.genres,
+    year: info.year,
+    createdAt: info.createdAt,
     length: info.chapters
       .filter((chapter) => chapter.skip === "no")
       .map((chapter) => chapter.length)
       .reduce((sum, len) => sum + len, 0),
   })
 }
-
-indexData.books.sort((a, b) => {
-  return (
-    a.author.localeCompare(b.author) || a.titleAlpha.localeCompare(b.titleAlpha)
-  )
-})
 
 const metaDir = path.join(SOURCE_DIR, "_meta_")
 

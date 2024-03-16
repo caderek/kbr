@@ -26,7 +26,7 @@
 
   --color-shadow: #08042633;
   --color-paper: #f7e9dc;
-  --color-paper-hc: #d9cbbf;
+  --color-paper-hc: #cfbeaf;
   --color-paper-shadow: #1a161333;
 
   --font-sans: "Open Sans", sans-serif;
@@ -117,7 +117,8 @@ a:hover {
 
 input,
 button,
-textarea {
+textarea,
+select {
   outline: none;
 }
 
@@ -127,7 +128,6 @@ a.button {
   text-decoration: none;
   font-size: var(--font-m);
   line-height: var(--font-m);
-  color: var(--color-fg);
   color: var(--color-fg);
   background: var(--color-input);
   padding: var(--space-m);
@@ -154,6 +154,58 @@ button:disabled:hover {
   opacity: 0.3;
 }
 
+input[type="text"] {
+  background: var(--color-bg);
+  color: var(--color-fg-hc);
+  font-size: var(--font-m);
+  font-family: var(--font-sans);
+  padding: var(--space-s);
+  border: solid 1px var(--color-input);
+  position: relative;
+  border-radius: var(--space-xs);
+}
+
+input[type="text"]:active,
+input[type="text"]:focus {
+  border-color: var(--color-fg-lc);
+}
+
+input::placeholder {
+  color: var(--color-fg-lc);
+  font-style: italic;
+}
+
+select {
+  background: var(--color-input);
+  color: var(--color-fg-hc);
+  font-size: var(--font-m);
+  font-family: var(--font-sans);
+  padding: var(--space-s);
+  border-radius: var(--space-xs);
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+select:hover {
+  opacity: 1;
+}
+
+label {
+  color: var(--color-fg-lc);
+  font-size: var(--font-s);
+  display: inline-block;
+  text-align: left;
+}
+
+label + label {
+  margin-left: var(--space-m);
+}
+
+label > span {
+  display: block;
+  margin-bottom: var(--space-s);
+}
+
 @media screen and (min-width: 64rem) {
   .mobile {
     display: none;
@@ -170,7 +222,8 @@ button:disabled:hover {
   }
 
   button,
-  a.button {
+  a.button,
+  select {
     opacity: 1;
   }
 }

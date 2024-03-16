@@ -42,4 +42,6 @@
 .pagination button.current {
   background: var(--color-bg-warning);
   color: var(--color-fg-warning);
+  opacity: 1;
+  cursor: default;
 }
