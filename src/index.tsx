@@ -25,6 +25,7 @@ render(
       <Route path="/settings" component={() => <h2>Settings</h2>} />
       <Route path="/profile" component={() => <h2>Profle</h2>} />
       <Route path="/prompt" component={Prompt} />
+      <Route path="/prompt/:id" component={Prompt} />
       <Route path="*404" component={() => <h1>Not Found</h1>} />
     </Router>
   ),

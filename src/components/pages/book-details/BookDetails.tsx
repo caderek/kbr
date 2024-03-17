@@ -5,8 +5,6 @@ import Cover from "../../common/book/Cover"
 import { StaticBookInfo } from "../../../types/common"
 import config from "../../../config"
 
-type Params = {}
-
 async function fetchBookDetails(id: string) {
   const res = await fetch(`/books/${id}/info.json`)
   const data = (await res.json()) as StaticBookInfo
@@ -19,12 +17,12 @@ async function fetchBookDetails(id: string) {
       data.chapters
         .filter((chapter) => chapter.skip === "no")
         .map((chapter) => chapter.length)
-        .reduce((sum, x) => sum + x, 0) / config.charactersPerPage,
+        .reduce((sum, x) => sum + x, 0) / config.CHARACTERS_PER_PAGE,
     ),
   }
 }
 
-const BookDetails: Component<Params> = () => {
+const BookDetails: Component = () => {
   const params = useParams()
   const [data] = createResource(params.id, fetchBookDetails)
 
@@ -120,7 +118,7 @@ const BookDetails: Component<Params> = () => {
             >
               {(chapter) => (
                 <li classList={{ skipped: chapter.skip === "yes" }}>
-                  <a href="/prompt">
+                  <a href={`/prompt/${data()?.id}__${chapter.id}`}>
                     <p class="chapter-title">{chapter.title}</p>
                   </a>
                   <div class="chapter-right">

@@ -97,6 +97,11 @@ export type Session = {
   search: string
 }
 
+export type BookPrompt = {
+  type: "book"
+  data: {}
+}
+
 export type State = {
   loaded: boolean
   stats: {}

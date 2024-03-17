@@ -1,5 +1,6 @@
 import localforage from "localforage"
 import {
+  BookStats,
   BooksIndex,
   Settings,
   StaticBookInfo,
@@ -69,6 +70,7 @@ type GeneralStore = {
 
 const storage = {
   booksInfo: new EntriesStorage<StaticBookInfo>("booksInfo"),
+  booksStats: new EntriesStorage<BookStats>("booksStats"),
   booksContent: new EntriesStorage<StaticChapterContent>("booksContent"),
   general: new MixedStorage<GeneralStore>("general"),
 }

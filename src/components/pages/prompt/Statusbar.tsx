@@ -1,6 +1,6 @@
 import "./Statusbar.css"
 import { Component, createMemo, Show } from "solid-js"
-import { formatNum } from "../../../../utils/formatters.ts"
+import { formatNum } from "../../../utils/formatters.ts"
 
 type Props = {
   bookId: string | null
@@ -14,8 +14,12 @@ type Props = {
 }
 
 const Statusbar: Component<Props> = (props) => {
-  const liveAcc = createMemo(() => (props.acc !== null ? formatNum(props.acc * 100, 1) : "-"))
-  const liveWpm = createMemo(() => (props.wpm !== null ? formatNum(props.wpm, 1) : "-"))
+  const liveAcc = createMemo(() =>
+    props.acc !== null ? formatNum(props.acc * 100, 1) : "-",
+  )
+  const liveWpm = createMemo(() =>
+    props.wpm !== null ? formatNum(props.wpm, 1) : "-",
+  )
   return (
     <section class="statusbar">
       <p class="slug">

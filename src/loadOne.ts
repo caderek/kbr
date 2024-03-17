@@ -5,9 +5,9 @@ async function loadOne() {
   const book = await loadEpub()
 
   const chapterNum = 20
-  const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
+  // const paragraphs = book.chapters[chapterNum].paragraphs.slice(0)
   // const paragraphs = new Array(20).fill("the")
-  // const paragraphs = ["the hello", "the little", "the again"]
+  const paragraphs = ["the hello", "the little", "the again"]
   // const paragraphs = ["out there again have so school get the must very"]
   //
   // const paragraphs = [

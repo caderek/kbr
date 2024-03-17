@@ -20,7 +20,7 @@ const Books: Component = () => {
         author: entry.author ?? "Unknown",
         year: entry.year,
         createdAt: entry.createdAt,
-        pages: Math.ceil(entry.length / config.charactersPerPage),
+        pages: Math.ceil(entry.length / config.CHARACTERS_PER_PAGE),
         description: entry.description ?? "No description",
         genres: entry.genres,
         coverUrl: `/books/${entry.id}/cover${
