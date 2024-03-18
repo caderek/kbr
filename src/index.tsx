@@ -3,13 +3,11 @@ import { render } from "solid-js/web"
 import { Router, Route } from "@solidjs/router"
 import "./boot/registerKeybindings.ts"
 import App from "./components/App"
-import Prompt from "./components/pages/prompt/Prompt"
+import Prompt from "./components/pages/prompt/Prompt.tsx"
 import Books from "./components/pages/books/Books"
 import BookDetails from "./components/pages/book-details/BookDetails.tsx"
-import loadOne from "./loadOne.ts"
 import prepareBooks from "./prepareBooks.ts"
 
-loadOne()
 // @ts-ignore
 window.prepareBooks = prepareBooks
 

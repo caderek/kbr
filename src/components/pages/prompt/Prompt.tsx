@@ -20,29 +20,10 @@ import { calculateAccuracy } from "./prompt-util/calculateAccuracy.tsx"
 import { calculateWpm } from "./prompt-util/calculateWpm.tsx"
 import { calculateParagraphWpm } from "./prompt-util/calculateParagraphWpm.tsx"
 import { scrollToWord } from "./prompt-util/scrollToWord.tsx"
+import { getPromptData } from "./prompt-actions/getPromptData.tsx"
 import type { LocalState, WordStats, ParagraphStats } from "./types.ts"
 
 import Statusbar from "./Statusbar.tsx"
-import { fetchJSON } from "../../../libs/api-helpers/fetchJSON.ts"
-import { fetchLines } from "../../../libs/api-helpers/fetchLines.ts"
-import { StaticBookInfo } from "../../../types/common.ts"
-
-async function getPromptData(id: string) {
-  const [bookId, chapterId] = id.split("__")
-
-  const info = (await fetchJSON(`/books/${bookId}/info.json`)) as StaticBookInfo
-  const paragraphs = await fetchLines(`/books/${bookId}/${chapterId}.txt`)
-
-  return {
-    bookInfo: {
-      id: bookId,
-      language: info.language,
-      title: info.title,
-    },
-    chapterInfo: info.chapters.find((chapter) => chapter.id === chapterId),
-    paragraphs,
-  }
-}
 
 function Prompt() {
   const params = useParams()
@@ -64,10 +45,6 @@ function Prompt() {
   let charset = getCharset("en")
 
   const [promptData] = createResource(params.id, getPromptData)
-
-  // createEffect(() => {
-  //   console.log(promptData())
-  // })
 
   // Load prompt content on content change
   createEffect(() => {
@@ -206,11 +183,11 @@ function Prompt() {
     return prev
   }, "0:0")
 
+  // Add times chunk when the cursor enters or reenters word,
+  // this way times of initial typin and later reentries (if user backspace from next word) are separate
+  // and total time spent on a word can be calculated
   createEffect(() => {
     if (local.original.length > 0) {
-      // Add times chunk when the cursor enters or reenters word,
-      // this way times of initial typin and later reentries (if user backspace from next word) are separate
-      // and total time spent on a word can be calculated
       setLocal(
         "stats",
         local.paragraphNum,

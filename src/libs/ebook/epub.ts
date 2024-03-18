@@ -160,7 +160,52 @@ export class Epub {
     return { path: rootFilePath, mime: rootFileMime }
   }
 
-  #readToc(element: Element, prefix: string, parentLabel?: string) {
+  #readHtmlToc(
+    element: Element,
+    prefix: string,
+    title: string | null,
+    parentLabel?: string,
+  ) {
+    const toc: TocElement[][] = [
+      ...element.querySelectorAll(":scope > li"),
+    ].map((navPoint) => {
+      const a = navPoint.querySelector(":scope > a") as HTMLAnchorElement
+
+      const currentLabel = this.#cleanText(a?.textContent ?? "")
+
+      const label = parentLabel
+        ? `${parentLabel} - ${currentLabel}`
+        : currentLabel
+
+      let nextLabel: string | undefined =
+        label.trim().toLowerCase() !== title?.trim().toLowerCase()
+          ? label
+          : undefined
+
+      if (shouldSkip(currentLabel)) {
+        nextLabel = parentLabel ? parentLabel : undefined
+      }
+
+      const link = a.getAttribute("href") ?? ""
+      const [rawPath, id] = link.split("#")
+      const path = `${prefix}${rawPath}`
+      const subList = navPoint.querySelector(":scope > ol")
+      const children = subList
+        ? this.#readHtmlToc(subList, prefix, title, nextLabel)
+        : []
+
+      return children.length > 0 ? children : [{ label, path, id }]
+    })
+
+    return toc.flat()
+  }
+
+  #readNcxToc(
+    element: Element,
+    prefix: string,
+    title: string | null,
+    parentLabel?: string,
+  ) {
     const toc: TocElement[][] = [
       ...element.querySelectorAll(":scope > navPoint"),
     ].map((navPoint) => {
@@ -181,7 +226,7 @@ export class Epub {
       const link = navPoint.querySelector("content")?.getAttribute("src") ?? ""
       const [rawPath, id] = link.split("#")
       const path = `${prefix}${rawPath}`
-      const children = this.#readToc(navPoint, prefix, nextLabel)
+      const children = this.#readNcxToc(navPoint, prefix, title, nextLabel)
       return children.length > 0 ? children : [{ label, path, id }]
     })
 
@@ -505,20 +550,34 @@ export class Epub {
     })
 
     const manifest = Object.fromEntries(manifestEntries)
-
     const cover = await this.#getCover(manifestEntries, entries, info, 320)
 
-    const tocEntry = (manifestEntries.find((entry) => entry[1].ext === "ncx") ??
-      [])[1]
+    const tocNcxEntry = manifestEntries.find((entry) => entry[1].ext === "ncx")
+    const tocHtmlEntry = manifestEntries.find(
+      (entry) => entry[0] === "toc.xhtml",
+    )
+
+    const tocInfo = tocNcxEntry
+      ? { type: "ncx", entry: tocNcxEntry[1] }
+      : tocHtmlEntry
+        ? { type: "html", entry: tocHtmlEntry[1] }
+        : undefined
 
     let toc: TocElement[] | null = null
 
-    if (tocEntry) {
-      const tocContent = await this.#readFile(tocEntry.path, entries)
-      const tocNode = tocContent.querySelector("navMap")
+    if (tocInfo) {
+      const tocContent = await this.#readFile(tocInfo.entry.path, entries)
+
+      const tocNode =
+        tocInfo.type === "ncx"
+          ? tocContent.querySelector("navMap")
+          : tocContent.querySelector("#toc > ol")
 
       if (tocNode) {
-        toc = this.#readToc(tocNode, prefix)
+        toc =
+          tocInfo.type === "ncx"
+            ? this.#readNcxToc(tocNode, prefix, info.title)
+            : this.#readHtmlToc(tocNode, prefix, info.title)
       }
     }
 
