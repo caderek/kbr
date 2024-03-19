@@ -1,3 +1,5 @@
+import { StaticChapterInfo } from "../../../types/common"
+
 export type WordStats = {
   length: number
   typedLength: number
@@ -14,6 +16,7 @@ export type ParagraphStats = {
   acc: null | number
   consistency: null | number
   inputTimes: number[]
+  totalKeystrokes: number
   startTime: number
   endTime: number
   totalTime: number
@@ -29,6 +32,7 @@ export type PageStats = {
 }
 
 export type LocalState = {
+  charset: Set<string>
   hideCursor: boolean
   done: boolean
   paused: boolean
@@ -39,4 +43,14 @@ export type LocalState = {
   paragraphNum: number
   wordNum: number
   charNum: number
+}
+
+export type PromptData = {
+  bookInfo: {
+    id: string
+    language: string | null
+    title: string | null
+  }
+  chapterInfo: StaticChapterInfo | undefined
+  paragraphs: string[] | null
 }

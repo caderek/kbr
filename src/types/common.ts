@@ -90,6 +90,7 @@ export type Settings = {
   replaceUnknownChars: boolean
   booksPerPage: number
   sortBy: SortBy
+  paginateChapters: boolean
 }
 
 export type Session = {

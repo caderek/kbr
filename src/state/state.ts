@@ -20,6 +20,7 @@ const defaultSettings: Settings = {
   replaceUnknownChars: false,
   booksPerPage: 60,
   sortBy: "author",
+  paginateChapters: false,
 }
 
 const defaultState: State = {

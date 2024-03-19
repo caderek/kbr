@@ -1,8 +1,9 @@
 import { fetchJSON } from "../../../../libs/api-helpers/fetchJSON.ts"
 import { fetchLines } from "../../../../libs/api-helpers/fetchLines.ts"
-import { StaticBookInfo } from "../../../../types/common.ts"
+import type { StaticBookInfo } from "../../../../types/common.ts"
+import type { PromptData } from "../types.ts"
 
-export async function getPromptData(id: string) {
+export async function getPromptData(id: string): Promise<PromptData> {
   const [bookId, chapterId] = id.split("__")
 
   const info = (await fetchJSON(`/books/${bookId}/info.json`)) as StaticBookInfo
