@@ -12,6 +12,7 @@ export type ParagraphStats = {
   wordCount: number
   wpm: null | number
   acc: null | number
+  consistency: null | number
   inputTimes: number[]
   startTime: number
   endTime: number

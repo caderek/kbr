@@ -24,6 +24,7 @@ import { getPromptData } from "./prompt-actions/getPromptData.tsx"
 import type { LocalState, WordStats, ParagraphStats } from "./types.ts"
 
 import Statusbar from "./Statusbar.tsx"
+import { calculateParagraphConsistency } from "./prompt-util/calculateParagraphConsistency.tsx"
 
 function Prompt() {
   const params = useParams()
@@ -75,6 +76,7 @@ function Prompt() {
           wordCount: original[i].length,
           wpm: null,
           acc: null,
+          consistency: null,
           inputTimes: [],
           startTime: 0,
           endTime: 0,
@@ -379,7 +381,9 @@ function Prompt() {
         .startsWith(local.typed[local.paragraphNum][local.wordNum].join("")),
     )
 
+    // PARAGRAPH END
     if (expectedChar === "⏎") {
+      setLocal("paused", true)
       const acc = calculateAccuracy(
         local.stats[local.paragraphNum].nonTypos,
         local.stats[local.paragraphNum].typos,
@@ -387,10 +391,20 @@ function Prompt() {
       const { wpm, start, end, time, charsCount } = calculateParagraphWpm(
         local.stats[local.paragraphNum].inputTimes,
         local.stats[local.paragraphNum].words,
+        local.stats[local.paragraphNum].totalTime,
       )
+
+      const consistency = calculateParagraphConsistency(
+        local.stats[local.paragraphNum].inputTimes,
+        local.stats[local.paragraphNum].charCount,
+        local.stats[local.paragraphNum].consistency,
+      )
+
+      console.log({ consistency: formatPercentage(consistency) })
 
       setLocal("stats", local.paragraphNum, "acc", acc)
       setLocal("stats", local.paragraphNum, "wpm", wpm)
+      setLocal("stats", local.paragraphNum, "consistency", consistency)
       setLocal("stats", local.paragraphNum, "startTime", start)
       setLocal("stats", local.paragraphNum, "endTime", end)
       setLocal("stats", local.paragraphNum, "totalTime", time)

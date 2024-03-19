@@ -159,6 +159,10 @@
   position: relative;
 }
 
+.book-details .chapters li p {
+  width: 50rem;
+}
+
 .book-details .chapters li.skipped,
 .book-details .chapters li.skipped a {
   color: var(--color-fg-lc);

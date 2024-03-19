@@ -5,11 +5,12 @@ import { WordStats } from "../types.ts"
 export function calculateParagraphWpm(
   inputTimes: number[],
   stats: WordStats[],
+  totalTime: number,
 ) {
   const afkTime = getAfkTime(inputTimes)
   const start = inputTimes[0]
   const end = inputTimes[inputTimes.length - 1]
-  const time = end - start - afkTime
+  const time = end - start - afkTime + totalTime
 
   let charsCount = 0
 

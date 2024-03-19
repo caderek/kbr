@@ -605,6 +605,10 @@ export class Epub {
 
       const content = await this.#readFile(item.path, entries)
 
+      content.body.querySelectorAll("hgroup p").forEach((el) => {
+        ;(el as HTMLParagraphElement).dataset.type = "h6"
+      })
+
       content.body.querySelectorAll("br").forEach((node) => {
         const nl = document.createTextNode("{{BR}}")
 
