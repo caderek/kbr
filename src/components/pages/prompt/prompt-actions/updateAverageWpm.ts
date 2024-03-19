@@ -1,6 +1,5 @@
 import { SetStoreFunction } from "solid-js/store"
 import { LocalState } from "../types"
-import { calculateAccuracy } from "../prompt-util/calculateAccuracy"
 import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm"
 import config from "../../../../config"
 import { calculateWpm } from "../prompt-util/calculateWpm"
