@@ -16,7 +16,6 @@ export type ParagraphStats = {
   acc: null | number
   consistency: null | number
   inputTimes: number[]
-  totalKeystrokes: number
   startTime: number
   endTime: number
   totalTime: number

@@ -47,11 +47,13 @@ function Prompt() {
 
   const [promptData] = createResource(params.id, getPromptData)
 
-  // Load prompt content on content change
-  createEffect(on(promptData, () => loadPromptContent(promptData, setLocal)))
+  const wordLabel = createMemo(() => {
+    return `${local.paragraphNum}:${local.wordNum}`
+  })
 
-  createEffect(updateAverageAccuracy(local, setLocal))
-  createEffect(updateAverageWpm(local, setLocal), "0:0")
+  createEffect(on(promptData, () => loadPromptContent(promptData, setLocal)))
+  createEffect(on(wordLabel, updateAverageWpm(local, setLocal)))
+  createEffect(on(wordLabel, updateAverageAccuracy(local, setLocal)))
 
   // Add times chunk when the cursor enters or reenters word,
   // this way times of initial typin and later reentries (if user backspace from next word) are separate

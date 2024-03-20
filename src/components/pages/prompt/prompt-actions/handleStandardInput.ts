@@ -1,4 +1,4 @@
-import { SetStoreFunction } from "solid-js/store"
+import { SetStoreFunction, produce } from "solid-js/store"
 import { LocalState } from "../types"
 import config from "../../../../config"
 import { setParagraphStats } from "./setParagraphStats"
@@ -43,7 +43,7 @@ export function handleStandardInput(
     local.wordNum,
     "times",
     local.stats[local.paragraphNum].words[local.wordNum].times.length - 1,
-    (prev) => [...prev, inputTime],
+    (prev) => [...prev, inputTime], // TODO prev is not iterable!
   )
 
   if (char !== expectedChar) {
@@ -114,12 +114,20 @@ export function handleStandardInput(
 
     console.log(local)
   } else if (isLastWord) {
-    setLocal("charNum", 0)
-    setLocal("wordNum", 0)
-    setLocal("paragraphNum", local.paragraphNum + 1)
+    setLocal(
+      produce((state) => {
+        state.charNum = 0
+        state.wordNum = 0
+        state.paragraphNum += 1
+      }),
+    )
   } else if (isLastChar) {
-    setLocal("charNum", 0)
-    setLocal("wordNum", local.wordNum + 1)
+    setLocal(
+      produce((state) => {
+        state.charNum = 0
+        state.wordNum += 1
+      }),
+    )
   } else {
     setLocal("charNum", local.charNum + 1)
   }

@@ -1,6 +1,7 @@
 import { SetStoreFunction } from "solid-js/store"
 import { LocalState } from "../types"
-import { calculateAccuracy } from "../prompt-util/calculateAccuracy"
+import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy"
+import { calculateWeightedAverage } from "../../../../utils/math"
 
 export function updateAverageAccuracy(
   local: LocalState,
@@ -11,17 +12,25 @@ export function updateAverageAccuracy(
       return
     }
 
-    const { nonTypos, typos } = local.stats.reduce(
-      (sums, parStats) => {
-        sums.nonTypos += parStats.nonTypos
-        sums.typos += parStats.typos
-        return sums
-      },
-      { nonTypos: 0, typos: 0 },
-    )
+    console.log("Updating average acc")
 
-    if (nonTypos > 0 || typos > 0) {
-      setLocal("pageStats", "acc", calculateAccuracy(nonTypos, typos))
+    const accuracies = []
+    const weights = []
+
+    for (let i = 0; i < local.paragraphNum; i++) {
+      accuracies.push(local.stats[i].acc as number)
+      weights.push(local.stats[i].charCount)
     }
+
+    const currentParagraph = local.stats[local.paragraphNum]
+
+    if (currentParagraph.inputTimes.length > 0) {
+      const { acc, charsCount } = calculateParagraphAccuracy(currentParagraph)
+      accuracies.push(acc)
+      weights.push(charsCount)
+    }
+
+    const averageAcc = calculateWeightedAverage(accuracies, weights)
+    setLocal("pageStats", "acc", averageAcc)
   }
 }

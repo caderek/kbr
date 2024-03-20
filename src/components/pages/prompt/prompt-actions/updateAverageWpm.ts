@@ -1,71 +1,39 @@
 import { SetStoreFunction } from "solid-js/store"
 import { LocalState } from "../types"
 import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm"
-import config from "../../../../config"
-import { calculateWpm } from "../prompt-util/calculateWpm"
+import { calculateWeightedAverage } from "../../../../utils/math"
 
 export function updateAverageWpm(
   local: LocalState,
   setLocal: SetStoreFunction<LocalState>,
 ) {
-  return (prev: string) => {
-    const label = `${local.paragraphNum}${local.wordNum}`
+  return () => {
+    if (local.stats.length === 0) {
+      return
+    }
+    console.log("Updating average wpm")
 
-    if (label !== prev || local.done) {
-      let totalTime = 0
-      let totalCorrectCharsCount = 0
-      let prevEndTime = 0
+    const wpms = []
+    const weights = []
 
-      for (const [paragraphNum, paragraphStats] of local.stats.entries()) {
-        if (
-          paragraphNum === local.paragraphNum &&
-          paragraphStats.inputTimes.length > 1
-        ) {
-          const paragraphWpm = calculateParagraphWpm(
-            paragraphStats.inputTimes,
-            paragraphStats.words,
-            0,
-          )
-
-          totalTime += paragraphWpm.time
-          totalCorrectCharsCount += paragraphWpm.charsCount
-
-          if (paragraphNum !== 0) {
-            const timeBetweenParagraphs = paragraphWpm.start - prevEndTime
-            totalTime +=
-              timeBetweenParagraphs >= config.AFK_BOUNDRY
-                ? config.AFK_PENALTY
-                : timeBetweenParagraphs
-          }
-        }
-
-        if (paragraphNum === local.paragraphNum) {
-          break
-        }
-
-        totalTime += paragraphStats.totalTime
-        totalCorrectCharsCount += paragraphStats.correctCharCount
-
-        if (paragraphNum !== 0) {
-          const timeBetweenParagraphs = paragraphStats.startTime - prevEndTime
-          totalTime +=
-            timeBetweenParagraphs >= config.AFK_BOUNDRY
-              ? config.AFK_PENALTY
-              : timeBetweenParagraphs
-        }
-
-        prevEndTime = paragraphStats.endTime
-      }
-
-      const wpm = calculateWpm(totalTime, totalCorrectCharsCount)
-
-      if (!Number.isNaN(wpm)) {
-        setLocal("pageStats", "wpm", wpm)
-      }
-
-      return label
+    for (let i = 0; i < local.paragraphNum; i++) {
+      wpms.push(local.stats[i].wpm as number)
+      weights.push(local.stats[i].charCount)
     }
 
-    return prev
+    const currentParagraph = local.stats[local.paragraphNum]
+
+    if (currentParagraph.inputTimes.length > 0) {
+      const { wpm, charsCount } = calculateParagraphWpm(
+        currentParagraph.inputTimes,
+        currentParagraph.words,
+        currentParagraph.totalTime,
+      )
+      wpms.push(wpm)
+      weights.push(charsCount)
+    }
+
+    const averageWpm = calculateWeightedAverage(wpms, weights)
+    setLocal("pageStats", "wpm", averageWpm)
   }
 }

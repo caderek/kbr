@@ -40,7 +40,6 @@ export function loadPromptContent(
         wpm: null,
         acc: null,
         consistency: null,
-        totalKeystrokes: 0,
         inputTimes: [],
         startTime: 0,
         endTime: 0,
