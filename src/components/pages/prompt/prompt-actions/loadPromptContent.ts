@@ -11,12 +11,11 @@ import { getCharset } from "../../../../libs/charsets"
 export function loadPromptContent(
   promptData: Resource<PromptData>,
   setLocal: SetStoreFunction<LocalState>,
+  id: string | null,
 ) {
   if (promptData() === undefined || promptData.loading || promptData.error) {
     return
   }
-
-  setLocal("charset", getCharset(promptData()!.bookInfo.language ?? "??"))
 
   const original = (promptData()?.paragraphs ?? []).map((paragraph) =>
     paragraph
@@ -36,14 +35,10 @@ export function loadPromptContent(
       ({
         wordCount: original[i].length,
         charCount: original[i].flat().length,
-        correctCharCount: 0,
         wpm: null,
         acc: null,
         consistency: null,
         inputTimes: [],
-        startTime: 0,
-        endTime: 0,
-        totalTime: 0,
         typos: 0,
         nonTypos: 0,
         words: original[i].map(
@@ -54,15 +49,24 @@ export function loadPromptContent(
               times: [],
               isCorrect: true,
               hadTypos: false,
+              typosIndicies: [],
             }) as WordStats,
         ),
       }) as ParagraphStats,
   )
 
-  setLocal("original", original)
-  setLocal("typed", empty)
-  setLocal("stats", stats)
-  setLocal("paragraphNum", 0)
-  setLocal("wordNum", 0)
-  setLocal("charNum", 0)
+  setLocal({
+    id,
+    charset: getCharset(promptData()!.bookInfo.language ?? "??"),
+    hideCursor: false,
+    done: false,
+    paused: true,
+    original,
+    typed: empty,
+    stats,
+    pageStats: { acc: null, wpm: null, inputTimes: [] },
+    paragraphNum: 0,
+    wordNum: 0,
+    charNum: 0,
+  })
 }

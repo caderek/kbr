@@ -16,8 +16,8 @@ import config from "../../../config.ts"
 import state from "../../../state/state.ts"
 import { formatNum, formatPercentage } from "../../../utils/formatters.ts"
 import { EXTRA_KEYS } from "./prompt-util/EXTRA_KEYS.ts"
-import { scrollToWord } from "./prompt-util/scrollToWord.tsx"
-import { getPromptData } from "./prompt-actions/getPromptData.tsx"
+import { scrollToWord } from "./prompt-util/scrollToWord.ts"
+import { getPromptData } from "./prompt-actions/getPromptData.ts"
 import type { LocalState } from "./types.ts"
 
 import Statusbar from "./Statusbar.tsx"
@@ -32,6 +32,7 @@ function Prompt() {
   const params = useParams()
 
   const [local, setLocal] = createStore<LocalState>({
+    id: null,
     charset: new Set(),
     hideCursor: false,
     done: false,
@@ -51,7 +52,9 @@ function Prompt() {
     return `${local.paragraphNum}:${local.wordNum}`
   })
 
-  createEffect(on(promptData, () => loadPromptContent(promptData, setLocal)))
+  createEffect(
+    on(promptData, () => loadPromptContent(promptData, setLocal, params.id)),
+  )
   createEffect(on(wordLabel, updateAverageWpm(local, setLocal)))
   createEffect(on(wordLabel, updateAverageAccuracy(local, setLocal)))
 
@@ -233,7 +236,7 @@ function Prompt() {
                                         error:
                                           currentChar() !== null &&
                                           !isCorrect(),
-                                        special: letter === "⏎",
+                                        special: letter === config.ENTER_SYMBOL,
                                       }}
                                     >
                                       {state.get.settings.showTypos

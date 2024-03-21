@@ -1,5 +1,5 @@
-import { calculateWpm } from "./calculateWpm.tsx"
-import { getAfkTime } from "./getAfkTime.tsx"
+import { calculateWpm } from "./calculateWpm.ts"
+import { getAfkTime } from "./getAfkTime.ts"
 import { WordStats } from "../types.ts"
 
 export function calculateParagraphWpm(
@@ -29,10 +29,9 @@ export function calculateParagraphWpm(
     }
   }
 
-  console.log({ prevWpm, time, charCount, weight, inputTimes, wordsStats })
-
   return {
     value: calculateWpm(time, charCount),
+    raw: calculateWpm(time, weight),
     time,
     weight,
   }

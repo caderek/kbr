@@ -6,14 +6,15 @@ export type WordStats = {
   times: number[][]
   isCorrect: boolean
   hadTypos: boolean
+  typosIndicies: number[]
 }
 
 export type ParagraphStats = {
   charCount: number
-  correctCharCount: number
   wordCount: number
   wpm: {
     value: number
+    raw: number
     weight: number
     time: number
   } | null
@@ -26,9 +27,6 @@ export type ParagraphStats = {
     weight: number
   } | null
   inputTimes: number[]
-  startTime: number
-  endTime: number
-  totalTime: number
   typos: number
   nonTypos: number
   words: WordStats[]
@@ -41,6 +39,7 @@ export type PageStats = {
 }
 
 export type LocalState = {
+  id: string | null
   charset: Set<string>
   hideCursor: boolean
   done: boolean

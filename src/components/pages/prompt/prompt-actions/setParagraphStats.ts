@@ -1,9 +1,11 @@
 import { produce, type SetStoreFunction } from "solid-js/store"
 import type { LocalState } from "../types.ts"
 import { formatPercentage } from "../../../../utils/formatters.ts"
-import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm.tsx"
-import { calculateParagraphConsistency } from "../prompt-util/calculateParagraphConsistency.tsx"
-import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.tsx"
+import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm.ts"
+import { calculateParagraphConsistency } from "../prompt-util/calculateParagraphConsistency.ts"
+import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.ts"
+import { getParagraphMissedWords } from "../prompt-util/getParagraphMissedWords.ts"
+import storage from "../../../../storage/storage.ts"
 
 export function setParagraphStats(
   local: LocalState,
@@ -26,19 +28,34 @@ export function setParagraphStats(
   )
 
   const consistency = calculateParagraphConsistency(
-    local.stats[local.paragraphNum].inputTimes,
-    local.stats[local.paragraphNum].consistency,
+    currentParagraph.inputTimes,
+    currentParagraph.consistency,
   )
 
+  const missedWords = getParagraphMissedWords(
+    currentParagraph.words,
+    local.original[local.paragraphNum],
+  )
+
+  console.log({ missedWords })
+  console.log({ wpm })
   console.log({ consistency: formatPercentage(consistency.value) })
 
   setLocal(
     "stats",
     local.paragraphNum,
     produce((state) => {
-      state.acc = acc
-      state.wpm = wpm
-      state.consistency = consistency
+      if (!Number.isNaN(acc.value)) {
+        state.acc = acc
+      }
+
+      if (!Number.isNaN(wpm.value)) {
+        state.wpm = wpm
+      }
+
+      if (!Number.isNaN(consistency.value)) {
+        state.consistency = consistency
+      }
 
       // Clean temp data
       state.typos = 0
@@ -50,9 +67,11 @@ export function setParagraphStats(
         times: [[]],
         isCorrect: entry.isCorrect,
         hadTypos: false,
+        typosIndicies: [],
       }))
     }),
   )
 
+  // storage.booksStats.set(local.id, )
   // Save paragraph stats
 }

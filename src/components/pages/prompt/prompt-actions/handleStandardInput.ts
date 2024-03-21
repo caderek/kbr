@@ -56,6 +56,16 @@ export function handleStandardInput(
       "hadTypos",
       true,
     )
+
+    setLocal(
+      "stats",
+      local.paragraphNum,
+      "words",
+      local.wordNum,
+      "typosIndicies",
+      (prev) => [...prev, local.charNum],
+    )
+    // TODO MARK TYPOS POSITIONS
   } else if (char !== "⏎") {
     setLocal("stats", local.paragraphNum, "nonTypos", (prev) => prev + 1)
   }

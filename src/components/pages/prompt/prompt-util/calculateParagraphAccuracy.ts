@@ -1,5 +1,5 @@
 import { calculateWeightedAverage } from "../../../../utils/math.ts"
-import { calculateAccuracy } from "./calculateAccuracy.tsx"
+import { calculateAccuracy } from "./calculateAccuracy.ts"
 
 export function calculateParagraphAccuracy(
   nonTypos: number,

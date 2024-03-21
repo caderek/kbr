@@ -1,8 +1,10 @@
-const symbols = `\`1234567890-=~!@#$%^&*()_+[]\\{}|;':",./<>? `
-const en = symbols + `qwertyuiopQWERTYUIOPasdfghjklASDFGHJKLzxcvbnmZXCVBNM`
+const sym = `\`1234567890-=~!@#$%^&*()_+[]\\{}|;':",./<>? `
+const en = sym + `qwertyuiopQWERTYUIOPasdfghjklASDFGHJKLzxcvbnmZXCVBNM`
 const pl = en + "ąĄćĆęĘłŁńŃóÓśŚźŹżŻ"
 const ua =
-  symbols + "аАбБвВгГґҐдДеЕєЄжЖзЗиИіІїЇйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩьЬюЮяЯ"
+  sym + "аАбБвВгГґҐдДеЕєЄжЖзЗиИіІїЇйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩьЬюЮяЯ"
+
+export const symbols = new Set(sym)
 
 export function getCharset(language: string) {
   const low = language.toLowerCase()

@@ -29,6 +29,7 @@ export function handleParagraphReset(
         times: [[]],
         isCorrect: false,
         hadTypos: false,
+        typosIndicies: [],
       })),
     }
   })
