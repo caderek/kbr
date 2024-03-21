@@ -1,4 +1,4 @@
-import type { SetStoreFunction } from "solid-js/store"
+import { produce, type SetStoreFunction } from "solid-js/store"
 import type { LocalState } from "../types.ts"
 import { formatPercentage } from "../../../../utils/formatters.ts"
 import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm.tsx"
@@ -11,30 +11,48 @@ export function setParagraphStats(
 ) {
   setLocal("paused", true)
 
-  const { acc } = calculateParagraphAccuracy(local.stats[local.paragraphNum])
+  const currentParagraph = local.stats[local.paragraphNum]
 
-  const { wpm, start, end, time, charsCount } = calculateParagraphWpm(
-    local.stats[local.paragraphNum].inputTimes,
-    local.stats[local.paragraphNum].words,
-    local.stats[local.paragraphNum].totalTime,
+  const acc = calculateParagraphAccuracy(
+    currentParagraph.nonTypos,
+    currentParagraph.typos,
+    currentParagraph.acc,
   )
 
-  const { consistency, totalKeystrokes } = calculateParagraphConsistency(
+  const wpm = calculateParagraphWpm(
+    currentParagraph.inputTimes,
+    currentParagraph.words,
+    currentParagraph.wpm,
+  )
+
+  const consistency = calculateParagraphConsistency(
     local.stats[local.paragraphNum].inputTimes,
-    local.stats[local.paragraphNum].totalKeystrokes,
     local.stats[local.paragraphNum].consistency,
   )
 
-  console.log({ consistency: formatPercentage(consistency) })
+  console.log({ consistency: formatPercentage(consistency.value) })
 
-  setLocal("stats", local.paragraphNum, "acc", acc)
-  setLocal("stats", local.paragraphNum, "wpm", wpm)
-  setLocal("stats", local.paragraphNum, "consistency", consistency)
-  setLocal("stats", local.paragraphNum, "totalKeystrokes", totalKeystrokes)
-  setLocal("stats", local.paragraphNum, "startTime", start)
-  setLocal("stats", local.paragraphNum, "endTime", end)
-  setLocal("stats", local.paragraphNum, "totalTime", time)
-  setLocal("stats", local.paragraphNum, "correctCharCount", charsCount)
+  setLocal(
+    "stats",
+    local.paragraphNum,
+    produce((state) => {
+      state.acc = acc
+      state.wpm = wpm
+      state.consistency = consistency
 
-  // save paragraph stats
+      // Clean temp data
+      state.typos = 0
+      state.nonTypos = 0
+      state.inputTimes = []
+      state.words = state.words.map((entry) => ({
+        length: entry.length,
+        typedLength: 0,
+        times: [[]],
+        isCorrect: entry.isCorrect,
+        hadTypos: false,
+      }))
+    }),
+  )
+
+  // Save paragraph stats
 }

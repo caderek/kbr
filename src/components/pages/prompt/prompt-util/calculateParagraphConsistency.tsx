@@ -4,8 +4,7 @@ import { calculateConsistency } from "./calculateConsistency.ts"
 
 export function calculateParagraphConsistency(
   inputTimes: number[],
-  totalKeystrokes: number,
-  consistency: number | null,
+  prevConsistency: { value: number; weight: number } | null,
 ) {
   const timeDiffs = []
 
@@ -14,20 +13,19 @@ export function calculateParagraphConsistency(
     timeDiffs.push(diff >= config.AFK_BOUNDRY ? 1000 : diff)
   }
 
-  const currentConsistency = calculateConsistency(timeDiffs)
+  const weight = inputTimes.length
+  const currentValue = calculateConsistency(timeDiffs)
 
   const updatedConsistency =
-    consistency === null
-      ? currentConsistency
-      : // If user goes back to already finished paragraph,
-        // calculate proportional change to consistency
-        calculateWeightedAverage(
-          [consistency, currentConsistency],
-          [1, Math.min(1, inputTimes.length / totalKeystrokes)],
+    prevConsistency === null
+      ? currentValue
+      : calculateWeightedAverage(
+          [prevConsistency.value, currentValue],
+          [prevConsistency.weight, weight],
         )
 
   return {
-    consistency: updatedConsistency,
-    totalKeystrokes: totalKeystrokes + inputTimes.length,
+    value: updatedConsistency,
+    weight: (prevConsistency?.weight ?? 0) + weight,
   }
 }

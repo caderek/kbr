@@ -12,25 +12,30 @@ export function updateAverageAccuracy(
       return
     }
 
-    console.log("Updating average acc")
-
     const accuracies = []
     const weights = []
 
     for (let i = 0; i < local.paragraphNum; i++) {
-      accuracies.push(local.stats[i].acc as number)
-      weights.push(local.stats[i].charCount)
+      accuracies.push(local.stats[i].acc!.value)
+      weights.push(local.stats[i].acc!.weight)
     }
 
     const currentParagraph = local.stats[local.paragraphNum]
 
     if (currentParagraph.inputTimes.length > 0) {
-      const { acc, charsCount } = calculateParagraphAccuracy(currentParagraph)
-      accuracies.push(acc)
-      weights.push(charsCount)
+      const acc = calculateParagraphAccuracy(
+        currentParagraph.nonTypos,
+        currentParagraph.typos,
+        currentParagraph.acc,
+      )
+      accuracies.push(acc.value)
+      weights.push(acc.weight)
     }
 
     const averageAcc = calculateWeightedAverage(accuracies, weights)
-    setLocal("pageStats", "acc", averageAcc)
+
+    if (!Number.isNaN(averageAcc)) {
+      setLocal("pageStats", "acc", averageAcc)
+    }
   }
 }

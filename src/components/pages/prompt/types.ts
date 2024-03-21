@@ -12,9 +12,19 @@ export type ParagraphStats = {
   charCount: number
   correctCharCount: number
   wordCount: number
-  wpm: null | number
-  acc: null | number
-  consistency: null | number
+  wpm: {
+    value: number
+    weight: number
+    time: number
+  } | null
+  acc: {
+    value: number
+    weight: number
+  } | null
+  consistency: {
+    value: number
+    weight: number
+  } | null
   inputTimes: number[]
   startTime: number
   endTime: number

@@ -11,29 +11,35 @@ export function updateAverageWpm(
     if (local.stats.length === 0) {
       return
     }
-    console.log("Updating average wpm")
 
-    const wpms = []
-    const weights = []
+    const wpms: number[] = []
+    const weights: number[] = []
 
     for (let i = 0; i < local.paragraphNum; i++) {
-      wpms.push(local.stats[i].wpm as number)
-      weights.push(local.stats[i].charCount)
+      if (local.stats[i].wpm === null) {
+        continue
+      }
+
+      wpms.push(local.stats[i].wpm!.value)
+      weights.push(local.stats[i].wpm!.weight)
     }
 
     const currentParagraph = local.stats[local.paragraphNum]
 
     if (currentParagraph.inputTimes.length > 0) {
-      const { wpm, charsCount } = calculateParagraphWpm(
+      const wpm = calculateParagraphWpm(
         currentParagraph.inputTimes,
         currentParagraph.words,
-        currentParagraph.totalTime,
+        currentParagraph.wpm,
       )
-      wpms.push(wpm)
-      weights.push(charsCount)
+      wpms.push(wpm.value)
+      weights.push(wpm.weight)
     }
 
     const averageWpm = calculateWeightedAverage(wpms, weights)
-    setLocal("pageStats", "wpm", averageWpm)
+
+    if (!Number.isNaN(averageWpm)) {
+      setLocal("pageStats", "wpm", averageWpm)
+    }
   }
 }

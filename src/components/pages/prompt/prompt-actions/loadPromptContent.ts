@@ -34,9 +34,9 @@ export function loadPromptContent(
     { length: empty.length },
     (_, i) =>
       ({
+        wordCount: original[i].length,
         charCount: original[i].flat().length,
         correctCharCount: 0,
-        wordCount: original[i].length,
         wpm: null,
         acc: null,
         consistency: null,
@@ -52,7 +52,7 @@ export function loadPromptContent(
               length: chars.length,
               typedLength: 0,
               times: [],
-              isCorrect: false,
+              isCorrect: true,
               hadTypos: false,
             }) as WordStats,
         ),

@@ -159,15 +159,13 @@ function Prompt() {
               {(paragraph, paragraphNum) => {
                 const wpm = createMemo(() => {
                   const val = local.stats?.[paragraphNum()]?.wpm
-                  return val !== null && val !== undefined
-                    ? `${formatNum(val)} wpm`
-                    : ""
+                  return val !== null ? `${formatNum(val.value)} wpm` : ""
                 })
 
                 const acc = createMemo(() => {
                   const val = local.stats?.[paragraphNum()]?.acc
-                  return val !== null && val !== undefined
-                    ? `${formatPercentage(val)} acc`
+                  return val !== null
+                    ? `${formatPercentage(val.value)} acc`
                     : ""
                 })
 
@@ -216,7 +214,7 @@ function Prompt() {
                                       ]
 
                                     if (typedChar === " " && letter !== " ") {
-                                      typedChar = "_" // "␣"
+                                      typedChar = "_"
                                     }
 
                                     return typedChar ?? letter
