@@ -9,7 +9,9 @@ function serializeChapterInfo(chapter: Chapter, i: number): StaticChapterInfo {
   return {
     id: String(i).padStart(3, "0"),
     title: chapter.title,
-    length: chapter.paragraphs.join(" ").length,
+    length: chapter.paragraphs
+      .map((p) => p.length + 1)
+      .reduce((a, b) => a + b, 0),
     skip: "no",
   }
 }

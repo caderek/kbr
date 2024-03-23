@@ -91,7 +91,6 @@ const Books: Component = () => {
     const limit = state.get.settings.booksPerPage
     const start = (state.get.session.booksPage - 1) * limit
     const end = start + limit
-    console.log({ start, end })
     return books().slice(start, end)
   })
 

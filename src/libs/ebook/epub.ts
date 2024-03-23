@@ -605,6 +605,18 @@ export class Epub {
 
       const content = await this.#readFile(item.path, entries)
 
+      // Remove references (probably temporary solution)
+      content.querySelectorAll("a").forEach((node) => {
+        if (node.getAttribute("epub:type") === "noteref") {
+          node.parentNode?.removeChild(node)
+        }
+      })
+
+      content.querySelectorAll("sup a").forEach((node) => {
+        node.parentNode?.removeChild(node)
+      })
+      // ---END remove references
+
       content.body.querySelectorAll("hgroup p").forEach((el) => {
         ;(el as HTMLParagraphElement).dataset.type = "h6"
       })

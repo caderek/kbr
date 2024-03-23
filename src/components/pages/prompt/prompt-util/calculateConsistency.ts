@@ -1,9 +1,15 @@
-import { calculateVariationCoefficient } from "../../../../utils/math"
+import {
+  calculateVariationCoefficient,
+  removeOutliersByPercentiles,
+  // removeOutliersByStandardDeviations,
+} from "../../../../utils/math"
 
 export function calculateConsistency(arr: number[]) {
-  if (arr.length < 2) {
+  const withoutOutliers = removeOutliersByPercentiles(arr)
+
+  if (withoutOutliers.length < 2) {
     return 1
   }
 
-  return 1 - calculateVariationCoefficient(arr)
+  return 1 - calculateVariationCoefficient(withoutOutliers)
 }

@@ -5,7 +5,8 @@ import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm.ts"
 import { calculateParagraphConsistency } from "../prompt-util/calculateParagraphConsistency.ts"
 import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.ts"
 import { getParagraphMissedWords } from "../prompt-util/getParagraphMissedWords.ts"
-import storage from "../../../../storage/storage.ts"
+import { saveParagraph } from "./saveParagraph.ts"
+// import storage from "../../../../storage/storage.ts"
 
 export function setParagraphStats(
   local: LocalState,
@@ -72,6 +73,13 @@ export function setParagraphStats(
     }),
   )
 
-  // storage.booksStats.set(local.id, )
-  // Save paragraph stats
+  console.log({ charNum: local.charNum })
+
+  if (local.id) {
+    saveParagraph(local.id, local.paragraphNum, local.length, {
+      wpm,
+      acc,
+      consistency,
+    })
+  }
 }

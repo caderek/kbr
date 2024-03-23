@@ -40,6 +40,7 @@ export type PageStats = {
 
 export type LocalState = {
   id: string | null
+  length: number
   charset: Set<string>
   hideCursor: boolean
   done: boolean

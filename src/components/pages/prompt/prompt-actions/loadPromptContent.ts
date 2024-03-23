@@ -17,6 +17,11 @@ export function loadPromptContent(
     return
   }
 
+  console.log({ promptData: promptData() })
+
+  // @ts-ignore
+  window.chapter = promptData()?.paragraphs?.join("\n")
+
   const original = (promptData()?.paragraphs ?? []).map((paragraph) =>
     paragraph
       .split(" ")
@@ -57,6 +62,7 @@ export function loadPromptContent(
 
   setLocal({
     id,
+    length: promptData()!.chapterInfo?.length,
     charset: getCharset(promptData()!.bookInfo.language ?? "??"),
     hideCursor: false,
     done: false,

@@ -9,6 +9,8 @@ export async function getPromptData(id: string): Promise<PromptData> {
   const info = (await fetchJSON(`/books/${bookId}/info.json`)) as StaticBookInfo
   const paragraphs = await fetchLines(`/books/${bookId}/${chapterId}.txt`)
 
+  console.log({ paragraphs })
+
   return {
     bookInfo: {
       id: bookId,

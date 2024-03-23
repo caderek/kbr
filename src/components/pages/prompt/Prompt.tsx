@@ -15,7 +15,7 @@ import { createStore } from "solid-js/store"
 import config from "../../../config.ts"
 import state from "../../../state/state.ts"
 import { formatNum, formatPercentage } from "../../../utils/formatters.ts"
-import { EXTRA_KEYS } from "./prompt-util/EXTRA_KEYS.ts"
+import { EXTRA_KEYS } from "./prompt-util/KEY_NAMES.ts"
 import { scrollToWord } from "./prompt-util/scrollToWord.ts"
 import { getPromptData } from "./prompt-actions/getPromptData.ts"
 import type { LocalState } from "./types.ts"
@@ -33,6 +33,7 @@ function Prompt() {
 
   const [local, setLocal] = createStore<LocalState>({
     id: null,
+    length: 0,
     charset: new Set(),
     hideCursor: false,
     done: false,
@@ -140,8 +141,9 @@ function Prompt() {
             "caret-floor": state.get.settings.caret === "floor",
           }}
           onClick={() => {
-            if (screenKeyboardPrompt) {
+            if (screenKeyboardPrompt && config.IS_MOBILE) {
               screenKeyboardPrompt.focus()
+
               if (config.IS_MOBILE && window.visualViewport) {
                 window.visualViewport?.addEventListener(
                   "resize",

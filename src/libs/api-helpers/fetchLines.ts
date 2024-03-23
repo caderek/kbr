@@ -6,7 +6,11 @@ export async function fetchLines(path: string) {
   }
 
   try {
-    return (await res.text()).split("\n").map((p) => p + "⏎")
+    const content = await res.text()
+    return content
+      .trim()
+      .split("\n")
+      .map((p) => p + "⏎")
   } catch (e) {
     console.error(e)
     return null

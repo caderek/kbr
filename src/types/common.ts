@@ -52,28 +52,46 @@ export type BooksIndex = {
   books: QuickBookInfo[]
 }
 
+export type BasicStats = {
+  acc: {
+    value: number
+    weight: number
+  }
+  wpm: {
+    value: number
+    weight: number
+  }
+  consistency: {
+    value: number
+    weight: number
+  }
+}
+
+export type ProgressStats = {
+  length: number
+  progress: number
+}
+
 export type FinishedParagraphStats = {
-  accuracy: number
-  wpm: number
-  consistency: number
-  time: number
+  wpm: {
+    value: number
+    raw: number
+    weight: number
+    time: number
+  }
+  acc: {
+    value: number
+    weight: number
+  }
+  consistency: {
+    value: number
+    weight: number
+  }
 }
 
-export type ChapterStats = {
-  progress: number
-  accuracy: number
-  wpm: number
-  consistency: number
-  paragraphs: FinishedParagraphStats[]
-}
+export type ChapterStats = BasicStats & ProgressStats
 
-export type BookStats = {
-  progress: number
-  accuracy: number
-  wpm: number
-  consistency: number
-  chapters: ChapterStats[]
-}
+export type BookStats = BasicStats & ProgressStats
 
 export type SortBy = "author" | "title" | "length" | "year" | "added"
 

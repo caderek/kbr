@@ -2,6 +2,8 @@ import localforage from "localforage"
 import {
   BookStats,
   BooksIndex,
+  ChapterStats,
+  FinishedParagraphStats,
   Settings,
   StaticBookInfo,
   StaticChapterContent,
@@ -12,7 +14,8 @@ class EntriesStorage<T> {
 
   constructor(name: string) {
     this.#database = localforage.createInstance({
-      name,
+      name: "main",
+      storeName: name,
       driver: [localforage.INDEXEDDB, localforage.LOCALSTORAGE],
     })
   }
@@ -35,7 +38,8 @@ class MixedStorage<T extends { [key: string]: any }> {
 
   constructor(name: string) {
     this.#database = localforage.createInstance({
-      name,
+      name: "main",
+      storeName: name,
       driver: [localforage.INDEXEDDB, localforage.LOCALSTORAGE],
     })
   }
@@ -71,6 +75,10 @@ type GeneralStore = {
 const storage = {
   booksInfo: new EntriesStorage<StaticBookInfo>("booksInfo"),
   booksStats: new EntriesStorage<BookStats>("booksStats"),
+  chaptersStats: new EntriesStorage<ChapterStats[]>("chaptersStats"),
+  paragraphsStats: new EntriesStorage<FinishedParagraphStats[]>(
+    "paragraphsStats",
+  ),
   booksContent: new EntriesStorage<StaticChapterContent>("booksContent"),
   general: new MixedStorage<GeneralStore>("general"),
 }

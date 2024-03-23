@@ -27,7 +27,7 @@ export function handleParagraphReset(
         length: chars.length,
         typedLength: 0,
         times: [[]],
-        isCorrect: false,
+        isCorrect: true,
         hadTypos: false,
         typosIndicies: [],
       })),
