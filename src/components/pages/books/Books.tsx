@@ -12,7 +12,7 @@ function getUtcDays(timestamp: number) {
 
 const Books: Component = () => {
   const books = createMemo(() => {
-    const data = state.get.booksIndex.books
+    const data = state.get.booksIndex
       .map((entry) => ({
         id: entry.id,
         title: entry.title ?? "No Title",
@@ -26,9 +26,8 @@ const Books: Component = () => {
         coverUrl: `/books/${entry.id}/cover${
           devicePixelRatio > 1 ? "" : "-small"
         }.min.png`,
-        progress:
-          Math.random() > 0.2 ? 0 : Math.random() > 0.5 ? 1 : Math.random(),
-        favorite: Math.random() > 0.9,
+        progress: entry.progress,
+        favorite: entry.favorite,
         dateAdded: Date.now() - 1000 * 60 * 60 * 24 * 8,
       }))
       .filter((book) => {

@@ -47,10 +47,19 @@ export type QuickBookInfo = {
   createdAt: number
 }
 
+export type QuickBookStats = {
+  progress: number
+  favorite: boolean
+}
+
+export type QuickBookData = QuickBookInfo & QuickBookStats
+
 export type BooksIndex = {
   lastUpdate: number
   books: QuickBookInfo[]
 }
+
+export type BooksLiveIndex = QuickBookData[]
 
 export type BasicStats = {
   acc: {
@@ -137,6 +146,6 @@ export type State = {
     wpm: number
   }
   settings: Settings
-  booksIndex: BooksIndex
+  booksIndex: BooksLiveIndex
   session: Session
 }

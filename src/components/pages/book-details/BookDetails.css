@@ -156,11 +156,16 @@
   background: var(--color-bg-hc);
   margin-bottom: var(--space-s);
   border-radius: var(--space-xs);
+  border: solid 1px var(--color-bg-hc);
   position: relative;
+  transition: 0.1s;
 }
 
 .book-details .chapters li p {
   width: 50rem;
+}
+.book-details .chapters li span {
+  display: inline-block;
 }
 
 .book-details .chapters li.skipped,
@@ -202,7 +207,7 @@
   text-align: right;
   position: relative;
   bottom: calc(var(--font-xl) - var(--font-m));
-  margin-left: var(--space-m);
+  margin-left: var(--space-xs);
 }
 
 .book-details .chapter-pages {

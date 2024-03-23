@@ -1,24 +1,61 @@
 import "./BookDetails.css"
 import { useParams } from "@solidjs/router"
-import { Component, createResource, createEffect, Show, For } from "solid-js"
+import {
+  Component,
+  createResource,
+  createEffect,
+  Show,
+  For,
+  createMemo,
+} from "solid-js"
 import Cover from "../../common/book/Cover"
 import { StaticBookInfo } from "../../../types/common"
 import config from "../../../config"
+import storage from "../../../storage/storage"
+import { formatNumNice, formatPercentageNice } from "../../../utils/formatters"
 
 async function fetchBookDetails(id: string) {
   const res = await fetch(`/books/${id}/info.json`)
   const data = (await res.json()) as StaticBookInfo
 
-  console.log({ data })
+  const chaptersStats = await storage.chaptersStats.get(id)
+  const bookStats = await storage.booksStats.get(id)
+
+  console.log({ data, bookStats })
+
+  const chapters = data.chapters.map((chapter) => {
+    const chapterStats = chaptersStats && chaptersStats[Number(chapter.id)]
+
+    return {
+      ...chapter,
+      wpm: chapterStats?.wpm.value ?? null,
+      acc: chapterStats?.acc.value ?? null,
+      consistency: chapterStats?.consistency.value ?? null,
+      progress: chapterStats?.progress ?? 0,
+      typedLength: chapterStats?.length ?? 0,
+    }
+  })
+
+  const totalPages = Math.ceil(
+    data.chapters
+      .filter((chapter) => chapter.skip === "no")
+      .map((chapter) => chapter.length)
+      .reduce((sum, x) => sum + x, 0) / config.CHARACTERS_PER_PAGE,
+  )
+
+  const typedLength = bookStats?.length ?? 0
+  const pages = typedLength / config.CHARACTERS_PER_PAGE
 
   return {
     ...data,
-    pages: Math.ceil(
-      data.chapters
-        .filter((chapter) => chapter.skip === "no")
-        .map((chapter) => chapter.length)
-        .reduce((sum, x) => sum + x, 0) / config.CHARACTERS_PER_PAGE,
-    ),
+    pages,
+    totalPages,
+    chapters,
+    wpm: bookStats?.wpm.value ?? null,
+    acc: bookStats?.acc.value ?? null,
+    consistency: bookStats?.consistency.value ?? null,
+    progress: bookStats?.progress ?? 0,
+    typedLength,
   }
 }
 
@@ -64,35 +101,48 @@ const BookDetails: Component = () => {
             </Show>
           </p>
           <ul class="stats">
-            <li>
-              <figure>
-                <figcaption>Pages</figcaption>
-                <p>
-                  <strong>36</strong>/{data()?.pages}
-                </p>
-              </figure>
-            </li>
+            {/* <li> */}
+            {/*   <figure> */}
+            {/*     <figcaption>Pages</figcaption> */}
+            {/*     <p> */}
+            {/*       <strong>{formatNumNice(data()?.pages ?? 0)}</strong>/ */}
+            {/*       {data()?.totalPages} */}
+            {/*     </p> */}
+            {/*   </figure> */}
+            {/* </li> */}
             <li>
               <figure>
                 <figcaption>Progress</figcaption>
                 <p>
-                  <strong>30</strong>%
+                  <strong>{formatPercentageNice(data()?.progress ?? 0)}</strong>
+                  %
                 </p>
               </figure>
             </li>
             <li>
               <figure>
-                <figcaption>Average speed</figcaption>
+                <figcaption>Speed</figcaption>
                 <p>
-                  <strong>60</strong> WPM
+                  <strong>{formatNumNice(data()?.wpm ?? 0)}</strong> WPM
                 </p>
               </figure>
             </li>
             <li>
               <figure>
-                <figcaption>Average accuracy</figcaption>
+                <figcaption>Accuracy</figcaption>
                 <p>
-                  <strong>97</strong>%
+                  <strong>{formatPercentageNice(data()?.acc ?? 0)}</strong>%
+                </p>
+              </figure>
+            </li>
+            <li>
+              <figure>
+                <figcaption>Consistency</figcaption>
+                <p>
+                  <strong>
+                    {formatPercentageNice(data()?.consistency ?? 0)}
+                  </strong>
+                  %
                 </p>
               </figure>
             </li>
@@ -116,29 +166,51 @@ const BookDetails: Component = () => {
                 (chapter) => chapter.skip !== "always",
               )}
             >
-              {(chapter) => (
-                <li classList={{ skipped: chapter.skip === "yes" }}>
-                  <a href={`/prompt/${data()?.id}__${chapter.id}`}>
-                    <p class="chapter-title">{chapter.title}</p>
-                  </a>
-                  <div class="chapter-right">
-                    <span class="chapter-pages">
-                      {Math.ceil(chapter.length / (5 * 300))} pages
-                    </span>{" "}
-                    <span class="chapter-status">STATUS</span>
-                    <span class="chapter-skip">
-                      <label>
-                        <i
-                          class={`icon-toggle-${
-                            chapter.skip === "no" ? "on" : "off"
-                          }`}
-                        />
-                        <input type="checkbox" />
-                      </label>
-                    </span>
-                  </div>
-                </li>
-              )}
+              {(chapter) => {
+                const pages = createMemo(() =>
+                  Math.ceil(chapter.length / (5 * 300)),
+                )
+
+                const status = createMemo(() => {
+                  if (chapter.skip === "yes") {
+                    return "SKIPPED"
+                  }
+
+                  if (chapter.progress === 1) {
+                    return "DONE"
+                  }
+
+                  if (chapter.progress > 0) {
+                    return formatPercentageNice(chapter.progress) + "%"
+                  }
+
+                  return ""
+                })
+
+                return (
+                  <li classList={{ skipped: chapter.skip === "yes" }}>
+                    <a href={`/prompt/${data()?.id}__${chapter.id}`}>
+                      <p class="chapter-title">{chapter.title}</p>
+                    </a>
+                    <div class="chapter-right">
+                      <span class="chapter-pages">
+                        {pages()} page{pages() !== 1 ? "s" : ""}
+                      </span>{" "}
+                      <span class="chapter-status">{status()}</span>
+                      <span class="chapter-skip">
+                        <label>
+                          <i
+                            class={`icon-toggle-${
+                              chapter.skip === "no" ? "on" : "off"
+                            }`}
+                          />
+                          <input type="checkbox" />
+                        </label>
+                      </span>
+                    </div>
+                  </li>
+                )
+              }}
             </For>
           </ul>
         </section>

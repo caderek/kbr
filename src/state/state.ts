@@ -1,7 +1,12 @@
 import { createEffect, createRoot } from "solid-js"
 import { SetStoreFunction, createStore } from "solid-js/store"
 import storage from "../storage/storage.ts"
-import type { State, Settings, BooksIndex } from "../types/common"
+import type {
+  State,
+  Settings,
+  BooksIndex,
+  BooksLiveIndex,
+} from "../types/common"
 import {
   getBooksIndexLastUpdate,
   getBooksIndex,
@@ -42,10 +47,7 @@ const defaultState: State = {
     wpm: 0,
   },
   settings: defaultSettings,
-  booksIndex: {
-    lastUpdate: 0,
-    books: [],
-  },
+  booksIndex: [],
   session: {
     booksPage: 1,
     search: "",
@@ -75,7 +77,27 @@ async function loadSavedData(state: State, setState: SetStoreFunction<State>) {
   }
 
   if (booksIndex) {
-    setState("booksIndex", booksIndex)
+    // Fetch QuickBookStats from storage
+    const booksWithStats = new Set(await storage.booksStats.keys())
+
+    const booksLiveIndex: BooksLiveIndex = []
+
+    for (const book of booksIndex.books) {
+      let progress = 0
+      let favorite = false
+
+      if (booksWithStats.has(book.id)) {
+        progress = (await storage.booksStats.get(book.id))?.progress ?? 0
+      }
+
+      booksLiveIndex.push({
+        ...book,
+        progress,
+        favorite,
+      })
+    }
+
+    setState("booksIndex", booksLiveIndex)
     await storage.general.set("booksIndex", booksIndex)
   }
 

@@ -31,6 +31,10 @@ class EntriesStorage<T> {
   remove(key: string) {
     return this.#database.removeItem(key)
   }
+
+  keys() {
+    return this.#database.keys()
+  }
 }
 
 class MixedStorage<T extends { [key: string]: any }> {
@@ -64,6 +68,10 @@ class MixedStorage<T extends { [key: string]: any }> {
 
   async remove(key: keyof T) {
     await this.#database.removeItem(key as string)
+  }
+
+  keys() {
+    return this.#database.keys()
   }
 }
 

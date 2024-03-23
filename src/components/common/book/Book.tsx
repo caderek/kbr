@@ -1,6 +1,7 @@
 import "./Book.css"
 import { Component, Show, For } from "solid-js"
 import Cover from "./Cover"
+import { formatPercentageNice } from "../../../utils/formatters"
 
 const WEEK_MS = 1000 * 60 * 60 * 24 * 7
 
@@ -15,10 +16,6 @@ type Props = {
   favorite: boolean
   dateAdded: number
   genres: string[]
-}
-
-function formatProgress(progress: number) {
-  return Math.floor(progress * 100)
 }
 
 const Book: Component<Props> = (props) => {
@@ -38,7 +35,9 @@ const Book: Component<Props> = (props) => {
           </p>
           <ul class="stats">
             <li>
-              <span>{props.pages} pages</span>
+              <span>
+                {props.pages} page{props.pages !== 1 ? "s" : ""}
+              </span>
             </li>
             <Show when={props.progress === 1}>
               <li class="done">
@@ -47,7 +46,7 @@ const Book: Component<Props> = (props) => {
             </Show>
             <Show when={props.progress > 0 && props.progress < 1}>
               <li class="in-progress" title="Show all in progress">
-                <a href="#">{formatProgress(props.progress)}% done</a>
+                <a href="#">{formatPercentageNice(props.progress)}% done</a>
               </li>
             </Show>
           </ul>

@@ -48,7 +48,7 @@ export async function saveParagraph(
   try {
     const [bookId, chapterId] = path.split("__")
     const bookLength =
-      state.get.booksIndex.books.find((book) => book.id === bookId)?.length ?? 0
+      state.get.booksIndex.find((book) => book.id === bookId)?.length ?? 0
 
     const paragraphsStats = (await storage.paragraphsStats.get(path)) ?? []
     const chaptersStats = (await storage.chaptersStats.get(bookId)) ?? []
@@ -82,6 +82,13 @@ export async function saveParagraph(
     await storage.paragraphsStats.set(path, paragraphsStats)
     await storage.chaptersStats.set(bookId, chaptersStats)
     await storage.booksStats.set(bookId, boookStats)
+
+    state.set(
+      "booksIndex",
+      state.get.booksIndex.findIndex((x) => x.id === bookId),
+      "progress",
+      boookStats.progress,
+    )
   } catch (e) {
     console.error(e)
     return false
