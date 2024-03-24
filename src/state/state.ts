@@ -77,14 +77,14 @@ async function loadSavedData(state: State, setState: SetStoreFunction<State>) {
   }
 
   if (booksIndex) {
-    // Fetch QuickBookStats from storage
     const booksWithStats = new Set(await storage.booksStats.keys())
+    const favorites = new Set((await storage.general.get("favorites")) ?? [])
 
     const booksLiveIndex: BooksLiveIndex = []
 
     for (const book of booksIndex.books) {
       let progress = 0
-      let favorite = false
+      let favorite = favorites.has(book.id)
 
       if (booksWithStats.has(book.id)) {
         progress = (await storage.booksStats.get(book.id))?.progress ?? 0

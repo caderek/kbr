@@ -75,9 +75,11 @@ class MixedStorage<T extends { [key: string]: any }> {
   }
 }
 
-type GeneralStore = {
+type GeneralStorage = {
   settings: Settings
   booksIndex: BooksIndex
+  missedWords: string[]
+  favorites: string[]
 }
 
 const storage = {
@@ -88,7 +90,7 @@ const storage = {
     "paragraphsStats",
   ),
   booksContent: new EntriesStorage<StaticChapterContent>("booksContent"),
-  general: new MixedStorage<GeneralStore>("general"),
+  general: new MixedStorage<GeneralStorage>("general"),
 }
 
 export default storage

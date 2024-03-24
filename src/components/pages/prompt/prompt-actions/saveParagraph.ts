@@ -44,12 +44,14 @@ export async function saveParagraph(
   paragraphNum: number,
   chapterLength: number,
   stats: FinishedParagraphStats,
+  missedWords: string[],
 ) {
   try {
     const [bookId, chapterId] = path.split("__")
     const bookLength =
       state.get.booksIndex.find((book) => book.id === bookId)?.length ?? 0
 
+    const existingMissedWords = (await storage.general.get("missedWords")) ?? []
     const paragraphsStats = (await storage.paragraphsStats.get(path)) ?? []
     const chaptersStats = (await storage.chaptersStats.get(bookId)) ?? []
 
@@ -79,9 +81,14 @@ export async function saveParagraph(
       progress: chaptersTypedLength / bookLength,
     }
 
+    const updatedMissedWords = [
+      ...new Set([...existingMissedWords, ...missedWords]),
+    ]
+
     await storage.paragraphsStats.set(path, paragraphsStats)
     await storage.chaptersStats.set(bookId, chaptersStats)
     await storage.booksStats.set(bookId, boookStats)
+    await storage.general.set("missedWords", updatedMissedWords)
 
     state.set(
       "booksIndex",

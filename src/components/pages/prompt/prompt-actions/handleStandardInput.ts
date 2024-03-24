@@ -2,6 +2,7 @@ import { SetStoreFunction, produce } from "solid-js/store"
 import { LocalState } from "../types"
 import config from "../../../../config"
 import { setParagraphStats } from "./setParagraphStats"
+import { getScreenSplitOffsets } from "../prompt-util/getScreenSplitOffsets"
 
 let afkTimeout: NodeJS.Timeout | null = null
 
@@ -105,6 +106,20 @@ export function handleStandardInput(
   // PARAGRAPH END
   if (expectedChar === "⏎") {
     setParagraphStats(local, setLocal)
+
+    const splitOffsets = getScreenSplitOffsets(
+      local.screenSplits,
+      local.paragraphNum,
+    )
+
+    if (local.splitStart !== splitOffsets.start) {
+      setLocal(
+        produce((state) => {
+          state.splitStart = splitOffsets.start
+          state.splitEnd = splitOffsets.end
+        }),
+      )
+    }
   }
 
   const isLastChar =

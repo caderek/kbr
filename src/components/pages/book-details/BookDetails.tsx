@@ -1,18 +1,16 @@
 import "./BookDetails.css"
 import { useParams } from "@solidjs/router"
-import {
-  Component,
-  createResource,
-  createEffect,
-  Show,
-  For,
-  createMemo,
-} from "solid-js"
+import { Component, createResource, Show, For, createMemo } from "solid-js"
 import Cover from "../../common/book/Cover"
 import { StaticBookInfo } from "../../../types/common"
 import config from "../../../config"
 import storage from "../../../storage/storage"
-import { formatNumNice, formatPercentageNice } from "../../../utils/formatters"
+import {
+  formatNum,
+  formatNumNice,
+  formatPercentage,
+  formatPercentageNice,
+} from "../../../utils/formatters"
 
 async function fetchBookDetails(id: string) {
   const res = await fetch(`/books/${id}/info.json`)
@@ -20,8 +18,6 @@ async function fetchBookDetails(id: string) {
 
   const chaptersStats = await storage.chaptersStats.get(id)
   const bookStats = await storage.booksStats.get(id)
-
-  console.log({ data, bookStats })
 
   const chapters = data.chapters.map((chapter) => {
     const chapterStats = chaptersStats && chaptersStats[Number(chapter.id)]
@@ -62,10 +58,6 @@ async function fetchBookDetails(id: string) {
 const BookDetails: Component = () => {
   const params = useParams()
   const [data] = createResource(params.id, fetchBookDetails)
-
-  createEffect(() => {
-    console.log(data())
-  })
 
   return (
     <div class="book-details">
@@ -114,7 +106,9 @@ const BookDetails: Component = () => {
               <figure>
                 <figcaption>Progress</figcaption>
                 <p>
-                  <strong>{formatPercentageNice(data()?.progress ?? 0)}</strong>
+                  <strong>
+                    {formatPercentageNice(data()?.progress ?? 0, 1)}
+                  </strong>
                   %
                 </p>
               </figure>
@@ -123,7 +117,7 @@ const BookDetails: Component = () => {
               <figure>
                 <figcaption>Speed</figcaption>
                 <p>
-                  <strong>{formatNumNice(data()?.wpm ?? 0)}</strong> WPM
+                  <strong>{formatNumNice(data()?.wpm ?? 0, 1)}</strong> WPM
                 </p>
               </figure>
             </li>
@@ -131,7 +125,7 @@ const BookDetails: Component = () => {
               <figure>
                 <figcaption>Accuracy</figcaption>
                 <p>
-                  <strong>{formatPercentageNice(data()?.acc ?? 0)}</strong>%
+                  <strong>{formatPercentageNice(data()?.acc ?? 0, 1)}</strong>%
                 </p>
               </figure>
             </li>
@@ -140,7 +134,7 @@ const BookDetails: Component = () => {
                 <figcaption>Consistency</figcaption>
                 <p>
                   <strong>
-                    {formatPercentageNice(data()?.consistency ?? 0)}
+                    {formatPercentageNice(data()?.consistency ?? 0, 1)}
                   </strong>
                   %
                 </p>
@@ -158,7 +152,7 @@ const BookDetails: Component = () => {
           </p>
         </section>
         <hr />
-        <section class="chapters">
+        <section class="chapters" id="chapters">
           <h2>Chapters</h2>
           <ul>
             <For
@@ -168,12 +162,12 @@ const BookDetails: Component = () => {
             >
               {(chapter) => {
                 const pages = createMemo(() =>
-                  Math.ceil(chapter.length / (5 * 300)),
+                  Math.ceil(chapter.length / config.CHARACTERS_PER_PAGE),
                 )
 
                 const status = createMemo(() => {
                   if (chapter.skip === "yes") {
-                    return "SKIPPED"
+                    return "SKIP"
                   }
 
                   if (chapter.progress === 1) {
@@ -193,9 +187,24 @@ const BookDetails: Component = () => {
                       <p class="chapter-title">{chapter.title}</p>
                     </a>
                     <div class="chapter-right">
-                      <span class="chapter-pages">
+                      <Show when={chapter.wpm}>
+                        <span class="chapter-stat">
+                          {formatNum(chapter.wpm ?? 0)} wpm
+                        </span>
+                      </Show>
+                      <Show when={chapter.acc}>
+                        <span class="chapter-stat">
+                          {formatPercentage(chapter.acc ?? 0)} acc
+                        </span>
+                      </Show>
+                      <Show when={chapter.consistency}>
+                        <span class="chapter-stat">
+                          {formatPercentage(chapter.consistency ?? 0)} con
+                        </span>
+                      </Show>
+                      <span class="chapter-stat">
                         {pages()} page{pages() !== 1 ? "s" : ""}
-                      </span>{" "}
+                      </span>
                       <span class="chapter-status">{status()}</span>
                       <span class="chapter-skip">
                         <label>

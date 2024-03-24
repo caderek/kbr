@@ -203,14 +203,14 @@
 
 .book-details .chapter-status {
   padding: var(--space-m);
-  width: 5rem;
+  width: 4rem;
   text-align: right;
   position: relative;
   bottom: calc(var(--font-xl) - var(--font-m));
   margin-left: var(--space-xs);
 }
 
-.book-details .chapter-pages {
+.book-details .chapter-stat {
   padding: var(--space-s);
   display: inline-block;
   background-color: var(--color-bg);
@@ -220,4 +220,5 @@
   width: 6rem;
   text-align: center;
   font-style: italic;
+  margin-right: var(--space-s);
 }

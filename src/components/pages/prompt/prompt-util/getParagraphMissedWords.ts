@@ -19,7 +19,6 @@ export function getParagraphMissedWords(
     ) {
       const word = original[i]
         .join("")
-        .toLowerCase()
         .trim()
         .replace(SYMBOLS_START_REGEX, "")
         .replace(SYMBOLS_END_REGEX, "")
@@ -28,5 +27,5 @@ export function getParagraphMissedWords(
     }
   }
 
-  return missedWords
+  return [...new Set(missedWords)]
 }

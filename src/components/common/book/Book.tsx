@@ -2,6 +2,7 @@ import "./Book.css"
 import { Component, Show, For } from "solid-js"
 import Cover from "./Cover"
 import { formatPercentageNice } from "../../../utils/formatters"
+import { toggleFavorite } from "../../../actions/toggleFavorite"
 
 const WEEK_MS = 1000 * 60 * 60 * 24 * 7
 
@@ -64,7 +65,10 @@ const Book: Component<Props> = (props) => {
               )}
             </For>
           </ul>
-          <button classList={{ favorite: true, active: props.favorite }}>
+          <button
+            classList={{ favorite: true, active: props.favorite }}
+            onClick={() => toggleFavorite(props.id)}
+          >
             <i
               class={props.favorite ? "icon-bookmark-on" : "icon-bookmark-off"}
             />

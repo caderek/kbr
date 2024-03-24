@@ -1,4 +1,7 @@
-import { StaticChapterInfo } from "../../../types/common"
+import {
+  FinishedParagraphStats,
+  StaticChapterInfo,
+} from "../../../types/common"
 
 export type WordStats = {
   length: number
@@ -41,12 +44,17 @@ export type PageStats = {
 export type LocalState = {
   id: string | null
   length: number
+  lengthCompleted: number
   charset: Set<string>
   hideCursor: boolean
   done: boolean
   paused: boolean
   typed: (string | null)[][][]
   original: string[][][]
+  incrementalLength: number[][]
+  screenSplits: number[]
+  splitStart: number
+  splitEnd: number
   stats: ParagraphStats[]
   pageStats: PageStats
   paragraphNum: number
@@ -61,5 +69,7 @@ export type PromptData = {
     title: string | null
   }
   chapterInfo: StaticChapterInfo | undefined
+  chapterProgress: number
   paragraphs: string[] | null
+  stats: FinishedParagraphStats[]
 }

@@ -1,12 +1,10 @@
 import { produce, type SetStoreFunction } from "solid-js/store"
 import type { LocalState } from "../types.ts"
-import { formatPercentage } from "../../../../utils/formatters.ts"
 import { calculateParagraphWpm } from "../prompt-util/calculateParagraphWpm.ts"
 import { calculateParagraphConsistency } from "../prompt-util/calculateParagraphConsistency.ts"
 import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.ts"
 import { getParagraphMissedWords } from "../prompt-util/getParagraphMissedWords.ts"
 import { saveParagraph } from "./saveParagraph.ts"
-// import storage from "../../../../storage/storage.ts"
 
 export function setParagraphStats(
   local: LocalState,
@@ -37,10 +35,6 @@ export function setParagraphStats(
     currentParagraph.words,
     local.original[local.paragraphNum],
   )
-
-  console.log({ missedWords })
-  console.log({ wpm })
-  console.log({ consistency: formatPercentage(consistency.value) })
 
   setLocal(
     "stats",
@@ -73,13 +67,17 @@ export function setParagraphStats(
     }),
   )
 
-  console.log({ charNum: local.charNum })
-
   if (local.id) {
-    saveParagraph(local.id, local.paragraphNum, local.length, {
-      wpm,
-      acc,
-      consistency,
-    })
+    saveParagraph(
+      local.id,
+      local.paragraphNum,
+      local.length,
+      {
+        wpm,
+        acc,
+        consistency,
+      },
+      missedWords,
+    )
   }
 }

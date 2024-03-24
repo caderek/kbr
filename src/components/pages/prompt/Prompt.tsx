@@ -27,6 +27,7 @@ import { updateAverageAccuracy } from "./prompt-actions/updateAverageAccuracy.ts
 import { updateAverageWpm } from "./prompt-actions/updateAverageWpm.ts"
 import { handleStandardInput } from "./prompt-actions/handleStandardInput.ts"
 import { loadPromptContent } from "./prompt-actions/loadPromptContent.ts"
+import { updateProgress } from "./prompt-actions/updateProgress.ts"
 
 function Prompt() {
   const params = useParams()
@@ -34,12 +35,17 @@ function Prompt() {
   const [local, setLocal] = createStore<LocalState>({
     id: null,
     length: 0,
+    lengthCompleted: 0,
     charset: new Set(),
     hideCursor: false,
     done: false,
     paused: true,
     original: [],
     typed: [],
+    incrementalLength: [],
+    screenSplits: [],
+    splitStart: 0,
+    splitEnd: 0,
     stats: [],
     pageStats: { acc: null, wpm: null, inputTimes: [] },
     paragraphNum: 0,
@@ -56,8 +62,10 @@ function Prompt() {
   createEffect(
     on(promptData, () => loadPromptContent(promptData, setLocal, params.id)),
   )
+
   createEffect(on(wordLabel, updateAverageWpm(local, setLocal)))
   createEffect(on(wordLabel, updateAverageAccuracy(local, setLocal)))
+  createEffect(on(wordLabel, updateProgress(local, setLocal)))
 
   // Add times chunk when the cursor enters or reenters word,
   // this way times of initial typin and later reentries (if user backspace from next word) are separate
@@ -117,6 +125,16 @@ function Prompt() {
     return scrollToWord(prev)
   }, 0)
 
+  const pages = createMemo(() =>
+    Math.ceil(local.length / config.CHARACTERS_PER_PAGE),
+  )
+
+  const page = createMemo(
+    () => Math.floor(local.lengthCompleted / config.CHARACTERS_PER_PAGE) + 1,
+  )
+
+  const progress = createMemo(() => local.lengthCompleted / local.length)
+
   let screenKeyboardPrompt: HTMLInputElement | undefined
 
   return (
@@ -129,8 +147,9 @@ function Prompt() {
           wpm={local.pageStats.wpm}
           acc={local.pageStats.acc}
           paused={local.paused}
-          page={1}
-          pages={200}
+          page={page()}
+          pages={pages()}
+          progress={progress()}
         />
         <section
           classList={{
@@ -160,15 +179,19 @@ function Prompt() {
         >
           <input type="text" ref={screenKeyboardPrompt!} />
           <div class="paragraphs">
-            <For each={local.original}>
+            <For each={local.original.slice(local.splitStart, local.splitEnd)}>
               {(paragraph, paragraphNum) => {
+                const offset = createMemo(
+                  () => paragraphNum() + local.splitStart,
+                )
+
                 const wpm = createMemo(() => {
-                  const val = local.stats?.[paragraphNum()]?.wpm
+                  const val = local.stats?.[offset()]?.wpm
                   return val !== null ? `${formatNum(val.value)} wpm` : ""
                 })
 
                 const acc = createMemo(() => {
-                  const val = local.stats?.[paragraphNum()]?.acc
+                  const val = local.stats?.[offset()]?.acc
                   return val !== null
                     ? `${formatPercentage(val.value)} acc`
                     : ""
@@ -179,15 +202,15 @@ function Prompt() {
                     <For each={paragraph}>
                       {(word, wordNum) => {
                         const currentWord = () =>
-                          local.typed[paragraphNum()][wordNum()]
+                          local.typed[offset()][wordNum()]
                         const expectedWord = () =>
-                          local.original[paragraphNum()][wordNum()]
+                          local.original[offset()][wordNum()]
                         const isInaccurate = () =>
                           !currentWord().includes(null) &&
                           currentWord().join("") !== expectedWord().join("")
 
                         const isActive = () =>
-                          paragraphNum() === local.paragraphNum &&
+                          offset() === local.paragraphNum &&
                           wordNum() === local.wordNum
 
                         return (
@@ -202,11 +225,9 @@ function Prompt() {
                               <For each={word}>
                                 {(letter, charNum) => {
                                   const currentChar = () =>
-                                    local.typed[paragraphNum()][wordNum()][
-                                      charNum()
-                                    ]
+                                    local.typed[offset()][wordNum()][charNum()]
                                   const expectedChar = () =>
-                                    local.original[paragraphNum()][wordNum()][
+                                    local.original[offset()][wordNum()][
                                       charNum()
                                     ]
                                   const isCorrect = () =>
@@ -214,7 +235,7 @@ function Prompt() {
 
                                   const getTypedChar = () => {
                                     let typedChar =
-                                      local.typed[paragraphNum()][wordNum()][
+                                      local.typed[offset()][wordNum()][
                                         charNum()
                                       ]
 
@@ -230,8 +251,7 @@ function Prompt() {
                                       classList={{
                                         letter: true,
                                         caret:
-                                          paragraphNum() ===
-                                            local.paragraphNum &&
+                                          offset() === local.paragraphNum &&
                                           wordNum() === local.wordNum &&
                                           charNum() === local.charNum,
                                         ok: isCorrect(),

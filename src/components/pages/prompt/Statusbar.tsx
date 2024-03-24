@@ -11,6 +11,7 @@ type Props = {
   paused: boolean
   page: number
   pages: number
+  progress: number
 }
 
 const Statusbar: Component<Props> = (props) => {
@@ -62,7 +63,7 @@ const Statusbar: Component<Props> = (props) => {
         </span>
       </p>
       <div class="progressbar">
-        <div style={`width: ${0.5 * 100}%`}></div>
+        <div style={`width: ${props.progress * 100}%`}></div>
       </div>
     </section>
   )
