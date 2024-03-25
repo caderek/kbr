@@ -16,8 +16,8 @@ export function updateAverageAccuracy(
     const weights = []
 
     for (let i = 0; i < local.paragraphNum; i++) {
-      accuracies.push(local.stats[i].acc!.value)
-      weights.push(local.stats[i].acc!.weight)
+      accuracies.push(local.stats[i].acc?.value ?? 0)
+      weights.push(local.stats[i].acc?.weight ?? 0)
     }
 
     const currentParagraph = local.stats[local.paragraphNum]

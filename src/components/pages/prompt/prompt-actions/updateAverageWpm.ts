@@ -20,8 +20,8 @@ export function updateAverageWpm(
         continue
       }
 
-      wpms.push(local.stats[i].wpm!.value)
-      weights.push(local.stats[i].wpm!.weight)
+      wpms.push(local.stats[i].wpm?.value ?? 0)
+      weights.push(local.stats[i].wpm?.weight ?? 0)
     }
 
     const currentParagraph = local.stats[local.paragraphNum]

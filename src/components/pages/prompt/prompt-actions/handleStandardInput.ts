@@ -2,7 +2,6 @@ import { SetStoreFunction, produce } from "solid-js/store"
 import { LocalState } from "../types"
 import config from "../../../../config"
 import { setParagraphStats } from "./setParagraphStats"
-import { getScreenSplitOffsets } from "../prompt-util/getScreenSplitOffsets"
 
 let afkTimeout: NodeJS.Timeout | null = null
 
@@ -103,25 +102,6 @@ export function handleStandardInput(
       .startsWith(local.typed[local.paragraphNum][local.wordNum].join("")),
   )
 
-  // PARAGRAPH END
-  if (expectedChar === "⏎") {
-    setParagraphStats(local, setLocal)
-
-    const splitOffsets = getScreenSplitOffsets(
-      local.screenSplits,
-      local.paragraphNum,
-    )
-
-    if (local.splitStart !== splitOffsets.start) {
-      setLocal(
-        produce((state) => {
-          state.splitStart = splitOffsets.start
-          state.splitEnd = splitOffsets.end
-        }),
-      )
-    }
-  }
-
   const isLastChar =
     local.charNum ===
     local.original[local.paragraphNum][local.wordNum].length - 1
@@ -130,14 +110,12 @@ export function handleStandardInput(
   const isLastParagraph =
     isLastWord && local.paragraphNum === local.typed.length - 1
 
+  // PARAGRAPH END
+  if (expectedChar === "⏎") {
+    setParagraphStats(local, setLocal, isLastParagraph)
+  }
+
   if (isLastParagraph) {
-    console.log("Page done!")
-    setLocal("done", true)
-
-    // Remove when there is summary page or next page mechanism
-    setLocal("charNum", local.charNum + 1)
-
-    console.log(local)
   } else if (isLastWord) {
     setLocal(
       produce((state) => {

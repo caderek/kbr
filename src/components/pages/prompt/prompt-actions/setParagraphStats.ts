@@ -5,10 +5,12 @@ import { calculateParagraphConsistency } from "../prompt-util/calculateParagraph
 import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.ts"
 import { getParagraphMissedWords } from "../prompt-util/getParagraphMissedWords.ts"
 import { saveParagraph } from "./saveParagraph.ts"
+import { redirect } from "@solidjs/router"
 
 export function setParagraphStats(
   local: LocalState,
   setLocal: SetStoreFunction<LocalState>,
+  done: boolean,
 ) {
   setLocal("paused", true)
 
@@ -78,6 +80,10 @@ export function setParagraphStats(
         consistency,
       },
       missedWords,
-    )
+    ).then(() => {
+      if (done) {
+        location.replace(`/results/${local.id}`)
+      }
+    })
   }
 }

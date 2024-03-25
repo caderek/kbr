@@ -1,13 +1,10 @@
 import "./Results.css"
-import state from "../../../state/state.ts"
-import { Show } from "solid-js"
+import { Component } from "solid-js"
+import { useParams } from "@solidjs/router"
 
-function Results() {
-  return (
-    <Show when={state.get.prompt.done}>
-      <section class="results">{state.get.prompt.wpm} WPM</section>
-    </Show>
-  )
+const Results: Component = () => {
+  const params = useParams()
+  return <section class="results">RESULTS {params.id}</section>
 }
 
 export default Results

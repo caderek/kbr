@@ -10,7 +10,7 @@ import {
   createResource,
   on,
 } from "solid-js"
-import { createStore } from "solid-js/store"
+import { createStore, produce } from "solid-js/store"
 
 import config from "../../../config.ts"
 import state from "../../../state/state.ts"
@@ -28,6 +28,7 @@ import { updateAverageWpm } from "./prompt-actions/updateAverageWpm.ts"
 import { handleStandardInput } from "./prompt-actions/handleStandardInput.ts"
 import { loadPromptContent } from "./prompt-actions/loadPromptContent.ts"
 import { updateProgress } from "./prompt-actions/updateProgress.ts"
+import { getScreenSplitOffsets } from "./prompt-util/getScreenSplitOffsets.ts"
 
 function Prompt() {
   const params = useParams()
@@ -55,17 +56,67 @@ function Prompt() {
 
   const [promptData] = createResource(params.id, getPromptData)
 
+  const setAutotypeText = () => {
+    const text = local.original
+      .slice(local.paragraphNum, local.splitEnd)
+      .map((p) => p.flat().join(""))
+      .join("\n\n")
+
+    // @ts-ignore
+    window.text = text
+  }
+
   const wordLabel = createMemo(() => {
     return `${local.paragraphNum}:${local.wordNum}`
   })
 
   createEffect(
-    on(promptData, () => loadPromptContent(promptData, setLocal, params.id)),
+    on(promptData, () => {
+      loadPromptContent(promptData, setLocal, params.id)
+      setAutotypeText()
+    }),
   )
 
   createEffect(on(wordLabel, updateAverageWpm(local, setLocal)))
   createEffect(on(wordLabel, updateAverageAccuracy(local, setLocal)))
   createEffect(on(wordLabel, updateProgress(local, setLocal)))
+
+  createEffect(on(() => local.splitEnd, setAutotypeText))
+
+  let isStart = true
+
+  createEffect(
+    on(
+      () => local.paragraphNum,
+      () => {
+        const splitOffsets = getScreenSplitOffsets(
+          local.screenSplits,
+          local.paragraphNum,
+        )
+
+        if (local.splitStart !== splitOffsets.start) {
+          setLocal(
+            produce((state) => {
+              state.splitStart = splitOffsets.start
+              state.splitEnd = splitOffsets.end
+            }),
+          )
+
+          window.scrollTo(0, 0)
+
+          //@ts-ignore
+          setTimeout(
+            () => {
+              //@ts-ignore
+              // window.simulateTyping(window.text, { wpm: 2000 })
+            },
+            isStart ? 5000 : 1000,
+          )
+          isStart = false
+        }
+      },
+    ),
+  )
 
   // Add times chunk when the cursor enters or reenters word,
   // this way times of initial typin and later reentries (if user backspace from next word) are separate

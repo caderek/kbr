@@ -9,6 +9,8 @@ import BookDetails from "./components/pages/book-details/BookDetails.tsx"
 import prepareBooks from "./prepareBooks.ts"
 import { simulateTyping } from "./simulateTyping.ts"
 import { Epub } from "./libs/ebook/epub.ts"
+import { speak } from "./libs/tts/speak.ts"
+import Results from "./components/pages/results/Results.tsx"
 
 const temp = async () => {
   const res = await fetch(
@@ -29,6 +31,8 @@ const temp = async () => {
 window.prepareBooks = prepareBooks
 // @ts-ignore
 window.simulateTyping = simulateTyping
+// @ts-ignore
+window.speak = speak
 
 const root = document.getElementById("root")
 
@@ -43,6 +47,7 @@ render(
       <Route path="/profile" component={() => <h2>Profle</h2>} />
       <Route path="/prompt" component={Prompt} />
       <Route path="/prompt/:id" component={Prompt} />
+      <Route path="/results/:id" component={Results} />
       <Route path="*404" component={() => <h1>Not Found</h1>} />
     </Router>
   ),

@@ -54,8 +54,6 @@ function getScreenSplits(paragraphs: string[], maxCharsPerScreen: number) {
 
   splits.push(paragraphsLengths.length)
 
-  console.log({ splits })
-
   return splits
 }
 
@@ -68,14 +66,9 @@ export function loadPromptContent(
     return
   }
 
-  console.log({ promptData: promptData() })
-
   const savedStats = promptData()?.stats ?? []
   const isComplete = (promptData()?.chapterProgress ?? 0) === 1
   const paragraphs = promptData()?.paragraphs ?? []
-
-  // @ts-ignore
-  window.chapter = paragraphs.join("\n")
 
   const original = paragraphs.map((paragraph) =>
     paragraph
