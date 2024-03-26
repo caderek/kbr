@@ -35,12 +35,13 @@
   --font-prompt: monospace;
   --font-prompt: sans-serif;
   --font-prompt: serif;
+  --font-prompt: "JetBrians Mono", monospace;
+  --font-prompt: "OpenDyslexic3";
+  --font-prompt: "Recursive Mono Casual Static", monospace;
+  --font-prompt: "OpenDyslexicMono";
   --font-prompt: "Fira Code", monospace;
   --font-prompt: "OpenDyslexic3";
-  --font-prompt: "JetBrians Mono", monospace;
-  --font-prompt: "Recursive Mono Casual Static";
   --font-prompt: "Merriweather";
-  --font-prompt: "OpenDyslexicMono";
   --font-prompt: "PT Mono", monospace;
 
   --font-xs: 0.75rem;
@@ -204,6 +205,10 @@ label + label {
 label > span {
   display: block;
   margin-bottom: var(--space-s);
+}
+
+details > summary {
+  cursor: pointer;
 }
 
 @media screen and (min-width: 64rem) {

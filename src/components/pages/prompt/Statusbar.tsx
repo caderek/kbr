@@ -25,12 +25,12 @@ const Statusbar: Component<Props> = (props) => {
     <section class="statusbar">
       <p class="slug">
         <Show when={props.bookTitle}>
-          <a href={`/books/${props.bookId}`} class="mobile">
+          <a href={`/books/${props.bookId}#toc`} class="mobile">
             <i class="icon-back"></i>
           </a>
         </Show>
         <Show when={props.bookTitle}>
-          <a href={`/books/${props.bookId}`} class="desktop">
+          <a href={`/books/${props.bookId}#toc`} class="desktop">
             {props.bookTitle}
           </a>
           <span class="desktop"> / </span>

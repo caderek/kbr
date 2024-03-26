@@ -57,11 +57,13 @@
 .prompt .paragraphs > p::before {
   content: attr(data-wpm);
   bottom: 3rem;
+  text-indent: 0;
 }
 
 .prompt .paragraphs > p::after {
   content: attr(data-acc);
   bottom: 1.75rem;
+  text-indent: 0;
 }
 
 .prompt .ok,

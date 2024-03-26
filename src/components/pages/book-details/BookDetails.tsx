@@ -1,8 +1,15 @@
 import "./BookDetails.css"
-import { useParams } from "@solidjs/router"
-import { Component, createResource, Show, For, createMemo } from "solid-js"
+import { useParams, useLocation } from "@solidjs/router"
+import {
+  Component,
+  createResource,
+  Show,
+  For,
+  createMemo,
+  createEffect,
+  onMount,
+} from "solid-js"
 import Cover from "../../common/book/Cover"
-import { StaticBookInfo } from "../../../types/common"
 import config from "../../../config"
 import storage from "../../../storage/storage"
 import {
@@ -11,10 +18,10 @@ import {
   formatPercentage,
   formatPercentageNice,
 } from "../../../utils/formatters"
+import { getBookInfo } from "../../../io/getBookInfo"
 
 async function fetchBookDetails(id: string) {
-  const res = await fetch(`/books/${id}/info.json`)
-  const data = (await res.json()) as StaticBookInfo
+  const data = await getBookInfo(id)
 
   const chaptersStats = await storage.chaptersStats.get(id)
   const bookStats = await storage.booksStats.get(id)
@@ -56,8 +63,17 @@ async function fetchBookDetails(id: string) {
 }
 
 const BookDetails: Component = () => {
+  const location = useLocation()
   const params = useParams()
   const [data] = createResource(params.id, fetchBookDetails)
+
+  onMount(() => {
+    createEffect(() => {
+      if (location.hash && data()) {
+        document.querySelector(location.hash)?.scrollIntoView()
+      }
+    })
+  })
 
   return (
     <div class="book-details">
@@ -152,7 +168,7 @@ const BookDetails: Component = () => {
           </p>
         </section>
         <hr />
-        <section class="chapters" id="chapters">
+        <section class="chapters" id="toc">
           <h2>Chapters</h2>
           <ul>
             <For
