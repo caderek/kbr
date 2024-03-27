@@ -2,6 +2,7 @@ import "./Results.css"
 import {
   Component,
   Show,
+  createEffect,
   createMemo,
   createResource,
   onCleanup,
@@ -11,6 +12,8 @@ import { useNavigate, useParams } from "@solidjs/router"
 import storage from "../../../storage/storage"
 import { getBookInfo } from "../../../io/getBookInfo"
 import { ChapterStats, StaticChapterInfo } from "../../../types/common"
+import { FullscreenEffects } from "../../../libs/confetti/FullscreenEffects"
+import state from "../../../state/state"
 
 function getNextChapterId(
   currentChapterId: number,
@@ -94,6 +97,13 @@ const Results: Component = () => {
       return
     }
   }
+
+  createEffect(() => {
+    if (state.get.loaded) {
+      const fse = new FullscreenEffects()
+      fse.init(state.get.settings.darkmode)
+    }
+  })
 
   onMount(() => {
     document.addEventListener("keydown", handleShortcuts)

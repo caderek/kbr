@@ -86,3 +86,7 @@ export function calculateMedian(values: number[]): number {
     ? values[half]
     : (values[half - 1] + values[half]) / 2
 }
+
+export function mod(num: number, modulus: number) {
+  return ((num % modulus) + modulus) % modulus
+}
