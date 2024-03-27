@@ -1,6 +1,6 @@
 import Confetti from "./Confetti"
 import Scene from "./tools/Scene"
-import { randomFloat } from "../../utils/random"
+import { randomFloat, randomInt } from "../../utils/random"
 
 export class FullscreenEffects {
   #canvas: HTMLCanvasElement
@@ -34,7 +34,7 @@ export class FullscreenEffects {
         "square",
         8,
       ).load({
-        amount: 100,
+        amount: 150,
         fullPalette: false,
         minOpacity: 0.5,
         speed: 10,
@@ -50,7 +50,7 @@ export class FullscreenEffects {
         "char",
         32,
       ).load({
-        amount: 100,
+        amount: 150,
         fullPalette: true,
         minOpacity: 1,
         speed: 10,
