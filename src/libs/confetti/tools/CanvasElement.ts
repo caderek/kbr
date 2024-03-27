@@ -74,6 +74,14 @@ abstract class CanvasElement {
     return this._name
   }
 
+  get x() {
+    return this._x
+  }
+
+  get y() {
+    return this._y
+  }
+
   move(x: number, y: number): this
   move(xy: number): this
   move(a: number, b?: number) {

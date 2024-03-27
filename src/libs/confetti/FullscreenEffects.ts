@@ -8,7 +8,6 @@ export class FullscreenEffects {
   constructor() {
     this.#canvas = document.createElement("canvas")
     this.#ctx = this.#canvas.getContext("2d")
-    console.log(window.innerWidth)
     this.#canvas.width = window.innerWidth * window.devicePixelRatio
     this.#canvas.height = window.innerHeight * window.devicePixelRatio
     this.#canvas.style.position = "fixed"
@@ -28,7 +27,7 @@ export class FullscreenEffects {
       return
     }
 
-    const confetties = Array.from({ length: 8 }, () => {
+    const confetties = Array.from({ length: 9 }, () => {
       return new Confetti(
         this.#canvas.width * randomFloat(0.25, 0.75),
         this.#canvas.height * randomFloat(0.25, 0.75),
@@ -51,11 +50,11 @@ export class FullscreenEffects {
         "char",
         32,
       ).load({
-        amount: 50,
+        amount: 100,
         fullPalette: true,
         minOpacity: 1,
         speed: 10,
-        sizeVariation: 0,
+        sizeVariation: 0.2,
         darkmode,
       }),
     )

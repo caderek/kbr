@@ -42,13 +42,14 @@ const paletteLight = [
   "#d53e21",
 ]
 
-interface SquareParticle {
+interface Particle {
   shape: Shape
   dX: number
   dY: number
   speed: number
   dAngle: number
   angleSpeed: number
+  dead: boolean
 }
 
 type Options = {
@@ -74,7 +75,7 @@ class Confetti {
   #y
   #type: "char" | "square"
   #size: number
-  #particles: SquareParticle[] = []
+  #particles: Particle[] = []
   #gravity = 5
   #drag = 0.02
   #running = false
@@ -144,6 +145,7 @@ class Confetti {
         dAngle,
         speed: speed * 3,
         angleSpeed: Math.random() * 5,
+        dead: false,
       })
     }
 
@@ -154,9 +156,7 @@ class Confetti {
     this.#running = true
   }
 
-  #drawParticle(ctx: CanvasRenderingContext2D, particle: SquareParticle) {
-    particle.shape.draw(ctx)
-
+  #updateparticle(particle: Particle) {
     particle.shape.move(
       particle.dX * particle.speed,
       particle.dY * particle.speed + this.#gravity,
@@ -169,10 +169,43 @@ class Confetti {
     particle.speed = particle.speed * (1 - this.#drag)
   }
 
+  #drawParticle(ctx: CanvasRenderingContext2D, particle: Particle) {
+    particle.shape.draw(ctx)
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     if (this.#running) {
-      for (const particle of this.#particles) {
-        this.#drawParticle(ctx, particle)
+      let dead = 0
+
+      for (let i = 0; i < this.#particles.length; i++) {
+        const x = this.#particles[i].shape.x
+        const y = this.#particles[i].shape.y
+        const particle = this.#particles[i]
+        let visible = true
+
+        if (particle.dead) {
+          dead++
+          visible = false
+        }
+
+        if (x < 0 || x > ctx.canvas.width || y > ctx.canvas.height) {
+          particle.dead = true
+          visible = false
+        }
+
+        if (y < 0) {
+          visible = false
+        }
+
+        if (visible) {
+          this.#drawParticle(ctx, particle)
+        }
+
+        this.#updateparticle(particle)
+      }
+
+      if (dead === this.#particles.length) {
+        this.#running = false
       }
     }
   }
