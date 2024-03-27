@@ -5,12 +5,12 @@ import { WordStats } from "../types.ts"
 export function calculateParagraphWpm(
   inputTimes: number[],
   wordsStats: WordStats[],
-  prevWpm: { value: number; time: number } | null,
+  prevTime: number,
 ) {
   const afkTime = getAfkTime(inputTimes)
   const start = inputTimes[0]
   const end = inputTimes[inputTimes.length - 1]
-  const time = end - start - afkTime + (prevWpm?.time ?? 0)
+  const time = end - start - afkTime + prevTime
 
   let charCount = 0
   let weight = 0
@@ -30,9 +30,11 @@ export function calculateParagraphWpm(
   }
 
   return {
-    value: calculateWpm(time, charCount),
-    raw: calculateWpm(time, weight),
+    wpm: {
+      value: calculateWpm(time, charCount),
+      raw: calculateWpm(time, weight),
+      weight,
+    },
     time,
-    weight,
   }
 }

@@ -62,31 +62,10 @@ export type BooksIndex = {
 export type BooksLiveIndex = QuickBookData[]
 
 export type BasicStats = {
-  acc: {
-    value: number
-    weight: number
-  }
-  wpm: {
-    value: number
-    weight: number
-  }
-  consistency: {
-    value: number
-    weight: number
-  }
-}
-
-export type ProgressStats = {
-  length: number
-  progress: number
-}
-
-export type FinishedParagraphStats = {
   wpm: {
     value: number
     raw: number
     weight: number
-    time: number
   }
   acc: {
     value: number
@@ -96,10 +75,17 @@ export type FinishedParagraphStats = {
     value: number
     weight: number
   }
+  time: number
+  timestamp: number
+  length: number
 }
 
-export type ChapterStats = BasicStats & ProgressStats
+export type ProgressStats = {
+  progress: number
+}
 
+export type FinishedParagraphStats = BasicStats
+export type ChapterStats = BasicStats & ProgressStats
 export type BookStats = BasicStats & ProgressStats
 
 export type SortBy = "author" | "title" | "length" | "year" | "added"

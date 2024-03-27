@@ -103,6 +103,7 @@ export function loadPromptContent(
         wpm: savedStats[i]?.wpm ?? null,
         acc: savedStats[i]?.acc ?? null,
         consistency: savedStats[i]?.consistency ?? null,
+        time: savedStats[i]?.time ?? 0,
         inputTimes: [],
         typos: 0,
         nonTypos: 0,

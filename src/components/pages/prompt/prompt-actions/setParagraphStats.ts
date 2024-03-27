@@ -5,7 +5,6 @@ import { calculateParagraphConsistency } from "../prompt-util/calculateParagraph
 import { calculateParagraphAccuracy } from "../prompt-util/calculateParagraphAccuracy.ts"
 import { getParagraphMissedWords } from "../prompt-util/getParagraphMissedWords.ts"
 import { saveParagraph } from "./saveParagraph.ts"
-import { redirect } from "@solidjs/router"
 
 export function setParagraphStats(
   local: LocalState,
@@ -22,10 +21,10 @@ export function setParagraphStats(
     currentParagraph.acc,
   )
 
-  const wpm = calculateParagraphWpm(
+  const { wpm, time } = calculateParagraphWpm(
     currentParagraph.inputTimes,
     currentParagraph.words,
-    currentParagraph.wpm,
+    currentParagraph.time,
   )
 
   const consistency = calculateParagraphConsistency(
@@ -54,6 +53,10 @@ export function setParagraphStats(
         state.consistency = consistency
       }
 
+      if (!Number.isNaN(time)) {
+        state.time = time
+      }
+
       // Clean temp data
       state.typos = 0
       state.nonTypos = 0
@@ -78,6 +81,9 @@ export function setParagraphStats(
         wpm,
         acc,
         consistency,
+        time,
+        timestamp: Date.now(),
+        length: wpm.weight,
       },
       missedWords,
     ).then(() => {

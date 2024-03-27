@@ -85,10 +85,12 @@ type GeneralStorage = {
 const storage = {
   booksInfo: new EntriesStorage<StaticBookInfo>("booksInfo"),
   booksStats: new EntriesStorage<BookStats>("booksStats"),
-  chaptersStats: new EntriesStorage<ChapterStats[]>("chaptersStats"),
-  paragraphsStats: new EntriesStorage<FinishedParagraphStats[]>(
-    "paragraphsStats",
+  chaptersStats: new EntriesStorage<{ [index: number]: ChapterStats }>(
+    "chaptersStats",
   ),
+  paragraphsStats: new EntriesStorage<{
+    [index: number]: FinishedParagraphStats
+  }>("paragraphsStats"),
   booksContent: new EntriesStorage<StaticChapterContent>("booksContent"),
   general: new MixedStorage<GeneralStorage>("general"),
 }

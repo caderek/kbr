@@ -19,7 +19,6 @@ export type ParagraphStats = {
     value: number
     raw: number
     weight: number
-    time: number
   } | null
   acc: {
     value: number
@@ -29,6 +28,7 @@ export type ParagraphStats = {
     value: number
     weight: number
   } | null
+  time: number
   inputTimes: number[]
   typos: number
   nonTypos: number

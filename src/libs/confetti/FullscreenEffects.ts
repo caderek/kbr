@@ -1,6 +1,6 @@
 import Confetti from "./Confetti"
 import Scene from "./tools/Scene"
-import { randomFloat, randomInt } from "../../utils/random"
+import { randomFloat } from "../../utils/random"
 
 export class FullscreenEffects {
   #canvas: HTMLCanvasElement
@@ -32,9 +32,9 @@ export class FullscreenEffects {
         this.#canvas.width * randomFloat(0.25, 0.75),
         this.#canvas.height * randomFloat(0.25, 0.75),
         "square",
-        8,
+        6,
       ).load({
-        amount: 150,
+        amount: 300,
         fullPalette: false,
         minOpacity: 0.5,
         speed: 30,
@@ -71,7 +71,7 @@ export class FullscreenEffects {
     loop()
 
     confetties.forEach((confetti, i) => {
-      setTimeout(() => confetti.trigger(), (i + 1) * 500)
+      setTimeout(() => confetti.trigger(), (i + 1) * 750)
     })
   }
 }

@@ -17,6 +17,7 @@ export function handleParagraphReset(
       wpm: null,
       acc: null,
       consistency: null,
+      time: 0,
       inputTimes: [],
       startTime: 0,
       endTime: 0,

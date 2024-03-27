@@ -14,28 +14,45 @@ function calculateStat(values: number[], weights: number[]) {
 }
 
 function sumarizeStats(basicStats: BasicStats[]): BasicStats {
-  const completed = basicStats.filter(Boolean)
+  const wpms = new Array(basicStats.length)
+  const rawWpms = new Array(basicStats.length)
+  const wpmsWeights = new Array(basicStats.length)
+  const accuracies = new Array(basicStats.length)
+  const accuraciesWeights = new Array(basicStats.length)
+  const consustencies = new Array(basicStats.length)
+  const consistenciesWeights = new Array(basicStats.length)
 
-  const wpms = new Array(completed.length)
-  const wpmsWeights = new Array(completed.length)
-  const accuracies = new Array(completed.length)
-  const accuraciesWeights = new Array(completed.length)
-  const consustencies = new Array(completed.length)
-  const consistenciesWeights = new Array(completed.length)
+  let time = 0
+  let length = 0
+  let timestamp = 0
 
-  for (let i = 0; i < completed.length; i++) {
-    wpms[i] = completed[i].wpm.value
-    wpmsWeights[i] = completed[i].wpm.weight
-    accuracies[i] = completed[i].acc.value
-    accuraciesWeights[i] = completed[i].acc.weight
-    consustencies[i] = completed[i].consistency.value
-    consistenciesWeights[i] = completed[i].consistency.weight
+  for (let i = 0; i < basicStats.length; i++) {
+    wpms[i] = basicStats[i].wpm.value
+    rawWpms[i] = basicStats[i].wpm.raw
+    wpmsWeights[i] = basicStats[i].wpm.weight
+    accuracies[i] = basicStats[i].acc.value
+    accuraciesWeights[i] = basicStats[i].acc.weight
+    consustencies[i] = basicStats[i].consistency.value
+    consistenciesWeights[i] = basicStats[i].consistency.weight
+    time += basicStats[i].time
+    length += basicStats[i].length
+    timestamp = Math.max(timestamp, basicStats[i].timestamp)
   }
 
+  const wpm = calculateStat(wpms, wpmsWeights)
+  const rawWpm = calculateStat(rawWpms, wpmsWeights)
+
   return {
-    wpm: calculateStat(wpms, wpmsWeights),
+    wpm: {
+      value: wpm.value,
+      raw: rawWpm.value,
+      weight: wpm.weight,
+    },
     acc: calculateStat(accuracies, accuraciesWeights),
     consistency: calculateStat(consustencies, consistenciesWeights),
+    time,
+    timestamp,
+    length,
   }
 }
 
@@ -52,33 +69,24 @@ export async function saveParagraph(
       state.get.booksIndex.find((book) => book.id === bookId)?.length ?? 0
 
     const existingMissedWords = (await storage.general.get("missedWords")) ?? []
-    const paragraphsStats = (await storage.paragraphsStats.get(path)) ?? []
-    const chaptersStats = (await storage.chaptersStats.get(bookId)) ?? []
+    const paragraphsStats = (await storage.paragraphsStats.get(path)) ?? {}
+    const chaptersStats = (await storage.chaptersStats.get(bookId)) ?? {}
 
     paragraphsStats[paragraphNum] = stats
 
-    const paragraphsTypedLength = paragraphsStats.reduce(
-      (sum, p) => sum + p.wpm.weight,
-      0,
-    )
+    const chapterPartialStats = sumarizeStats(Object.values(paragraphsStats))
 
     const chapterStats = {
-      ...sumarizeStats(paragraphsStats),
-      length: paragraphsTypedLength,
-      progress: paragraphsTypedLength / chapterLength,
+      ...chapterPartialStats,
+      progress: chapterPartialStats.length / chapterLength,
     }
 
     chaptersStats[Number(chapterId)] = chapterStats
 
-    const chaptersTypedLength = chaptersStats.reduce(
-      (sum, c) => sum + c.length,
-      0,
-    )
-
+    const bookPartialStats = sumarizeStats(Object.values(chaptersStats))
     const boookStats = {
-      ...sumarizeStats(chaptersStats),
-      length: chaptersTypedLength,
-      progress: chaptersTypedLength / bookLength,
+      ...bookPartialStats,
+      progress: bookPartialStats.length / bookLength,
     }
 
     const updatedMissedWords = [

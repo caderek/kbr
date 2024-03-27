@@ -136,7 +136,7 @@ class Confetti {
           : new Rectangle()
               .size(size)
               .origin(size / 2)
-              // .round(size / 4)
+              // .round(size / 2)
               .position(this.#x, this.#y)
               .fill(`${color}${alphaHex}`)
               .angle(Math.floor(Math.random() * 90))
@@ -146,7 +146,7 @@ class Confetti {
         dX,
         dY,
         dAngle,
-        speed: speed * randomFloat(0.1, 1),
+        speed: speed * randomFloat(0.05, 1),
         angleSpeed: randomFloat(1, 5),
         dead: false,
         color,
@@ -174,7 +174,7 @@ class Confetti {
 
     particle.speed = particle.speed * (1 - this.#drag)
 
-    if (this.#type === "square" && this.#ticks > 100) {
+    if (this.#type === "square" && this.#ticks > 60) {
       particle.alpha = Math.max(particle.alpha - 1, 0)
       const alphaHex = particle.alpha.toString(16).padStart(2, "0")
       particle.shape.fill(`${particle.color}${alphaHex}`)
