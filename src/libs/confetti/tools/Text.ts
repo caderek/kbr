@@ -32,7 +32,7 @@ class Text extends Shape {
 
     ctx.rotate(this._rotation)
     ctx.translate(-this._originX, -this._originY)
-    ctx.font = `bold ${this.#size}px monospace`
+    ctx.font = `bold ${this.#size}px "PT Mono", monospace`
     ctx.textBaseline = "middle"
     ctx.textAlign = "center"
     ctx.fillText(this.#char, 0, 0)
