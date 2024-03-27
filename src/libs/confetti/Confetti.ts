@@ -50,6 +50,8 @@ interface Particle {
   dAngle: number
   angleSpeed: number
   dead: boolean
+  color: string
+  alpha: number
 }
 
 type Options = {
@@ -79,6 +81,7 @@ class Confetti {
   #gravity = 5
   #drag = 0.02
   #running = false
+  #ticks = 0
 
   constructor(x: number, y: number, type: "char" | "square", size: number) {
     this.#x = x
@@ -114,8 +117,7 @@ class Confetti {
       const dAngle = randomFloat(0.5, 1.5) * (Math.random() > 0.5 ? 1 : -1)
       const color = randomElement(colors)
       const alpha = randomInt(Math.floor(minOpacity * 256), 256)
-        .toString(16)
-        .padStart(2, "0")
+      const alphaHex = alpha.toString(16).padStart(2, "0")
 
       const size = Math.round(
         randomFloat(
@@ -134,8 +136,9 @@ class Confetti {
           : new Rectangle()
               .size(size)
               .origin(size / 2)
+              // .round(size / 4)
               .position(this.#x, this.#y)
-              .fill(`${color}${alpha}`)
+              .fill(`${color}${alphaHex}`)
               .angle(Math.floor(Math.random() * 90))
 
       this.#particles.push({
@@ -143,9 +146,11 @@ class Confetti {
         dX,
         dY,
         dAngle,
-        speed: speed * 3,
-        angleSpeed: Math.random() * 5,
+        speed: speed * randomFloat(0.1, 1),
+        angleSpeed: randomFloat(1, 5),
         dead: false,
+        color,
+        alpha,
       })
     }
 
@@ -157,9 +162,10 @@ class Confetti {
   }
 
   #updateparticle(particle: Particle) {
+    const magnitude = Math.hypot(particle.dX, particle.dY)
     particle.shape.move(
-      particle.dX * particle.speed,
-      particle.dY * particle.speed + this.#gravity,
+      (particle.dX * particle.speed) / magnitude,
+      (particle.dY * particle.speed) / magnitude + this.#gravity,
     )
 
     particle.shape.angle(
@@ -167,6 +173,12 @@ class Confetti {
     )
 
     particle.speed = particle.speed * (1 - this.#drag)
+
+    if (this.#type === "square" && this.#ticks > 100) {
+      particle.alpha = Math.max(particle.alpha - 1, 0)
+      const alphaHex = particle.alpha.toString(16).padStart(2, "0")
+      particle.shape.fill(`${particle.color}${alphaHex}`)
+    }
   }
 
   #drawParticle(ctx: CanvasRenderingContext2D, particle: Particle) {
@@ -188,7 +200,12 @@ class Confetti {
           visible = false
         }
 
-        if (x < 0 || x > ctx.canvas.width || y > ctx.canvas.height) {
+        if (
+          x < 0 ||
+          x > ctx.canvas.width ||
+          y > ctx.canvas.height ||
+          particle.alpha === 0
+        ) {
           particle.dead = true
           visible = false
         }
@@ -207,6 +224,8 @@ class Confetti {
       if (dead === this.#particles.length) {
         this.#running = false
       }
+
+      this.#ticks++
     }
   }
 }

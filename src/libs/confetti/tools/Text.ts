@@ -1,7 +1,7 @@
 import { randomElement } from "../../../utils/random"
 import Shape from "./Shape"
 
-const chars = `ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+const chars = `ABCDEFGHIJKLMNOPQRSTUWXYZ`
 
 class Text extends Shape {
   #size: number = 16

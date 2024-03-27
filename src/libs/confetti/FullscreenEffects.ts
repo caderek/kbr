@@ -37,7 +37,7 @@ export class FullscreenEffects {
         amount: 150,
         fullPalette: false,
         minOpacity: 0.5,
-        speed: 10,
+        speed: 30,
         sizeVariation: 0.5,
         darkmode,
       })
@@ -53,7 +53,7 @@ export class FullscreenEffects {
         amount: 150,
         fullPalette: true,
         minOpacity: 1,
-        speed: 10,
+        speed: 30,
         sizeVariation: 0.2,
         darkmode,
       }),
