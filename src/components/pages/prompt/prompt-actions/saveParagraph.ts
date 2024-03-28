@@ -87,6 +87,7 @@ export async function saveParagraph(
     const boookStats = {
       ...bookPartialStats,
       progress: bookPartialStats.length / bookLength,
+      lastChapter: Number(chapterId),
     }
 
     const updatedMissedWords = [

@@ -71,5 +71,5 @@ export type PromptData = {
   chapterInfo: StaticChapterInfo | undefined
   chapterProgress: number
   paragraphs: string[] | null
-  stats: FinishedParagraphStats[]
+  stats: { [index: number]: FinishedParagraphStats }
 }

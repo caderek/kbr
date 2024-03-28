@@ -66,7 +66,7 @@ export function loadPromptContent(
     return
   }
 
-  const savedStats = promptData()?.stats ?? []
+  const savedStats = promptData()?.stats ?? {}
   const isComplete = (promptData()?.chapterProgress ?? 0) === 1
   const paragraphs = promptData()?.paragraphs ?? []
 
@@ -90,8 +90,10 @@ export function loadPromptContent(
     return paragraph.map((word) => word.map((_) => null))
   })
 
-  // @ts-ignore
-  const lastCompletedParagraphNum = promptData()?.stats.findLastIndex(Boolean)
+  const indicies = Object.keys(savedStats).map(Number)
+
+  const lastCompletedParagraphNum = Math.max(-1, ...indicies)
+
   const paragraphNum = isComplete ? 0 : lastCompletedParagraphNum + 1
 
   const stats = Array.from(

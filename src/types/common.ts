@@ -86,7 +86,7 @@ export type ProgressStats = {
 
 export type FinishedParagraphStats = BasicStats
 export type ChapterStats = BasicStats & ProgressStats
-export type BookStats = BasicStats & ProgressStats
+export type BookStats = BasicStats & ProgressStats & { lastChapter: number }
 
 export type SortBy = "author" | "title" | "length" | "year" | "added"
 

@@ -19,12 +19,20 @@ import {
   formatPercentageNice,
 } from "../../../utils/formatters"
 import { getBookInfo } from "../../../io/getBookInfo"
+import { getNextChapterId } from "../../../actions/getNextChapterId"
 
 async function fetchBookDetails(id: string) {
   const data = await getBookInfo(id)
 
   const chaptersStats = await storage.chaptersStats.get(id)
   const bookStats = await storage.booksStats.get(id)
+
+  const nextChapterNum = getNextChapterId({
+    currentChapterIndex: bookStats?.lastChapter ?? 0,
+    chaptersStats: chaptersStats ?? {},
+    chapters: data.chapters,
+    progress: bookStats?.progress ?? 0,
+  })
 
   const chapters = data.chapters.map((chapter) => {
     const chapterStats = chaptersStats && chaptersStats[Number(chapter.id)]
@@ -59,6 +67,7 @@ async function fetchBookDetails(id: string) {
     consistency: bookStats?.consistency.value ?? null,
     progress: bookStats?.progress ?? 0,
     typedLength,
+    nextChapterNum,
   }
 }
 
@@ -75,6 +84,20 @@ const BookDetails: Component = () => {
     })
   })
 
+  const nextChapter = createMemo(() => {
+    const chaptetId = String(data()?.nextChapterNum ?? 0).padStart(3, "0")
+
+    return {
+      link: `/prompt/${params.id}__${chaptetId}`,
+      text:
+        data()?.progress === 1
+          ? "TYPE AGAIN"
+          : data()?.progress === 0
+            ? "START"
+            : "CONTINUE",
+    }
+  })
+
   return (
     <div class="book-details">
       <Show when={data()}>
@@ -82,8 +105,10 @@ const BookDetails: Component = () => {
           <h2>{data()?.title}</h2>
           <Cover url={`/books/${params.id}/cover.min.png`} />
           <nav>
-            <button>EDIT</button>
-            <button class="primary">CONTINUE</button>
+            {/* <button>EDIT</button> */}
+            <a class="button primary" href={nextChapter().link}>
+              {nextChapter().text}
+            </a>
           </nav>
           <p class="author">
             by <a href="#">{data()?.author}</a>

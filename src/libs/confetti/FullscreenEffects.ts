@@ -5,23 +5,14 @@ import { randomFloat } from "../../utils/random"
 export class FullscreenEffects {
   #canvas: HTMLCanvasElement
   #ctx: CanvasRenderingContext2D | null
-  constructor() {
-    this.#canvas = document.createElement("canvas")
+  constructor(canvas: HTMLCanvasElement) {
+    this.#canvas = canvas
     this.#ctx = this.#canvas.getContext("2d")
     this.#canvas.width = window.innerWidth * window.devicePixelRatio
     this.#canvas.height = window.innerHeight * window.devicePixelRatio
-    this.#canvas.style.position = "fixed"
-    this.#canvas.style.top = "0"
-    this.#canvas.style.left = "0"
-    this.#canvas.style.zIndex = "2"
-    this.#canvas.style.width = "100vw"
-    this.#canvas.style.height = "100vh"
-    this.#canvas.style.pointerEvents = "none"
-
-    document.body.appendChild(this.#canvas)
   }
 
-  init(darkmode: boolean) {
+  init(darkmode: boolean, isMobile: boolean) {
     if (!this.#ctx) {
       console.error("Can't initialize canvas")
       return
@@ -34,7 +25,7 @@ export class FullscreenEffects {
         "square",
         6,
       ).load({
-        amount: 300,
+        amount: isMobile ? 100 : 300,
         fullPalette: false,
         minOpacity: 0.5,
         speed: 30,
@@ -50,7 +41,7 @@ export class FullscreenEffects {
         "char",
         32,
       ).load({
-        amount: 150,
+        amount: isMobile ? 80 : 150,
         fullPalette: true,
         minOpacity: 1,
         speed: 30,
